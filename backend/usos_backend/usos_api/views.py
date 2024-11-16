@@ -1,9 +1,18 @@
 #from django.shortcuts import render
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group#, User
 from rest_framework import permissions, viewsets
+
+from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+
+from django.http import JsonResponse
+import json
 
 from usos_backend.usos_api.serializers import GroupSerializer, UserSerializer
 
+from .models import User
 
 class UserViewSet(viewsets.ModelViewSet):
     """
