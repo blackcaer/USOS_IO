@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+from django.utils.timezone import now
 
 
 # Categories
@@ -33,14 +35,15 @@ class CategoryAttendanceStatus(models.Model):
 # Main models
 
 class User(AbstractUser):
-    name = models.CharField(max_length=255)
-    first_name = models.CharField(max_length=255)
-    middle_name = models.CharField(max_length=255, blank=True, null=True)
-    last_name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-    birth_date = models.DateField()
-    sex = models.CharField(max_length=10, choices=[("M", "Male"), ("F", "Female")])
-    status = models.ForeignKey(CategoryUserStatus, on_delete=models.SET_NULL, null=True)    #TODO maybe default to something?
+    name = models.CharField(max_length=255, default="name_example")
+    first_name = models.CharField(max_length=255, default="name_example")
+    middle_name = models.CharField(max_length=255, blank=True, null=True, default="Mname_example")
+    last_name = models.CharField(max_length=255, default="Lname_example")
+    email = models.EmailField(unique=True, default="example@example.com")  # Przykładowy adres e-mail
+    birth_date = models.DateField(default="2010-01-01")  # Przykładowa data urodzenia
+    sex = models.CharField(max_length=15, choices=[("M", "Male"), ("F", "Female")],default="M")
+    status = models.CharField(max_length=31, choices=[("A", "Active"), ("D", "Unactive")],default="A")
+    #status = models.ForeignKey(CategoryUserStatus, on_delete=models.SET_NULL, null=True)  
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     photo_url = models.URLField(blank=True, null=True)
 
@@ -74,7 +77,7 @@ class Teacher(models.Model):
 
 class StudentGroup(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True,default="")
     category = models.ForeignKey(CategoryStudentGroup, on_delete=models.SET_NULL, null=True)
     level = models.IntegerField()
     section = models.CharField(max_length=50, blank=True, null=True)
@@ -86,7 +89,7 @@ class StudentGroup(models.Model):
 
 class SchoolSubject(models.Model):
     subject_name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True,default="")
     is_mandatory = models.BooleanField(default=False)
     student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
 
@@ -108,7 +111,7 @@ class Grade(models.Model):
 
 class GradeColumn(models.Model):
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True,default="")
     default_weight = models.IntegerField()
     school_subject = models.ForeignKey(SchoolSubject, on_delete=models.CASCADE)
 
@@ -119,7 +122,7 @@ class GradeColumn(models.Model):
 class Attendance(models.Model):
     status = models.ForeignKey(CategoryAttendanceStatus, on_delete=models.SET_NULL, null=True)
     meeting = models.ForeignKey("Meeting", on_delete=models.CASCADE)
-    absence_reason = models.CharField(max_length=1023, blank=True, null=True)
+    absence_reason = models.TextField(blank=False, null=True)
 
     def __str__(self):
         return f"{self.status} for meeting {self.meeting}"
@@ -127,7 +130,7 @@ class Attendance(models.Model):
 
 class Meeting(models.Model):
     topic = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True,default="")
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     school_subject = models.ForeignKey(SchoolSubject, on_delete=models.CASCADE)
@@ -135,3 +138,42 @@ class Meeting(models.Model):
 
     def __str__(self):
         return self.topic
+
+class ConsentTemplate(models.Model):
+    author = models.ForeignKey('Teacher', on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, default="")
+    start_date = models.DateField()
+    end_date = models.DateField()
+    recipients = models.ManyToManyField('StudentGroup')
+    expiry_date = models.DateField()
+    duration = models.IntegerField()
+
+    def is_active(self):
+        return (timezone.now().date() - self.creation_date).days <= self.duration
+
+    def __str__(self):
+        return f"ConsentTemplate {self.title} by {self.author} (Active: {self.is_active()})"
+
+
+class ParentConsent(models.Model):
+    parent_user = models.ForeignKey('Parent', on_delete=models.CASCADE)
+    child_user = models.ForeignKey('Student', on_delete=models.CASCADE)
+    consent = models.ForeignKey(ConsentTemplate, on_delete=models.CASCADE)
+    is_consent = models.BooleanField(default=False)
+    url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Consent by {self.parent_user} for {self.child_user}"
+
+
+class ScheduledMeeting(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, default="")
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE)
+    school_subject = models.ForeignKey('SchoolSubject', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
