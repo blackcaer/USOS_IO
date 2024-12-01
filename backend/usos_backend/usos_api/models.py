@@ -6,31 +6,35 @@ from django.utils.timezone import now
 
 # Categories
 class CategoryUserStatus(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=30, unique=True)     # Unique, stable code
+    name = models.CharField(max_length=63,blank=True)                  # Human friendly name
 
     def __str__(self):
-        return self.name
+        return f"{self.code} {self.name}"
 
 
 class CategoryStudentGroup(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-
+    code = models.CharField(max_length=30, unique=True)  
+    name = models.CharField(max_length=63,blank=True)
+    
     def __str__(self):
-        return self.name
+        return f"{self.code} {self.name}"
 
 
 class CategoryGradeValue(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    code = models.CharField(max_length=30, unique=True)  
+    name = models.CharField(max_length=63,blank=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.code} {self.name}"
 
 
 class CategoryAttendanceStatus(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    code = models.CharField(max_length=30, unique=True)  
+    name = models.CharField(max_length=63,blank=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.code} {self.name}"
 
 # Main models
 
