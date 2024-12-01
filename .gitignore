@@ -7,7 +7,7 @@ entries/
 *.pot
 *.pyc
 __pycache__
-db.sqlite3
+#db.sqlite3     # For development
 media
 
 # Backup files # 
