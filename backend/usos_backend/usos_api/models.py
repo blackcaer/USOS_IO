@@ -39,20 +39,20 @@ class CategoryAttendanceStatus(models.Model):
 # Main models
 
 class User(AbstractUser):
-    name = models.CharField(max_length=255, default="name_example")
+    """ 
+    Username is user's identifier
+    """
     first_name = models.CharField(max_length=255, default="name_example")
-    middle_name = models.CharField(max_length=255, blank=True, null=True, default="Mname_example")
     last_name = models.CharField(max_length=255, default="Lname_example")
     email = models.EmailField(unique=True, default="example@example.com")  # Przykładowy adres e-mail
     birth_date = models.DateField(default="2010-01-01")  # Przykładowa data urodzenia
     sex = models.CharField(max_length=15, choices=[("M", "Male"), ("F", "Female")],default="M")
-    status = models.CharField(max_length=31, choices=[("A", "Active"), ("D", "Unactive")],default="A")
-    #status = models.ForeignKey(CategoryUserStatus, on_delete=models.SET_NULL, null=True)  
+    status = models.CharField(max_length=31, choices=[("A", "Active"), ("U", "Unactive")],default="A")
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     photo_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.id} {self.username}: {self.first_name} {self.last_name}"    
 
 
 class Parent(models.Model):
@@ -64,11 +64,11 @@ class Parent(models.Model):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    groups = models.ManyToManyField("StudentGroup")
-    parents = models.ManyToManyField(Parent, related_name="children")
+    groups = models.ManyToManyField("StudentGroup", blank=True)
+    parents = models.ManyToManyField(Parent, related_name="children", blank=True)
 
     def __str__(self):
-        return f"Student: {self.user}"
+        return f"{self.id} Student: {self.user}"
 
 
 class Teacher(models.Model):
@@ -76,7 +76,7 @@ class Teacher(models.Model):
     groups = models.ManyToManyField("StudentGroup", blank=True)
 
     def __str__(self):
-        return f"Teacher: {self.user}"
+        return f"{self.id} Teacher: {self.user}"
 
 
 class StudentGroup(models.Model):
