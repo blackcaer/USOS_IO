@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group
 from rest_framework import serializers
 
 from .models import (
-    User, Student, Parent, Teacher, Grade, GradeColumn, ScheduledMeeting, ParentConsent,
+    Meeting, User, Student, Parent, Teacher, Grade, GradeColumn, ScheduledMeeting, ParentConsent,
     ConsentTemplate, Attendance, SchoolSubject, StudentGroup, CategoryGradeValue
 )
 
@@ -15,9 +15,29 @@ class GroupSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username','first_name', 'last_name', 'email', 'status', 'birth_date','sex','phone_number', 'photo_url']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'status', 'birth_date', 'sex', 'phone_number', 'photo_url', 'role']
 
+class UserCreateSerializer(serializers.ModelSerializer):
+    role = serializers.ChoiceField(choices=['student', 'parent', 'teacher'], write_only=True)
 
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email', 'status', 'birth_date', 'sex', 'phone_number', 'photo_url', 'role']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        role = validated_data.pop('role')
+        user = User.objects.create_user(**validated_data)
+        if role == 'student':
+            Student.objects.create(user=user)
+        elif role == 'parent':
+            Parent.objects.create(user=user)
+        elif role == 'teacher':
+            Teacher.objects.create(user=user)
+        else:
+            raise serializers.ValidationError("Invalid role")
+        return user
+        
 class StudentGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentGroup
@@ -64,18 +84,16 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'start_date', 'end_date', 'recipients', 'expiry_date']
 
 
-
-
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ['id', 'user', 'groups']
+        fields = ['id', 'user', 'groups', 'parents']
 
 
 class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
-        fields = ['id', 'user']
+        fields = ['id', 'user', 'groups']
 
 
 class ParentSerializer(serializers.ModelSerializer):
@@ -83,3 +101,13 @@ class ParentSerializer(serializers.ModelSerializer):
         model = Parent
         fields = ['id', 'user', 'children']
 
+
+class MeetingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Meeting
+        fields = ['id', 'title', 'description', 'start_time', 'duration', 'teacher', 'school_subject']
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = ['id', 'student', 'status', 'absence_reason', 'meeting']
