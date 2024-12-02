@@ -1,8 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils import timezone
-from django.utils.timezone import now
+import datetime
+from django.core.exceptions import ValidationError
+from datetime import timedelta
 
+def validate_duration(value):
+    if value > timedelta(minutes=120):
+        raise ValidationError('Duration cannot exceed 120 minutes.')
 
 # Categories
 class CategoryUserStatus(models.Model):
@@ -38,45 +43,65 @@ class CategoryAttendanceStatus(models.Model):
 
 # Main models
 
+class UserManager(BaseUserManager):
+    def create_user(self, username, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The Email field must be set')
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(username, email, password, **extra_fields)
+
 class User(AbstractUser):
     """ 
     Username is user's identifier
     """
+    ROLE_CHOICES = [
+        ('student', 'Student'),
+        ('parent', 'Parent'),
+        ('teacher', 'Teacher'),
+    ]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     first_name = models.CharField(max_length=255, default="name_example")
     last_name = models.CharField(max_length=255, default="Lname_example")
-    email = models.EmailField(unique=True, default="example@example.com")  # Przykładowy adres e-mail
-    birth_date = models.DateField(default="2010-01-01")  # Przykładowa data urodzenia
+    email = models.EmailField(unique=True, default="example@example.com")
+    birth_date = models.DateField(default=datetime.date(2010, 1, 1))
     sex = models.CharField(max_length=15, choices=[("M", "Male"), ("F", "Female")],default="M")
-    status = models.CharField(max_length=31, choices=[("A", "Active"), ("U", "Unactive")],default="A")
+    status = models.CharField(max_length=31, choices=[("A", "Active"), ("U", "Inactive")],default="A")
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     photo_url = models.URLField(blank=True, null=True)
 
-    def __str__(self):
-        return f"{self.id} {self.username}: {self.first_name} {self.last_name}"    
+    objects = UserManager()
 
+    def __str__(self):
+        return f"{self.username}({self.id}): {self.first_name} {self.last_name}"
+
+class Teacher(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    groups = models.ManyToManyField('StudentGroup', blank=True)
+
+    def __str__(self):
+        return f"Teacher: {self.user.username}"
 
 class Parent(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
-        return f"Parent: {self.user}"
-
+        return f"Parent: {self.user.username}"
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    groups = models.ManyToManyField("StudentGroup", blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    groups = models.ManyToManyField('StudentGroup', blank=True)
     parents = models.ManyToManyField(Parent, related_name="children", blank=True)
 
     def __str__(self):
-        return f"{self.id} Student: {self.user}"
-
-
-class Teacher(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    groups = models.ManyToManyField("StudentGroup", blank=True)
-
-    def __str__(self):
-        return f"{self.id} Teacher: {self.user}"
+        return f"Student: {self.user.username}"
 
 
 class StudentGroup(models.Model):
@@ -134,14 +159,14 @@ class Attendance(models.Model):
 
 class Meeting(models.Model):
     topic = models.CharField(max_length=255)
-    description = models.TextField(blank=True,default="")
+    description = models.TextField(blank=True, default="")
     start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
-    school_subject = models.ForeignKey(SchoolSubject, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    duration = models.DurationField(default=timedelta(minutes=45), validators=[validate_duration])
+    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE)
+    school_subject = models.ForeignKey('SchoolSubject', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.topic
+        return self.title
 
 class ConsentTemplate(models.Model):
     author = models.ForeignKey('Teacher', on_delete=models.CASCADE)
@@ -176,7 +201,7 @@ class ScheduledMeeting(models.Model):
     description = models.TextField(blank=True, default="")
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE)
+    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE, related_name='scheduled_meetings')
     school_subject = models.ForeignKey('SchoolSubject', on_delete=models.CASCADE)
 
     def __str__(self):
