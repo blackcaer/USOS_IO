@@ -234,6 +234,11 @@ a,a:hover{
     margin: 0 auto;
 }
 
+.grade-block {
+    background-color: #1E3E62; 
+    max-height: 20%;
+}
+
 /* 
  * ----------------------------
  * Buttons
