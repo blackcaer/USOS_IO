@@ -158,7 +158,7 @@ class Attendance(models.Model):
 
 
 class Meeting(models.Model):
-    topic = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     start_time = models.DateTimeField()
     duration = models.DurationField(default=timedelta(minutes=45), validators=[validate_duration])
