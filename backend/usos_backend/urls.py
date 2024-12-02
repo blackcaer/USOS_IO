@@ -22,7 +22,7 @@ from .usos_api.views import (
     StudentViewSet, TeacherViewSet, ParentViewSet, GradeViewSet,
     CurrentUserView, UserInfoView,  GradeColumnView,
     GradeListCreateView, GradeDetailView, ScheduleView, 
-    ConsentTemplateView, FeedView
+    ConsentTemplateView, FeedView,UserViewSet
 )
 
 
@@ -63,6 +63,7 @@ router.register('students', StudentViewSet, basename='student')
 router.register('teachers', TeacherViewSet, basename='teacher')
 router.register('parents', ParentViewSet, basename='parent')
 router.register('grades', GradeViewSet, basename='grade')
+router.register('users', UserViewSet, basename='user')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

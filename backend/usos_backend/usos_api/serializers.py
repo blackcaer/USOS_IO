@@ -6,7 +6,6 @@ from .models import (
     ConsentTemplate, Attendance, SchoolSubject, StudentGroup, CategoryGradeValue
 )
 
-
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
@@ -16,7 +15,7 @@ class GroupSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'name', 'first_name', 'last_name', 'email', 'status', 'photo_url']
+        fields = ['id', 'username','first_name', 'last_name', 'email', 'status', 'birth_date','sex','phone_number', 'photo_url']
 
 
 class StudentGroupSerializer(serializers.ModelSerializer):
@@ -66,8 +65,6 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
 
 
 
-from rest_framework import serializers
-from .models import Student, Teacher, Parent, Grade, GradeColumn, User, ScheduledMeeting, ConsentTemplate
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:

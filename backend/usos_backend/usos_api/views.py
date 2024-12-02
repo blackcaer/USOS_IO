@@ -28,7 +28,7 @@ from .serializers import (
     StudentSerializer,TeacherSerializer,ParentSerializer
 )
 
-
+#ViewSets
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -36,7 +36,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
-
+    http_method_names = ['get', 'put', 'patch', 'delete', 'head', 'options']
 
 class GroupViewSet(viewsets.ModelViewSet):
     """
@@ -47,12 +47,10 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-# ViewSets dla prostych CRUD operacji
 class StudentViewSet(ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = [IsAuthenticated]
-
 
 class TeacherViewSet(ModelViewSet):
     queryset = Teacher.objects.all()
@@ -72,7 +70,7 @@ class GradeViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
-# Widoki dla bardziej specyficznych funkcji
+# APIViews
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
 
