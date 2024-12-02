@@ -37,7 +37,37 @@ class UserCreateSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("Invalid role")
         return user
-        
+
+class StudentSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Student
+        fields = ['id', 'user', 'groups', 'parents']
+
+    def get_id(self, obj):
+        return obj.user.id
+
+class ParentSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Parent
+        fields = ['id', 'user', 'children']
+
+    def get_id(self, obj):
+        return obj.user.id
+
+class TeacherSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Teacher
+        fields = ['id', 'user', 'groups']
+
+    def get_id(self, obj):
+        return obj.user.id
+
 class StudentGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentGroup
@@ -82,24 +112,6 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConsentTemplate
         fields = ['id', 'title', 'description', 'start_date', 'end_date', 'recipients', 'expiry_date']
-
-
-class StudentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Student
-        fields = ['id', 'user', 'groups', 'parents']
-
-
-class TeacherSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Teacher
-        fields = ['id', 'user', 'groups']
-
-
-class ParentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Parent
-        fields = ['id', 'user', 'children']
 
 
 class MeetingSerializer(serializers.ModelSerializer):
