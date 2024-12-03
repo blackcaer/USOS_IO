@@ -72,15 +72,18 @@ class GradeSerializer(serializers.ModelSerializer):
         queryset=CategoryGradeValue.objects.all(),
         slug_field="code"
     )
+    count_to_avg = serializers.BooleanField(default=True)
 
     class Meta:
         model = Grade
-        fields = ['id', 'value', 'weight', 'timestamp', 'student', 'grade_column', 'count_to_avg']
+        fields = ['id', 'value', 'timestamp', 'student', 'grade_column', 'count_to_avg']
 
 class GradeColumnSerializer(serializers.ModelSerializer):
+    weight = serializers.IntegerField(default=1)
+
     class Meta:
         model = GradeColumn
-        fields = ['id', 'title', 'description', 'school_subject']
+        fields = ['id', 'title', 'weight', 'description', 'school_subject']
 
 class ScheduledMeetingSerializer(serializers.ModelSerializer):
     class Meta:
