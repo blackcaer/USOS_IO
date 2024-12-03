@@ -73,10 +73,15 @@ class GradeSerializer(serializers.ModelSerializer):
         slug_field="code"
     )
     count_to_avg = serializers.BooleanField(default=True)
+    grade_column = serializers.PrimaryKeyRelatedField(queryset=GradeColumn.objects.all())
 
     class Meta:
         model = Grade
         fields = ['id', 'value', 'timestamp', 'student', 'grade_column', 'count_to_avg']
+
+    def create(self, validated_data):
+        grade = Grade.objects.create(grade_column=validated_data.pop('grade_column'), **validated_data)
+        return grade
 
 class GradeColumnSerializer(serializers.ModelSerializer):
     weight = serializers.IntegerField(default=1)

@@ -32,6 +32,9 @@ from .serializers import (
 )
 
 class UserViewSet(viewsets.ModelViewSet):
+    """
+    FOR BACKEND DEVELOPMENT ONLY! (probably won't be supported)
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
@@ -78,6 +81,9 @@ class TeacherViewSet(viewsets.ModelViewSet):
 
 
 class ParentViewSet(viewsets.ModelViewSet):
+    """
+    FOR BACKEND DEVELOPMENT ONLY! (probably won't be supported)
+    """
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
     permission_classes = [IsAuthenticated]
@@ -191,22 +197,20 @@ class UserInfoView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-    def put(self, request, user_id):
+    """def put(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)"""
 
 class GradeListCreateView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = GradeSerializer   
 
     def get(self, request, user_id, subject_id):
-        # Check if the user exists
         student = get_object_or_404(Student, user_id=user_id)
-        # Check if the subject exists
         subject = get_object_or_404(SchoolSubject, id=subject_id)
         
         grades = Grade.objects.filter(student=student, grade_column__school_subject=subject)
@@ -214,14 +218,14 @@ class GradeListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request, user_id, subject_id):
-        # Check if the user exists
         student = get_object_or_404(Student, user_id=user_id)
-        # Check if the subject exists
         subject = get_object_or_404(SchoolSubject, id=subject_id)
         
-        serializer = GradeSerializer(data=request.data)
+        data = request.data.copy()
+        data['student'] = student.user_id  # Użyj user_id zamiast id
+        serializer = GradeSerializer(data=data)
         if serializer.is_valid():
-            serializer.save(student=student, grade_column__school_subject=subject)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
