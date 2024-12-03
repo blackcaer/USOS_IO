@@ -134,7 +134,7 @@ class Grade(models.Model):
 
 class GradeColumn(models.Model):
     title = models.CharField(max_length=255)
-    weight = models.IntegerField()
+    weight = models.IntegerField(default=1)
     description = models.TextField(blank=True,default="")
     school_subject = models.ForeignKey(SchoolSubject, on_delete=models.CASCADE)
 
@@ -212,4 +212,3 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.title} (from {self.sender})"
-    
