@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.contrib.auth.models import Group
 from rest_framework import serializers
 
@@ -91,9 +92,11 @@ class GradeColumnSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'weight', 'description', 'school_subject']
 
 class ScheduledMeetingSerializer(serializers.ModelSerializer):
+    duration = serializers.DurationField(default=timedelta(minutes=45))
+
     class Meta:
         model = ScheduledMeeting
-        fields = ['id', 'title', 'description', 'start_time', 'end_time', 'teacher', 'school_subject']
+        fields = ['id', 'title', 'description', 'start_time', 'duration', 'teacher', 'school_subject']
 
 class ParentConsentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -106,6 +109,8 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'start_date', 'end_date', 'recipients', 'expiry_date']
 
 class MeetingSerializer(serializers.ModelSerializer):
+    duration = serializers.DurationField(default=timedelta(minutes=45))
+
     class Meta:
         model = Meeting
         fields = ['id', 'title', 'description', 'start_time', 'duration', 'teacher', 'school_subject']
