@@ -118,7 +118,7 @@ class SchoolSubject(models.Model):
     student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.subject_name
+        return f"{self.subject_name} for {self.student_group}"
 
 
 class Grade(models.Model):
@@ -136,7 +136,6 @@ class Grade(models.Model):
 class GradeColumn(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True,default="")
-    default_weight = models.IntegerField()
     school_subject = models.ForeignKey(SchoolSubject, on_delete=models.CASCADE)
 
     def __str__(self):
