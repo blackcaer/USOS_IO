@@ -23,12 +23,12 @@ from usos_backend.usos_api.serializers import GroupSerializer
 from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
 from .models import (
-    User, Grade, GradeColumn, ScheduledMeeting, ParentConsent, ConsentTemplate, StudentGroup, SchoolSubject, Meeting, Attendance
+    User, Grade, GradeColumn, ScheduledMeeting, ParentConsent, ConsentTemplate, StudentGroup, SchoolSubject, Meeting, Attendance, Message
 )
 from .serializers import (
     UserSerializer, GradeSerializer, GradeColumnSerializer, ScheduledMeetingSerializer,
     ParentConsentSerializer, ConsentTemplateSerializer, StudentGroupSerializer, SchoolSubjectSerializer,
-    StudentSerializer,TeacherSerializer,ParentSerializer, MeetingSerializer, AttendanceSerializer
+    StudentSerializer,TeacherSerializer,ParentSerializer, MeetingSerializer, AttendanceSerializer, MessageSerializer
 )
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -287,4 +287,34 @@ class GradeColumnDetailView(APIView):
 class SchoolSubjectViewSet(viewsets.ModelViewSet):
     queryset = SchoolSubject.objects.all()
     serializer_class = SchoolSubjectSerializer
+    permission_classes = [IsAuthenticated]
+
+class StudentGroupViewSet(viewsets.ModelViewSet):
+    queryset = StudentGroup.objects.all()
+    serializer_class = StudentGroupSerializer
+    permission_classes = [IsAuthenticated]
+
+class ScheduledMeetingViewSet(viewsets.ModelViewSet):
+    queryset = ScheduledMeeting.objects.all()
+    serializer_class = ScheduledMeetingSerializer
+    permission_classes = [IsAuthenticated]
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+    permission_classes = [IsAuthenticated]
+
+class ConsentTemplateViewSet(viewsets.ModelViewSet):
+    queryset = ConsentTemplate.objects.all()
+    serializer_class = ConsentTemplateSerializer
+    permission_classes = [IsAuthenticated]
+
+class ParentConsentViewSet(viewsets.ModelViewSet):
+    queryset = ParentConsent.objects.all()
+    serializer_class = ParentConsentSerializer
+    permission_classes = [IsAuthenticated]
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]

@@ -6,12 +6,12 @@ from .usos_api.views import (
     CurrentUserView, UserInfoView, GradeColumnView,
     GradeListCreateView, GradeDetailView, ScheduleView, 
     ConsentTemplateView, FeedView, UserCreateViewSet, MeetingViewSet, GradeColumnDetailView, SchoolSubjectViewSet
+    ,GradeListCreateView, GradeDetailView, GradeColumnView, GradeColumnDetailView, SchoolSubjectViewSet,
+    StudentGroupViewSet, ScheduledMeetingViewSet, AttendanceViewSet, ConsentTemplateViewSet, ParentConsentViewSet, MessageViewSet
 )
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 import datetime
-
-
 
 router = DefaultRouter()
 router.register('students', StudentViewSet, basename='student')
@@ -22,10 +22,18 @@ router.register('users', UserCreateViewSet, basename='user')
 router.register('meetings', MeetingViewSet, basename='meeting')
 router.register('subjects', SchoolSubjectViewSet, basename='subject')
 
+router.register('student-groups', StudentGroupViewSet, basename='studentgroup')
+router.register('scheduled-meetings', ScheduledMeetingViewSet, basename='scheduledmeeting')
+router.register('attendances', AttendanceViewSet, basename='attendance')
+router.register('consent-templates', ConsentTemplateViewSet, basename='consenttemplate')
+router.register('parent-consents', ParentConsentViewSet, basename='parentconsent')
+router.register('messages', MessageViewSet, basename='message')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('auth/', include('rest_framework.urls')),
+    
     path('user/', CurrentUserView.as_view(), name='current_user'),
     path('user/<int:user_id>/info/', UserInfoView.as_view(), name='user_info'),
     

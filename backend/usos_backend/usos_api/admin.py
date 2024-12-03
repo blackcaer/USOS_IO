@@ -3,7 +3,7 @@ from .models import (
     User, Parent, Student, Teacher, StudentGroup,
     SchoolSubject, Grade, GradeColumn, Attendance,
     Meeting, ConsentTemplate, ParentConsent, ScheduledMeeting,
-    CategoryUserStatus, CategoryStudentGroup, CategoryGradeValue, CategoryAttendanceStatus
+    CategoryStudentGroup, CategoryGradeValue, CategoryAttendanceStatus
 )
 from django.contrib.auth.models import Group
 
@@ -20,7 +20,6 @@ admin.site.register(Meeting)
 admin.site.register(ConsentTemplate)
 admin.site.register(ParentConsent)
 admin.site.register(ScheduledMeeting)
-admin.site.register(CategoryUserStatus)
 admin.site.register(CategoryStudentGroup)
 admin.site.register(CategoryGradeValue)
 admin.site.register(CategoryAttendanceStatus)
