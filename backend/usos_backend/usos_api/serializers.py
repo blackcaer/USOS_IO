@@ -91,6 +91,13 @@ class GradeColumnSerializer(serializers.ModelSerializer):
         model = GradeColumn
         fields = ['id', 'title', 'weight', 'description', 'school_subject']
 
+class GradeColumnDetailSerializer(serializers.ModelSerializer):
+    grades = GradeSerializer(many=True, read_only=True, source='grade_set')
+
+    class Meta:
+        model = GradeColumn
+        fields = ['id', 'title', 'weight', 'description', 'school_subject', 'grades']
+
 class ScheduledMeetingSerializer(serializers.ModelSerializer):
     duration = serializers.DurationField(default=timedelta(minutes=45))
 

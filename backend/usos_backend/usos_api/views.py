@@ -33,7 +33,7 @@ from .serializers import (
 
 class UserViewSet(viewsets.ModelViewSet):
     """
-    FOR BACKEND DEVELOPMENT ONLY! (probably won't be supported)
+    Be careful xd
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -53,15 +53,6 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    FOR BACKEND DEVELOPMENT ONLY! (probably won't be supported)
-    """
-    queryset = Group.objects.all().order_by('name')
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
 
 class StudentViewSet(viewsets.ModelViewSet):
     """
@@ -90,17 +81,6 @@ class ParentViewSet(viewsets.ModelViewSet):
 
 
 class GradeViewSet(ModelViewSet):
-    """
-    FOR BACKEND DEVELOPMENT ONLY! (probably won't be supported)
-    """
-    queryset = Grade.objects.all()
-    serializer_class = GradeSerializer
-    permission_classes = [IsAuthenticated]
-
-class GradeViewSet(ModelViewSet):
-    """
-    FOR BACKEND DEVELOPMENT ONLY! (probably won't be supported)
-    """
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
     permission_classes = [IsAuthenticated]
@@ -297,9 +277,14 @@ class GradeColumnDetailView(APIView):
     serializer_class = GradeColumnSerializer   
 
     def get(self, request,subject_id, column_id):
+        column = get_object_or_404(GradeColumn, id=column_id)
         grades = Grade.objects.filter(grade_column_id=column_id)
-        serializer = GradeSerializer(grades, many=True)
-        return Response(serializer.data)
+        column_serializer = GradeColumnSerializer(column)
+        grade_serializer = GradeSerializer(grades, many=True)
+        return Response({
+            'column': column_serializer.data,
+            'grades': grade_serializer.data
+        })
 
     def put(self, request,subject_id, column_id):
         column = get_object_or_404(GradeColumn, id=column_id)
