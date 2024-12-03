@@ -195,7 +195,7 @@ class ScheduledMeeting(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    duration = models.DurationField(default=timedelta(minutes=45), validators=[validate_duration])
     teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE, related_name='scheduled_meetings')
     school_subject = models.ForeignKey('SchoolSubject', on_delete=models.CASCADE)
 
