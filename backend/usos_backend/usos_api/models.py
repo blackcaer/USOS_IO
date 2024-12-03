@@ -123,7 +123,6 @@ class SchoolSubject(models.Model):
 
 class Grade(models.Model):
     value = models.ForeignKey(CategoryGradeValue, on_delete=models.SET_NULL, null=True)
-    weight = models.IntegerField()
     timestamp = models.DateField(auto_now_add=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     grade_column = models.ForeignKey("GradeColumn", on_delete=models.CASCADE)
@@ -135,6 +134,7 @@ class Grade(models.Model):
 
 class GradeColumn(models.Model):
     title = models.CharField(max_length=255)
+    weight = models.IntegerField()
     description = models.TextField(blank=True,default="")
     school_subject = models.ForeignKey(SchoolSubject, on_delete=models.CASCADE)
 
