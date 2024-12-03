@@ -7,7 +7,7 @@ from .models import (
 )
 from django.contrib.auth.models import Group
 
-#admin.site.register(User)
+admin.site.register(User)
 admin.site.register(Parent)
 admin.site.register(Student)
 admin.site.register(Teacher)

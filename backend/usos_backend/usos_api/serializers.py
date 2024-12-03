@@ -13,11 +13,6 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'status', 'birth_date', 'sex', 'phone_number', 'photo_url', 'role']
-
-class UserCreateSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(choices=['student', 'parent', 'teacher'], write_only=True)
 
     class Meta:
@@ -37,6 +32,27 @@ class UserCreateSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("Invalid role")
         return user
+"""
+class UserCreateSerializer(serializers.ModelSerializer):
+    role = serializers.ChoiceField(choices=['student', 'parent', 'teacher'], write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'role', 'username', 'password', 'first_name', 'last_name', 'email', 'status', 'birth_date', 'sex', 'phone_number', 'photo_url']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        role = validated_data.pop('role')
+        user = User.objects.create_user(**validated_data)
+        if role == 'student':
+            Student.objects.create(user=user)
+        elif role == 'parent':
+            Parent.objects.create(user=user)
+        elif role == 'teacher':
+            Teacher.objects.create(user=user)
+        else:
+            raise serializers.ValidationError("Invalid role")
+        return user"""
 
 class StudentSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
@@ -85,6 +101,7 @@ class GradeSerializer(serializers.ModelSerializer):
         queryset=CategoryGradeValue.objects.all(),
         slug_field="code"
     )
+
     class Meta:
         model = Grade
         fields = ['id', 'value', 'weight', 'timestamp', 'student', 'grade_column', 'count_to_avg']
