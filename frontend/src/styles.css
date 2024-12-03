@@ -61,12 +61,7 @@ p{
     margin:0
 }
 
-h1,h2,h3,h4,h5,h6{
-    color:#333;
-    font-weight:700;
-    margin:0;
-    line-height:1.2
-}
+
 
 h1{
     font-size:36px
@@ -237,6 +232,21 @@ a,a:hover{
 .grade-block {
     background-color: #1E3E62; 
     max-height: 20%;
+}
+
+/* 
+ * ----------------------------
+ * Grades Section
+ * ----------------------------
+ */
+
+ .button-grade {
+    font-size: clamp(9px,0.7vw,16px);
+    color: #121218;
+    width: 6vw;
+    height: 2vw;
+    background-color: #F5F5F5;
+    margin: 0 auto;
 }
 
 /* 
