@@ -9,18 +9,12 @@ def validate_duration(value):
     if value > timedelta(minutes=120):
         raise ValidationError('Duration cannot exceed 120 minutes.')
 
+
+    
 # Categories
-class CategoryUserStatus(models.Model):
-    code = models.CharField(max_length=30, unique=True)     # Unique, stable code
-    name = models.CharField(max_length=63,blank=True)                  # Human friendly name
-
-    def __str__(self):
-        return f"{self.code} {self.name}"
-
-
 class CategoryStudentGroup(models.Model):
-    code = models.CharField(max_length=30, unique=True)  
-    name = models.CharField(max_length=63,blank=True)
+    code = models.CharField(max_length=30, unique=True)     # Unique, stable code
+    name = models.CharField(max_length=63,blank=True)       # Human friendly name
     
     def __str__(self):
         return f"{self.code} {self.name}"
@@ -81,6 +75,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.username}({self.id}): {self.first_name} {self.last_name}"
+
 
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
@@ -149,6 +144,7 @@ class GradeColumn(models.Model):
 
 
 class Attendance(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     status = models.ForeignKey(CategoryAttendanceStatus, on_delete=models.SET_NULL, null=True)
     meeting = models.ForeignKey("Meeting", on_delete=models.CASCADE)
     absence_reason = models.TextField(blank=False, null=True)
@@ -206,3 +202,15 @@ class ScheduledMeeting(models.Model):
 
     def __str__(self):
         return self.title
+
+class Message(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    recipients = models.ManyToManyField(User, related_name='received_messages')
+
+    def __str__(self):
+        return f"{self.title} (from {self.sender})"
+    
