@@ -110,22 +110,10 @@ class MeetingViewSet(viewsets.ModelViewSet):
     serializer_class = MeetingSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        if hasattr(user, 'teacher'):
-            return Meeting.objects.filter(teacher=user.teacher)
-        return Meeting.objects.none()
-
-    def list(self, request):
-        now = timezone.now()
-        past_meetings = self.get_queryset().filter(start_time__lt=now - timedelta(minutes=45))
-        serializer = self.get_serializer(past_meetings, many=True)
-        return Response(serializer.data)
-
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(teacher=request.user.teacher)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
