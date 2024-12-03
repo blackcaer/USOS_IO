@@ -80,7 +80,7 @@ class GradeSerializer(serializers.ModelSerializer):
 class GradeColumnSerializer(serializers.ModelSerializer):
     class Meta:
         model = GradeColumn
-        fields = ['id', 'title', 'description', 'default_weight', 'school_subject']
+        fields = ['id', 'title', 'description', 'school_subject']
 
 class ScheduledMeetingSerializer(serializers.ModelSerializer):
     class Meta:
