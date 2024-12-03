@@ -34,34 +34,28 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class StudentSerializer(serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
+    user = UserSerializer()
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
 
     class Meta:
         model = Student
-        fields = ['id', 'user', 'groups', 'parents']
-
-    def get_id(self, obj):
-        return obj.user.id
+        fields = ['user_id', 'user', 'groups', 'parents']
 
 class ParentSerializer(serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
+    user = UserSerializer()
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
 
     class Meta:
         model = Parent
-        fields = ['id', 'user', 'children']
-
-    def get_id(self, obj):
-        return obj.user.id
+        fields = ['user_id', 'user', 'children']
 
 class TeacherSerializer(serializers.ModelSerializer):
-    id = serializers.SerializerMethodField()
+    user = UserSerializer()
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
 
     class Meta:
         model = Teacher
-        fields = ['id', 'user', 'groups']
-
-    def get_id(self, obj):
-        return obj.user.id
+        fields = ['user_id', 'user', 'groups']
 
 class StudentGroupSerializer(serializers.ModelSerializer):
     class Meta:

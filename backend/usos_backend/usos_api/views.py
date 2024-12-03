@@ -318,3 +318,8 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
+
+class GradeColumnViewSet(viewsets.ModelViewSet):
+    queryset = GradeColumn.objects.all()
+    serializer_class = GradeColumnSerializer
+    permission_classes = [IsAuthenticated]

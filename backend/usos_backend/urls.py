@@ -7,7 +7,8 @@ from .usos_api.views import (
     GradeListCreateView, GradeDetailView, ScheduleView, 
     ConsentTemplateView, FeedView, UserCreateViewSet, MeetingViewSet, GradeColumnDetailView, SchoolSubjectViewSet
     ,GradeListCreateView, GradeDetailView, GradeColumnView, GradeColumnDetailView, SchoolSubjectViewSet,
-    StudentGroupViewSet, ScheduledMeetingViewSet, AttendanceViewSet, ConsentTemplateViewSet, ParentConsentViewSet, MessageViewSet
+    StudentGroupViewSet, ScheduledMeetingViewSet, AttendanceViewSet, 
+    ConsentTemplateViewSet, ParentConsentViewSet, MessageViewSet,GradeColumnViewSet
 )
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
@@ -28,6 +29,7 @@ router.register('attendances', AttendanceViewSet, basename='attendance')
 router.register('consent-templates', ConsentTemplateViewSet, basename='consenttemplate')
 router.register('parent-consents', ParentConsentViewSet, basename='parentconsent')
 router.register('messages', MessageViewSet, basename='message')
+router.register('grade-columns', GradeColumnViewSet, basename='gradecolumn')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
