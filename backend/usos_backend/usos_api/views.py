@@ -222,7 +222,7 @@ class GradeDetailView(APIView):
 
 class ScheduleView(APIView):
     permission_classes = [IsAuthenticated]
-    #serializer_class = ???
+    serializer_class = ScheduledMeetingSerializer
     def get(self, request):
         meetings = ScheduledMeeting.objects.filter(teacher=request.user)
         serializer = ScheduledMeetingSerializer(meetings, many=True)
@@ -231,7 +231,7 @@ class ScheduleView(APIView):
 
 class ConsentTemplateView(APIView):
     permission_classes = [IsAuthenticated]
-    #serializer_class = ???
+    serializer_class = ConsentTemplateSerializer
     def get(self, request, template_consent_id):
         template = get_object_or_404(ConsentTemplate, id=template_consent_id)
         serializer = ConsentTemplateSerializer(template)
@@ -245,7 +245,7 @@ class ConsentTemplateView(APIView):
 
 class FeedView(APIView):
     permission_classes = [IsAuthenticated]
-    #serializer_class = ???
+    serializer_class = None  # No serializer needed for this view
     def get(self, request, user_id):
         # Logika generowania feeda dla użytkownika
         return Response({"feed": "Example feed data"})
@@ -341,6 +341,7 @@ class GradeColumnViewSet(viewsets.ModelViewSet):
 
 class StudentGroupsView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = StudentGroupSerializer
 
     def get(self, request, user_id):
         student = get_object_or_404(Student, user_id=user_id)
@@ -350,6 +351,7 @@ class StudentGroupsView(APIView):
 
 class StudentSubjectsView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = SchoolSubjectSerializer
 
     def get(self, request, user_id, group_id):
         student = get_object_or_404(Student, user_id=user_id)
@@ -360,6 +362,7 @@ class StudentSubjectsView(APIView):
 
 class ParentChildrenView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = StudentSerializer
 
     def get(self, request, user_id):
         parent = get_object_or_404(Parent, user_id=user_id)
@@ -369,6 +372,7 @@ class ParentChildrenView(APIView):
 
 class TeacherGroupsView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = StudentGroupSerializer
 
     def get(self, request, user_id):
         teacher = get_object_or_404(Teacher, user_id=user_id)
@@ -378,6 +382,7 @@ class TeacherGroupsView(APIView):
 
 class TeacherSubjectsView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = SchoolSubjectSerializer
 
     def get(self, request, user_id, group_id):
         teacher = get_object_or_404(Teacher, user_id=user_id)
