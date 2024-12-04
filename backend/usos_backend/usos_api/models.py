@@ -9,7 +9,6 @@ def validate_duration(value):
     if value > timedelta(minutes=120):
         raise ValidationError('Duration cannot exceed 120 minutes.')
 
-
     
 # Categories
 class CategoryStudentGroup(models.Model):
@@ -35,8 +34,9 @@ class CategoryAttendanceStatus(models.Model):
     def __str__(self):
         return f"{self.code} {self.name}"
 
-# Main models
+# Main models:
 
+# Helper model for User
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
@@ -79,8 +79,7 @@ class User(AbstractUser):
 
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    groups = models.ManyToManyField('StudentGroup', blank=True)
-
+ 
     def __str__(self):
         return f"Teacher: {self.user.username}"
 
@@ -92,7 +91,6 @@ class Parent(models.Model):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    groups = models.ManyToManyField('StudentGroup', blank=True)
     parents = models.ManyToManyField(Parent, related_name="children", blank=True)
 
     def __str__(self):
@@ -168,7 +166,7 @@ class ConsentTemplate(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     end_date = models.DateField()
-    recipients = models.ManyToManyField('StudentGroup')
+    students = models.ManyToManyField(Student, related_name="consent_templates")
 
     def time_to_end(self):
         return (self.end_date - timezone.now().date()).days

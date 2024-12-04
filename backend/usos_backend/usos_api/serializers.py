@@ -40,7 +40,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ['user_id', 'user', 'groups', 'parents']
+        fields = ['user_id', 'user', 'parents']
 
 class ParentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -56,7 +56,7 @@ class TeacherSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Teacher
-        fields = ['user_id', 'user', 'groups']
+        fields = ['user_id', 'user']
 
 class StudentGroupSerializer(serializers.ModelSerializer):
     class Meta:
@@ -113,7 +113,7 @@ class ParentConsentSerializer(serializers.ModelSerializer):
 class ConsentTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConsentTemplate
-        fields = ['id', 'title', 'description', 'end_date', 'recipients']
+        fields = ['id', 'title', 'description', 'end_date', 'students']
 
 class MeetingSerializer(serializers.ModelSerializer):
     duration = serializers.DurationField(default=timedelta(minutes=45))
