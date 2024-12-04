@@ -1,86 +1,119 @@
 {
-    "students": [
-      {
-        "id": 1,
-        "name": "Jan Przykładowy",
-        "groups": [1]
-      }
-    ],
-    "studentGroups": [
-      {
-        "id": 1,
-        "name": "4A",
-        "description": "4A klasa",
-        "students": [1]
-      }
-    ],
-    "grades": [
-      {
-        "id": 1,
-        "value": 5,
-        "weight": 1,
-        "timestamp": "2023-12-01T10:00:00Z",
-        "student": 1,
-        "grade_column": 1,
-        "count_to_avg": true
-      },
-      {
-        "id": 2,
-        "value": 4,
-        "weight": 1,
-        "timestamp": "2023-12-02T10:00:00Z",
-        "student": 1,
-        "grade_column": 1,
-        "count_to_avg": true
-      },
-      {
-        "id": 3,
-        "value": 5,
-        "weight": 1,
-        "timestamp": "2023-12-05T10:00:00Z",
-        "student": 1,
-        "grade_column": 1,
-        "count_to_avg": true
-      },
-      {
-        "id": 4,
-        "value": 4,
-        "weight": 1,
-        "timestamp": "2023-11-19T10:00:00Z",
-        "student": 1,
-        "grade_column": 1,
-        "count_to_avg": true
-      },
-      {
-        "id": 5,
-        "value": 2,
-        "weight": 1,
-        "timestamp": "2023-12-22T10:00:00Z",
-        "student": 1,
-        "grade_column": 1,
-        "count_to_avg": true
-      }
-    ],
-    "gradeColumns": [
-      {
-        "id": 1,
-        "title": "Sprawdzian 1",
-        "school_subject": 1
-      }
-    ],
-    "schoolSubjects": [
-      {
-        "id": 1,
-        "subject_name": "Matematyka",
-        "description": "Algebra i geometria",
-        "is_mandatory": true,
-        "student_group": 1
-      }
-    ],
-    "teachers": [
-      {
-        "id": 1,
-        "name": "Witold Żak"
-      }
-    ]
-  }
+  "students": [
+    {
+      "id": 1,
+      "name": "Jan Przykładowy",
+      "groups": [1]
+    }
+  ],
+  "studentGroups": [
+    {
+      "id": 1,
+      "name": "4A",
+      "description": "4A klasa",
+      "students": [1]
+    }
+  ],
+  "grades": [
+    {
+      "id": 1,
+      "value": 5,
+      "weight": 1,
+      "timestamp": "2023-12-01T10:00:00Z",
+      "student": 1,
+      "grade_column": 1,
+      "count_to_avg": true
+    },
+    {
+      "id": 2,
+      "value": 4,
+      "weight": 1,
+      "timestamp": "2023-12-02T10:00:00Z",
+      "student": 1,
+      "grade_column": 1,
+      "count_to_avg": true
+    },
+    {
+      "id": 3,
+      "value": 5,
+      "weight": 1,
+      "timestamp": "2023-12-05T10:00:00Z",
+      "student": 1,
+      "grade_column": 1,
+      "count_to_avg": true
+    },
+    {
+      "id": 4,
+      "value": 4,
+      "weight": 1,
+      "timestamp": "2023-11-19T10:00:00Z",
+      "student": 1,
+      "grade_column": 1,
+      "count_to_avg": true
+    },
+    {
+      "id": 5,
+      "value": 2,
+      "weight": 1,
+      "timestamp": "2023-12-22T10:00:00Z",
+      "student": 1,
+      "grade_column": 1,
+      "count_to_avg": true
+    },
+    {
+      "id": 6,
+      "value": 5,
+      "weight": 1,
+      "timestamp": "2023-18-22T10:00:00Z",
+      "student": 1,
+      "grade_column": 1,
+      "count_to_avg": true
+    }
+  ],
+  "gradeColumns": [
+    {
+      "id": 1,
+      "title": "Sprawdzian Matematyka",
+      "school_subject": 1
+    },
+    {
+      "id": 2,
+      "title": "Sprawdzian Polski",
+      "school_subject": 2
+    },
+    {
+      "id": 3,
+      "title": "Sprawdzian Historia",
+      "school_subject": 3
+    }
+  ],
+  "schoolSubjects": [
+    {
+      "id": 1,
+      "subject_name": "Matematyka",
+      "description": "Algebra i geometria",
+      "is_mandatory": true,
+      "student_group": 1
+    },
+    {
+      "id": 2,
+      "subject_name": "Polski",
+      "description": "",
+      "is_mandatory": true,
+      "student_group": 1
+    },
+    {
+      "id": 3,
+      "subject_name": "Historia",
+      "description": "",
+      "is_mandatory": true,
+      "student_group": 1
+    }
+  ],
+  "teachers": [
+    {
+      "id": 1,
+      "name": "Witold Żak"
+    }
+  ]
+}
