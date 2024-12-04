@@ -39,8 +39,6 @@ sortedcontainers==2.4.0
 sqlparse==0.5.2
 submit50==3.1.5
 termcolor==1.1.0
-trio==0.25.0
-trio-websocket==0.11.1
 typing_extensions==4.10.0
 tzdata==2024.2
 urllib3==2.2.1
