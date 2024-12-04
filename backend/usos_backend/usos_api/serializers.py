@@ -113,7 +113,7 @@ class ParentConsentSerializer(serializers.ModelSerializer):
 class ConsentTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConsentTemplate
-        fields = ['id', 'title', 'description', 'start_date', 'end_date', 'recipients', 'expiry_date']
+        fields = ['id', 'title', 'description', 'end_date', 'recipients']
 
 class MeetingSerializer(serializers.ModelSerializer):
     duration = serializers.DurationField(default=timedelta(minutes=45))

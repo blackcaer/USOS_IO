@@ -167,14 +167,14 @@ class ConsentTemplate(models.Model):
     author = models.ForeignKey('Teacher', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
-    start_date = models.DateField()
     end_date = models.DateField()
     recipients = models.ManyToManyField('StudentGroup')
-    expiry_date = models.DateField()
-    duration = models.IntegerField()
+
+    def time_to_end(self):
+        return (self.end_date - timezone.now().date()).days
 
     def is_active(self):
-        return (timezone.now().date() - self.creation_date).days <= self.duration
+        return timezone.now().date() <= self.end_date
 
     def __str__(self):
         return f"ConsentTemplate {self.title} by {self.author} (Active: {self.is_active()})"
