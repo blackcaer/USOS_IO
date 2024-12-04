@@ -65,7 +65,7 @@ class User(AbstractUser):
         ('parent', 'Parent'),
         ('teacher', 'Teacher'),
     ]
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, editable=False,)
     first_name = models.CharField(max_length=255, default="name_example")
     last_name = models.CharField(max_length=255, default="Lname_example")
     email = models.EmailField(unique=True, default="example@example.com")
@@ -80,7 +80,17 @@ class User(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return f"{self.username}({self.id}): {self.first_name} {self.last_name}"
+        return f"{self.username}: {self.first_name} {self.last_name}"
+
+
+class Student(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, primary_key=True)
+    parents = models.ManyToManyField(
+        "Parent", related_name="children", blank=True)
+
+    def __str__(self):
+        return f"Student: {self.user.username}"
 
 
 class Teacher(models.Model):
@@ -97,16 +107,6 @@ class Parent(models.Model):
 
     def __str__(self):
         return f"Parent: {self.user.username}"
-
-
-class Student(models.Model):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True)
-    parents = models.ManyToManyField(
-        Parent, related_name="children", blank=True)
-
-    def __str__(self):
-        return f"Student: {self.user.username}"
 
 
 class StudentGroup(models.Model):

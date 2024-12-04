@@ -15,18 +15,18 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    role = serializers.ChoiceField(
-        choices=['student', 'parent', 'teacher'], write_only=True)
+    role = serializers.ChoiceField(choices=['student', 'parent', 'teacher'], write_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email',
-                  'status', 'birth_date', 'sex', 'phone_number', 'photo_url', 'role']
+        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email', 'status', 'birth_date', 'sex', 'phone_number', 'photo_url', 'role']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         role = validated_data.pop('role')
         user = User.objects.create_user(**validated_data)
+        user.role = role
+        user.save()
         if role == 'student':
             Student.objects.create(user=user)
         elif role == 'parent':
@@ -37,14 +37,31 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Invalid role")
         return user
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['role'] = instance.role
+        return representation
+
+
+    def update(self, instance, validated_data):
+        validated_data.pop('role', None)  # Prevent role from being updated
+        return super().update(instance, validated_data)
+
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    user_id = serializers.IntegerField(source='user.id', read_only=True)
 
     class Meta:
         model = Student
         fields = ['user_id', 'user', 'parents']
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        parents_data = validated_data.pop('parents', [])
+        user = User.objects.create_user(**user_data)
+        student = Student.objects.create(user=user, **validated_data)
+        student.parents.set(parents_data) 
+        return student
 
 
 class ParentSerializer(serializers.ModelSerializer):
@@ -55,6 +72,14 @@ class ParentSerializer(serializers.ModelSerializer):
         model = Parent
         fields = ['user_id', 'user', 'children']
 
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        children_data = validated_data.pop('children', [])
+        user = User.objects.create_user(**user_data)
+        parent = Parent.objects.create(user=user, **validated_data)
+        parent.children.set(children_data)  # Użyj metody set do przypisania dzieci
+        return parent
+
 
 class TeacherSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -63,6 +88,12 @@ class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields = ['user_id', 'user']
+
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        user = User.objects.create_user(**user_data)
+        teacher = Teacher.objects.create(user=user, **validated_data)
+        return teacher
 
 
 class StudentGroupSerializer(serializers.ModelSerializer):

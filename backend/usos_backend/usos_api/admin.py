@@ -6,8 +6,11 @@ from .models import (
     CategoryStudentGroup, CategoryGradeValue, CategoryAttendanceStatus
 )
 from django.contrib.auth.models import Group
+class UserAdmin(admin.ModelAdmin):
+    list_display = ['username', 'email', 'first_name', 'last_name', 'role']
+    search_fields = ['username', 'email', 'first_name', 'last_name', 'role']
 
-admin.site.register(User)
+admin.site.register(User, UserAdmin)
 admin.site.register(Parent)
 admin.site.register(Student)
 admin.site.register(Teacher)
