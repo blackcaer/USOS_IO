@@ -77,7 +77,7 @@ class ParentSerializer(serializers.ModelSerializer):
         children_data = validated_data.pop('children', [])
         user = User.objects.create_user(**user_data)
         parent = Parent.objects.create(user=user, **validated_data)
-        parent.children.set(children_data)  # Użyj metody set do przypisania dzieci
+        parent.children.set(children_data)  
         return parent
 
 

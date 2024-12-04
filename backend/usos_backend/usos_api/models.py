@@ -65,7 +65,8 @@ class User(AbstractUser):
         ('parent', 'Parent'),
         ('teacher', 'Teacher'),
     ]
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, editable=False,)
+    role = models.CharField(
+        max_length=10, choices=ROLE_CHOICES, editable=False,)
     first_name = models.CharField(max_length=255, default="name_example")
     last_name = models.CharField(max_length=255, default="Lname_example")
     email = models.EmailField(unique=True, default="example@example.com")
@@ -165,20 +166,6 @@ class Attendance(models.Model):
         return f"{self.status} for meeting {self.meeting}"
 
 
-class Meeting(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, default="")
-    start_time = models.DateTimeField()
-    duration = models.DurationField(default=timedelta(
-        minutes=45), validators=[validate_duration])
-    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE)
-    school_subject = models.ForeignKey(
-        'SchoolSubject', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.title
-
-
 class ConsentTemplate(models.Model):
     author = models.ForeignKey('Teacher', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
@@ -216,6 +203,20 @@ class ScheduledMeeting(models.Model):
         minutes=45), validators=[validate_duration])
     teacher = models.ForeignKey(
         'Teacher', on_delete=models.CASCADE, related_name='scheduled_meetings')
+    school_subject = models.ForeignKey(
+        'SchoolSubject', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+
+class Meeting(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, default="")
+    start_time = models.DateTimeField()
+    duration = models.DurationField(default=timedelta(
+        minutes=45), validators=[validate_duration])
+    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE)
     school_subject = models.ForeignKey(
         'SchoolSubject', on_delete=models.CASCADE)
 
