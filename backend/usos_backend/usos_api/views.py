@@ -345,7 +345,7 @@ class StudentGroupsView(APIView):
 
     def get(self, request, user_id):
         student = get_object_or_404(Student, user_id=user_id)
-        groups = student.groups.all()
+        groups = student.student_groups.all() 
         serializer = StudentGroupSerializer(groups, many=True)
         return Response(serializer.data)
 
