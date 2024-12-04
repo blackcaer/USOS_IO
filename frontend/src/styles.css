@@ -232,6 +232,18 @@ a,a:hover{
 .grade-block {
     background-color: #1E3E62; 
     max-height: 20%;
+    max-height: 100px;
+    display: flex;
+    justify-content: space-between;  /* Размещение элементов по бокам */
+    align-items: center;
+    padding: 0 1px;
+    color: #F5F5F5;
+    font-size: 16px;
+}
+
+.block-naked {
+    background-color: #1E3E62;
+    height: 100%; 
 }
 
 /* 
@@ -239,6 +251,23 @@ a,a:hover{
  * Grades Section
  * ----------------------------
  */
+
+.grade-box {
+    background-color: #F5F5F5;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #1E3E62;
+}
+
+.grades {
+    display: flex;
+    gap: 8px; 
+}
 
  .button-grade {
     font-size: clamp(9px,0.7vw,16px);

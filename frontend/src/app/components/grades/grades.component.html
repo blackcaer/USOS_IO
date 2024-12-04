@@ -1,32 +1,27 @@
 <div class="main-content pt-28 flex overflow-y-auto">
-  <div class="section-content w-4/5" style="display: flex;">
-      <div class="block rounded-xl flex flex-col mt-6 mb-14 ml-6" style="overflow: hidden;">
-
-          <div class="flex items-center">
-              <h1 class="ml-7">Jan Przykładowy</h1>
-
-              <div class="flex ml-auto">
-                  <div class="button-main rounded-3xl mx-4 flex justify-center items-center">Dzisiaj</div>
-                  <div class="button-main rounded-3xl mx-4 flex justify-center items-center">Dzisiaj</div>
-              </div>
-          </div>
-
-          <div class="section-content w-full grade-block mt-4 rounded-xl overflow-hidden" style="height: 300px;">
-              <div class="overflow-y-auto h-full">
-                  <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" style="height: 100px; background: #2A5D8F;">
-                      Элемент 1
-                  </div>
-                  <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" style="height: 100px; background: #3C7AAE;">
-                      Элемент 2
-                  </div>
-                  <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" style="height: 100px; background: #4A8FC3;">
-                      Элемент 3
-                  </div>
-                  <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" style="height: 100px; background: #5BA4E0;">
-                      Элемент 4
-                  </div>
-              </div>
-          </div>
-      </div>
+    <div class="section-content w-4/5" style="display: flex;">
+        <div class="block rounded-xl flex flex-col mt-6 mb-14 ml-6">
+  
+            <div class="flex items-center mt-5">
+                <h1 class="ml-7">Jan Przykładowy</h1>
+  
+                <div class="flex ml-auto mr-5">
+                    <div class="button-grade rounded-3xl mx-4 flex justify-center items-center">Cząstkowe</div>
+                    <div class="button-grade rounded-3xl mx-4 flex justify-center items-center">Śródroczne</div>
+                </div>
+            </div>
+  
+            <div class="section-content block-naked mt-4 rounded-xl overflow-hidden mb-7 ml-7" style="width: 96%; max-height: 600px; overflow-y: auto;">
+                <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" style="height: 100px; background: #2A5D8F;" *ngFor="let s of subjects">
+                    <span class="ml-3" style="font-size: clamp(9px,2.7vw,44px);">{{ s.name }}</span>
+                    <div class="grades mr-5">
+                        <div class="grade-box" *ngFor="let g of s.grades">{{ g }}</div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
   </div>
-</div>
+
+  
