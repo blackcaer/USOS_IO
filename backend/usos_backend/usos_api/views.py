@@ -28,8 +28,9 @@ from .models import (
 from .serializers import (
     UserSerializer, GradeSerializer, GradeColumnSerializer, ScheduledMeetingSerializer,
     ParentConsentSerializer, ConsentTemplateSerializer, StudentGroupSerializer, SchoolSubjectSerializer,
-    StudentSerializer,TeacherSerializer,ParentSerializer, MeetingSerializer, AttendanceSerializer, MessageSerializer
+    StudentSerializer, TeacherSerializer, ParentSerializer, MeetingSerializer, AttendanceSerializer, MessageSerializer
 )
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -49,10 +50,12 @@ class UserViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+
 
 class StudentViewSet(viewsets.ModelViewSet):
     """
@@ -61,6 +64,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = [IsAuthenticated]
+
 
 class TeacherViewSet(viewsets.ModelViewSet):
     """
@@ -84,6 +88,7 @@ class GradeViewSet(ModelViewSet):
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
     permission_classes = [IsAuthenticated]
+
 
 class MeetingViewSet(viewsets.ModelViewSet):
     queryset = Meeting.objects.all()
@@ -115,17 +120,21 @@ class MeetingViewSet(viewsets.ModelViewSet):
             attendance_instance, created = Attendance.objects.update_or_create(
                 meeting=meeting,
                 student_id=attendance['student_id'],
-                defaults={'status': attendance['status'], 'absence_reason': attendance.get('absence_reason')}
+                defaults={'status': attendance['status'], 'absence_reason': attendance.get(
+                    'absence_reason')}
             )
         return Response({'status': 'attendance updated'})
 
     @action(detail=False, methods=['get'], url_path='schedule')
     def get_schedule(self, request):
-        start_of_week = timezone.now().date() - timezone.timedelta(days=timezone.now().date().weekday())
+        start_of_week = timezone.now().date(
+        ) - timezone.timedelta(days=timezone.now().date().weekday())
         end_of_week = start_of_week + timezone.timedelta(days=6)
-        meetings = self.get_queryset().filter(start_time__date__range=[start_of_week, end_of_week])
+        meetings = self.get_queryset().filter(
+            start_time__date__range=[start_of_week, end_of_week])
         serializer = self.get_serializer(meetings, many=True)
         return Response(serializer.data)
+
 
 """class UserCreateViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -140,14 +149,16 @@ class MeetingViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)"""
 
 # APIViews
+
+
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
-    
+
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
-    
+
     def put(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -159,7 +170,7 @@ class CurrentUserView(APIView):
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
-       
+
     def get(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
         serializer = UserSerializer(user)
@@ -173,22 +184,24 @@ class UserInfoView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)"""
 
+
 class GradeListCreateView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = GradeSerializer   
+    serializer_class = GradeSerializer
 
     def get(self, request, user_id, subject_id):
         student = get_object_or_404(Student, user_id=user_id)
         subject = get_object_or_404(SchoolSubject, id=subject_id)
-        
-        grades = Grade.objects.filter(student=student, grade_column__school_subject=subject)
+
+        grades = Grade.objects.filter(
+            student=student, grade_column__school_subject=subject)
         serializer = GradeSerializer(grades, many=True)
         return Response(serializer.data)
 
     def post(self, request, user_id, subject_id):
         student = get_object_or_404(Student, user_id=user_id)
         subject = get_object_or_404(SchoolSubject, id=subject_id)
-        
+
         data = request.data.copy()
         data['student'] = student.user_id  # Użyj user_id zamiast id
         serializer = GradeSerializer(data=data)
@@ -197,9 +210,10 @@ class GradeListCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class GradeDetailView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = GradeSerializer   
+    serializer_class = GradeSerializer
 
     def get(self, request, grade_id):
         grade = get_object_or_404(Grade, id=grade_id)
@@ -223,6 +237,7 @@ class GradeDetailView(APIView):
 class ScheduleView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ScheduledMeetingSerializer
+
     def get(self, request):
         meetings = ScheduledMeeting.objects.filter(teacher=request.user)
         serializer = ScheduledMeetingSerializer(meetings, many=True)
@@ -232,6 +247,7 @@ class ScheduleView(APIView):
 class ConsentTemplateView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ConsentTemplateSerializer
+
     def get(self, request, template_consent_id):
         template = get_object_or_404(ConsentTemplate, id=template_consent_id)
         serializer = ConsentTemplateSerializer(template)
@@ -246,6 +262,7 @@ class ConsentTemplateView(APIView):
 class FeedView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = None  # No serializer needed for this view
+
     def get(self, request, user_id):
         # Logika generowania feeda dla użytkownika
         return Response({"feed": "Example feed data"})
@@ -253,7 +270,7 @@ class FeedView(APIView):
 
 class GradeColumnView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = GradeColumnSerializer   
+    serializer_class = GradeColumnSerializer
 
     def get(self, request, subject_id):
         columns = GradeColumn.objects.filter(school_subject_id=subject_id)
@@ -272,11 +289,12 @@ class GradeColumnView(APIView):
         columns.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class GradeColumnDetailView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = GradeColumnSerializer   
+    serializer_class = GradeColumnSerializer
 
-    def get(self, request,subject_id, column_id):
+    def get(self, request, subject_id, column_id):
         column = get_object_or_404(GradeColumn, id=column_id)
         grades = Grade.objects.filter(grade_column_id=column_id)
         column_serializer = GradeColumnSerializer(column)
@@ -286,58 +304,68 @@ class GradeColumnDetailView(APIView):
             'grades': grade_serializer.data
         })
 
-    def put(self, request,subject_id, column_id):
+    def put(self, request, subject_id, column_id):
         column = get_object_or_404(GradeColumn, id=column_id)
-        serializer = GradeColumnSerializer(column, data=request.data, partial=True)
+        serializer = GradeColumnSerializer(
+            column, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request,subject_id, column_id):
+    def delete(self, request, subject_id, column_id):
         column = get_object_or_404(GradeColumn, id=column_id)
         column.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class SchoolSubjectViewSet(viewsets.ModelViewSet):
     queryset = SchoolSubject.objects.all()
     serializer_class = SchoolSubjectSerializer
     permission_classes = [IsAuthenticated]
 
+
 class StudentGroupViewSet(viewsets.ModelViewSet):
     queryset = StudentGroup.objects.all()
     serializer_class = StudentGroupSerializer
     permission_classes = [IsAuthenticated]
+
 
 class ScheduledMeetingViewSet(viewsets.ModelViewSet):
     queryset = ScheduledMeeting.objects.all()
     serializer_class = ScheduledMeetingSerializer
     permission_classes = [IsAuthenticated]
 
+
 class AttendanceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
     permission_classes = [IsAuthenticated]
+
 
 class ConsentTemplateViewSet(viewsets.ModelViewSet):
     queryset = ConsentTemplate.objects.all()
     serializer_class = ConsentTemplateSerializer
     permission_classes = [IsAuthenticated]
 
+
 class ParentConsentViewSet(viewsets.ModelViewSet):
     queryset = ParentConsent.objects.all()
     serializer_class = ParentConsentSerializer
     permission_classes = [IsAuthenticated]
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
 
+
 class GradeColumnViewSet(viewsets.ModelViewSet):
     queryset = GradeColumn.objects.all()
     serializer_class = GradeColumnSerializer
     permission_classes = [IsAuthenticated]
+
 
 class StudentGroupsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -345,9 +373,10 @@ class StudentGroupsView(APIView):
 
     def get(self, request, user_id):
         student = get_object_or_404(Student, user_id=user_id)
-        groups = student.student_groups.all() 
+        groups = student.student_groups.all()
         serializer = StudentGroupSerializer(groups, many=True)
         return Response(serializer.data)
+
 
 class StudentSubjectsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -360,6 +389,7 @@ class StudentSubjectsView(APIView):
         serializer = SchoolSubjectSerializer(subjects, many=True)
         return Response(serializer.data)
 
+
 class ParentChildrenView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StudentSerializer
@@ -370,6 +400,7 @@ class ParentChildrenView(APIView):
         serializer = StudentSerializer(children, many=True)
         return Response(serializer.data)
 
+
 class TeacherGroupsView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StudentGroupSerializer
@@ -379,6 +410,7 @@ class TeacherGroupsView(APIView):
         groups = teacher.groups.all()
         serializer = StudentGroupSerializer(groups, many=True)
         return Response(serializer.data)
+
 
 class TeacherSubjectsView(APIView):
     permission_classes = [IsAuthenticated]

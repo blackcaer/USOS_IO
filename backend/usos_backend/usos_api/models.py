@@ -5,31 +5,34 @@ import datetime
 from django.core.exceptions import ValidationError
 from datetime import timedelta
 
+
 def validate_duration(value):
     if value > timedelta(minutes=120):
         raise ValidationError('Duration cannot exceed 120 minutes.')
 
-    
+
 # Categories
 class CategoryStudentGroup(models.Model):
-    code = models.CharField(max_length=30, unique=True)     # Unique, stable code
-    name = models.CharField(max_length=63,blank=True)       # Human friendly name
-    
+    # Unique, stable code
+    code = models.CharField(max_length=30, unique=True)
+    # Human friendly name
+    name = models.CharField(max_length=63, blank=True)
+
     def __str__(self):
         return f"{self.code} {self.name}"
 
 
 class CategoryGradeValue(models.Model):
-    code = models.CharField(max_length=30, unique=True)  
-    name = models.CharField(max_length=63,blank=True)
+    code = models.CharField(max_length=30, unique=True)
+    name = models.CharField(max_length=63, blank=True)
 
     def __str__(self):
         return f"{self.code} {self.name}"
 
 
 class CategoryAttendanceStatus(models.Model):
-    code = models.CharField(max_length=30, unique=True)  
-    name = models.CharField(max_length=63,blank=True)
+    code = models.CharField(max_length=30, unique=True)
+    name = models.CharField(max_length=63, blank=True)
 
     def __str__(self):
         return f"{self.code} {self.name}"
@@ -37,6 +40,8 @@ class CategoryAttendanceStatus(models.Model):
 # Main models:
 
 # Helper model for User
+
+
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
@@ -52,10 +57,9 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(username, email, password, **extra_fields)
 
+
 class User(AbstractUser):
-    """ 
-    Username is user's identifier
-    """
+    """ Username is user's unique identifier (inherited from AbstractUser) """
     ROLE_CHOICES = [
         ('student', 'Student'),
         ('parent', 'Parent'),
@@ -66,8 +70,10 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=255, default="Lname_example")
     email = models.EmailField(unique=True, default="example@example.com")
     birth_date = models.DateField(default=datetime.date(2010, 1, 1))
-    sex = models.CharField(max_length=15, choices=[("M", "Male"), ("F", "Female")],default="M")
-    status = models.CharField(max_length=31, choices=[("A", "Active"), ("U", "Inactive")],default="A")
+    sex = models.CharField(max_length=15, choices=[(
+        "M", "Male"), ("F", "Female")], default="M")
+    status = models.CharField(max_length=31, choices=[(
+        "A", "Active"), ("U", "Inactive")], default="A")
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     photo_url = models.URLField(blank=True, null=True)
 
@@ -78,20 +84,26 @@ class User(AbstractUser):
 
 
 class Teacher(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
- 
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, primary_key=True)
+
     def __str__(self):
         return f"Teacher: {self.user.username}"
 
+
 class Parent(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
         return f"Parent: {self.user.username}"
 
+
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    parents = models.ManyToManyField(Parent, related_name="children", blank=True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, primary_key=True)
+    parents = models.ManyToManyField(
+        Parent, related_name="children", blank=True)
 
     def __str__(self):
         return f"Student: {self.user.username}"
@@ -99,8 +111,9 @@ class Student(models.Model):
 
 class StudentGroup(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField(blank=True,default="")
-    category = models.ForeignKey(CategoryStudentGroup, on_delete=models.SET_NULL, null=True)
+    description = models.TextField(blank=True, default="")
+    category = models.ForeignKey(
+        CategoryStudentGroup, on_delete=models.SET_NULL, null=True)
     level = models.IntegerField()
     section = models.CharField(max_length=50, blank=True, null=True)
     students = models.ManyToManyField(Student, related_name="student_groups")
@@ -111,7 +124,7 @@ class StudentGroup(models.Model):
 
 class SchoolSubject(models.Model):
     subject_name = models.CharField(max_length=255)
-    description = models.TextField(blank=True,default="")
+    description = models.TextField(blank=True, default="")
     is_mandatory = models.BooleanField(default=False)
     student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
 
@@ -120,7 +133,8 @@ class SchoolSubject(models.Model):
 
 
 class Grade(models.Model):
-    value = models.ForeignKey(CategoryGradeValue, on_delete=models.SET_NULL, null=True)
+    value = models.ForeignKey(
+        CategoryGradeValue, on_delete=models.SET_NULL, null=True)
     timestamp = models.DateField(auto_now_add=True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     grade_column = models.ForeignKey("GradeColumn", on_delete=models.CASCADE)
@@ -133,7 +147,7 @@ class Grade(models.Model):
 class GradeColumn(models.Model):
     title = models.CharField(max_length=255)
     weight = models.IntegerField(default=1)
-    description = models.TextField(blank=True,default="")
+    description = models.TextField(blank=True, default="")
     school_subject = models.ForeignKey(SchoolSubject, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -142,7 +156,8 @@ class GradeColumn(models.Model):
 
 class Attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    status = models.ForeignKey(CategoryAttendanceStatus, on_delete=models.SET_NULL, null=True)
+    status = models.ForeignKey(
+        CategoryAttendanceStatus, on_delete=models.SET_NULL, null=True)
     meeting = models.ForeignKey("Meeting", on_delete=models.CASCADE)
     absence_reason = models.TextField(blank=False, null=True)
 
@@ -154,19 +169,23 @@ class Meeting(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     start_time = models.DateTimeField()
-    duration = models.DurationField(default=timedelta(minutes=45), validators=[validate_duration])
+    duration = models.DurationField(default=timedelta(
+        minutes=45), validators=[validate_duration])
     teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE)
-    school_subject = models.ForeignKey('SchoolSubject', on_delete=models.CASCADE)
+    school_subject = models.ForeignKey(
+        'SchoolSubject', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
+
 
 class ConsentTemplate(models.Model):
     author = models.ForeignKey('Teacher', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     end_date = models.DateField()
-    students = models.ManyToManyField(Student, related_name="consent_templates")
+    students = models.ManyToManyField(
+        Student, related_name="consent_templates")
 
     def time_to_end(self):
         return (self.end_date - timezone.now().date()).days
@@ -193,19 +212,24 @@ class ScheduledMeeting(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
     start_time = models.DateTimeField()
-    duration = models.DurationField(default=timedelta(minutes=45), validators=[validate_duration])
-    teacher = models.ForeignKey('Teacher', on_delete=models.CASCADE, related_name='scheduled_meetings')
-    school_subject = models.ForeignKey('SchoolSubject', on_delete=models.CASCADE)
+    duration = models.DurationField(default=timedelta(
+        minutes=45), validators=[validate_duration])
+    teacher = models.ForeignKey(
+        'Teacher', on_delete=models.CASCADE, related_name='scheduled_meetings')
+    school_subject = models.ForeignKey(
+        'SchoolSubject', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
+
 
 class Message(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
-    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    sender = models.ForeignKey(
+        User, related_name='sent_messages', on_delete=models.CASCADE)
     recipients = models.ManyToManyField(User, related_name='received_messages')
 
     def __str__(self):
