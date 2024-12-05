@@ -16,6 +16,14 @@ class GroupSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(choices=['student', 'parent', 'teacher'], write_only=True)
+    first_name = serializers.CharField(default="first_name")
+    last_name = serializers.CharField(default="last_name")
+    #email = serializers.EmailField(default="email@example.com")#unique
+    birth_date = serializers.DateField(default="2010-01-01")
+    sex = serializers.ChoiceField(choices=[("M", "Male"), ("F", "Female")], default="M")
+    status = serializers.ChoiceField(choices=[("A", "Active"), ("U", "Inactive")], default="A")
+    phone_number = serializers.CharField(default="", allow_blank=True, allow_null=True)
+    photo_url = serializers.URLField(default="", allow_blank=True, allow_null=True)
 
     class Meta:
         model = User
@@ -41,7 +49,6 @@ class UserSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['role'] = instance.role
         return representation
-
 
     def update(self, instance, validated_data):
         validated_data.pop('role', None)  # Prevent role from being updated
