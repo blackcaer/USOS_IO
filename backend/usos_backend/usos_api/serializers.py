@@ -100,7 +100,7 @@ class StudentGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentGroup
         fields = ['id', 'name', 'description',
-                  'category', 'level', 'section', 'students']
+                   'level', 'section', 'students']
 
 
 class SchoolSubjectSerializer(serializers.ModelSerializer):

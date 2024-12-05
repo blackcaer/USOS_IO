@@ -12,7 +12,7 @@ def validate_duration(value):
 
 
 # Categories
-class CategoryStudentGroup(models.Model):
+"""class CategoryStudentGroup(models.Model):
     # Unique, stable code
     code = models.CharField(max_length=30, unique=True)
     # Human friendly name
