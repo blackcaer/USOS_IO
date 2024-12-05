@@ -78,10 +78,11 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     photo_url = models.URLField(blank=True, null=True)
 
-    objects = UserManager()
+    class Meta:
+        ordering = ['id']
 
     def __str__(self):
-        return f"{self.username}: {self.first_name} {self.last_name}"
+        return f"{self.username}: {self.first_name} {self.last_name} role:{self.role}"
 
 
 class Student(models.Model):
@@ -89,7 +90,10 @@ class Student(models.Model):
         User, on_delete=models.CASCADE, primary_key=True)
     parents = models.ManyToManyField(
         "Parent", related_name="children", blank=True)
-
+    
+    class Meta:
+        ordering = ['user']
+        
     def __str__(self):
         return f"Student: {self.user.username}"
 
@@ -98,6 +102,9 @@ class Teacher(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, primary_key=True)
 
+    class Meta:
+        ordering = ['user']
+        
     def __str__(self):
         return f"Teacher: {self.user.username}"
 
@@ -106,6 +113,9 @@ class Parent(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, primary_key=True)
 
+    class Meta:
+        ordering = ['user']
+        
     def __str__(self):
         return f"Parent: {self.user.username}"
 
