@@ -20,6 +20,7 @@ def validate_duration(value):
 
     def __str__(self):
         return f"{self.code} {self.name}"
+"""
 
 
 class CategoryGradeValue(models.Model):
@@ -67,9 +68,9 @@ class User(AbstractUser):
     ]
     role = models.CharField(
         max_length=10, choices=ROLE_CHOICES, editable=False,)
-    first_name = models.CharField(max_length=255, default="name_example")
-    last_name = models.CharField(max_length=255, default="Lname_example")
-    email = models.EmailField(unique=True, default="example@example.com")
+    first_name = models.CharField(max_length=255, default="first_name")
+    last_name = models.CharField(max_length=255, default="last_name")
+    email = models.EmailField(unique=True, default="email@example.com")
     birth_date = models.DateField(default=datetime.date(2010, 1, 1))
     sex = models.CharField(max_length=15, choices=[(
         "M", "Male"), ("F", "Female")], default="M")
@@ -123,8 +124,8 @@ class Parent(models.Model):
 class StudentGroup(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
-    category = models.ForeignKey(
-        CategoryStudentGroup, on_delete=models.SET_NULL, null=True)
+    #category = models.ForeignKey(
+    #    CategoryStudentGroup, on_delete=models.SET_NULL, null=True)
     level = models.IntegerField()
     section = models.CharField(max_length=50, blank=True, null=True)
     students = models.ManyToManyField(Student, related_name="student_groups")
@@ -162,7 +163,7 @@ class GradeColumn(models.Model):
     school_subject = models.ForeignKey(SchoolSubject, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return f"{self.title} for {self.school_subject}"
 
 
 class Attendance(models.Model):
