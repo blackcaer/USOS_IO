@@ -3,8 +3,10 @@ import { MainBlocksComponent } from './components/main-blocks/main-blocks.compon
 import { ScheduleComponent } from './components/schedule/schedule.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
 import { GradesComponent } from './components/grades/grades.component';
+import { LoginComponent } from './components/login/login.component';
 
 export const routes: Routes = [
+    {path: 'login', component: LoginComponent},
     {path: 'statistics', component: StatisticsComponent},
     {path: 'grades', component: GradesComponent},
     {path: 'schedule', component: ScheduleComponent},
