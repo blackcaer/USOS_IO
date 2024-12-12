@@ -1,7 +1,7 @@
 # from django.shortcuts import render
 from datetime import timedelta
 from .models import Student, Teacher, Parent
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
@@ -10,12 +10,14 @@ from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from django.utils import timezone
 
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
 
 from usos_backend.usos_api.serializers import GroupSerializer
@@ -151,6 +153,33 @@ class MeetingViewSet(viewsets.ModelViewSet):
 # APIViews
 
 
+@csrf_exempt
+def custom_login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('current_user')
+            else:
+                return HttpResponse('Invalid login credentials', status=401)
+        else:
+            return HttpResponse('Invalid form data', status=400)
+    else:
+        form = AuthenticationForm()
+    return render(request, 'registration/login.html', {'form': form})
+
+@csrf_exempt
+def custom_logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'method not allowed'}, status=405)
+
+@method_decorator(csrf_exempt, name='dispatch')
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer

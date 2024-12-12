@@ -1,22 +1,15 @@
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from .usos_api.views import (
+from usos_backend.usos_api.views import (
+    custom_login_view, custom_logout_view, CurrentUserView, UserInfoView,
     StudentViewSet, TeacherViewSet, ParentViewSet, GradeViewSet,
-    CurrentUserView, UserInfoView, GradeColumnView,
-    GradeListCreateView, GradeDetailView, ScheduleView, 
-    ConsentTemplateView, FeedView, MeetingViewSet, GradeColumnDetailView, SchoolSubjectViewSet
-    ,GradeListCreateView, GradeDetailView, GradeColumnView, GradeColumnDetailView, SchoolSubjectViewSet,
+    GradeColumnView, GradeListCreateView, GradeDetailView, ScheduleView, 
+    ConsentTemplateView, FeedView, MeetingViewSet, GradeColumnDetailView, SchoolSubjectViewSet,
     StudentGroupViewSet, ScheduledMeetingViewSet, AttendanceViewSet, 
-    ConsentTemplateViewSet, ParentConsentViewSet, MessageViewSet,GradeColumnViewSet,
-    StudentGroupsView, StudentSubjectsView,
-    ParentChildrenView, TeacherGroupsView, TeacherSubjectsView,UserViewSet
+    ConsentTemplateViewSet, ParentConsentViewSet, MessageViewSet, GradeColumnViewSet,
+    StudentGroupsView, StudentSubjectsView, ParentChildrenView, TeacherGroupsView, TeacherSubjectsView, UserViewSet
 )
-
-     
-from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.db import models
-import datetime
 
 router = DefaultRouter()
 router.register('students', StudentViewSet, basename='student')
@@ -26,7 +19,6 @@ router.register('grades', GradeViewSet, basename='grade')
 router.register('users', UserViewSet, basename='user')
 router.register('meetings', MeetingViewSet, basename='meeting')
 router.register('subjects', SchoolSubjectViewSet, basename='subject')
-
 router.register('student-groups', StudentGroupViewSet, basename='studentgroup')
 router.register('scheduled-meetings', ScheduledMeetingViewSet, basename='scheduledmeeting')
 router.register('attendances', AttendanceViewSet, basename='attendance')
@@ -38,6 +30,8 @@ router.register('grade-columns', GradeColumnViewSet, basename='gradecolumn')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('auth/login/', custom_login_view, name='login'),
+    path('auth/logout/', custom_logout_view, name='logout'),
     path('auth/', include('rest_framework.urls')),
     
     path('user/', CurrentUserView.as_view(), name='current_user'),
