@@ -1,0 +1,96 @@
+<div class="main-content pt-28 flex overflow-y-auto">
+    <div class="section-content w-4/5">
+  
+        <div class="container mx-auto p-6">
+          <!-- Tailwind Grid ()-->
+          <div class="grid grid-cols-3 gap-5 md:grid-cols-6">
+  
+              <div class="col-span-2 row-span-2 block p-6 rounded-xl flex flex-col">
+  
+                <div class="flex justify-between items-center">
+                  Plan zajęć
+  
+                  <div class="ml-auto mt-1">
+                      <svg [routerLink]="'/schedule'" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
+                        <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
+                      </svg>    
+                  </div> 
+                </div>
+  
+  
+                <div class="flex justify-between items-center mt-2">
+                  <div class="mt-3 mb-1 ml-16">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="2vw" viewBox="0 -960 960 960" width="vw" fill="#F5F5F5">
+                      <path d="M560-240 320-480l240-240 56 56-184 184 184 184-56 56Z"/>
+                    </svg>
+                  </div>
+  
+                  <div class="button-main rounded-3xl flex-grow mx-4 mt-2 flex justify-center items-center">Dzisiaj</div>
+  
+                  <div class="mt-3 mb-1 mr-16">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="2vw" viewBox="0 -960 960 960" width="2vw" fill="#F5F5F5">
+                      <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/>
+                    </svg>
+                  </div>
+                </div>
+                
+                  
+                <div class="section-content flex-grow mt-4 rounded-xl" style="background-color: #1E3E62;">
+                </div>
+              </div>
+  
+              <div class="col-span-4 p-6 rounded-xl block flex" style="height: 190px;">
+                Aktualności
+  
+                <div [routerLink]="'/'" style="cursor: pointer;" class="ml-auto mt-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
+                    <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
+                  </svg>
+                </div>
+              </div>
+  
+              <div class="col-span-2 p-6 rounded-xl block flex flex-col" style="height: 515px;">
+  
+                <div class="flex justify-between items-center">
+                  
+                  Oceny
+  
+                  <div class="ml-auto mt-1">
+                    <svg [routerLink]="'/grades'" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
+                      <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
+                    </svg>
+                  </div>
+                </div>
+  
+                <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" *ngFor="let g of lastGrades">
+                  <span class="ml-3" style="font-size: clamp(9px,2.7vw,20px);">{{ g.name }}</span>
+                  <div class="grade-box mr-3">{{ g.grade }}</div>
+                </div>
+                  
+              </div>
+  
+              <div class="col-span-2 p-6 rounded-xl block flex flex-col" style="height: 515px;">
+  
+                <div class="flex justify-between items-center">
+                  
+                  Statystyki
+  
+                  <div class="ml-auto mt-1">
+                    <svg [routerLink]="'/statistics'" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
+                      <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
+                    </svg>
+                  </div>
+                </div>
+  
+                <div class="section-content section-content-p30 flex-grow mt-4 rounded-xl" style="background-color: #1E3E62;">
+                </div>
+                  
+              </div>
+  
+              
+  
+          </div>
+  
+        </div>
+    </div>
+  </div>

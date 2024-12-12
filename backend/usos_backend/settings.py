@@ -143,7 +143,7 @@ CSRF_HEADER_NAME = 'HTTP_X_XSRF_TOKEN'
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",  # Ваш адрес фронтенда (поменяйте порт, если он другой)
+    "http://localhost:4200",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
