@@ -141,6 +141,10 @@ CSRF_COOKIE_HTTPONLY = False  # this is the default, and should be kept this way
 CSRF_COOKIE_NAME = 'XSRF-TOKEN'
 CSRF_HEADER_NAME = 'HTTP_X_XSRF_TOKEN'
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:4200",
+]
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",  # Ваш адрес фронтенда (поменяйте порт, если он другой)
