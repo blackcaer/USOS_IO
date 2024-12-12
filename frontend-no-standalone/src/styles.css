@@ -1,0 +1,310 @@
+/* 
+ * ----------------------------
+ * Common CSS
+ * ----------------------------
+ */
+
+ *{
+    margin:0;
+    padding:0;
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box
+}
+
+body{
+    font-family:Arial, sans-serif;
+    font-weight:400;
+    font-size:16px;
+    line-height:1.625;
+    color:#666;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-image: url('assets/images/blurry-gradient-background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+ul{
+    margin:0
+}
+
+button,input[type=button]{
+    cursor:pointer
+}
+
+button:focus,input:focus{
+    outline:0
+}
+
+input{
+    border:none
+}
+
+button{
+    border:none;
+    background:0 0
+}
+
+img{
+    max-width:100%;
+    height:auto
+}
+
+p{
+    margin:0
+}
+
+
+
+h1{
+    font-size:36px
+}
+
+h2{
+    font-size:30px
+}
+
+h3{
+    font-size:24px
+}
+
+h4{
+    font-size:18px
+}
+
+h5{
+    font-size:15px
+}
+
+h6{
+    font-size:13px
+}
+
+a{
+    display:inline-block
+}
+
+a:active,a:focus,a:hover{
+    text-decoration:none;
+    outline:0
+}
+
+a,a:hover{
+    -webkit-transition:all .3s ease;
+    -o-transition:all .3s ease;
+    -moz-transition:all .3s ease;
+    transition:all .3s ease
+}
+
+/*Layout Css*/
+.section-content{
+    padding:0 30px
+}
+
+.page-wrapper{
+    overflow:hidden;
+}
+
+.page-container{
+    padding-left:0px;
+    width: 100%;
+}
+
+.main-content{
+    display: flex;
+    min-height:100vh;
+    width: 100vw;
+}
+
+/* 
+ * ----------------------------
+ * Header Section
+ * ----------------------------
+ */
+
+.header{
+    background:#121218;
+    -webkit-box-shadow:0 2px 5px 0 rgba(0,0,0,.1);
+    -moz-box-shadow:0 2px 5px 0 rgba(0,0,0,.1);
+    box-shadow:0 2px 5px 0 rgba(0,0,0,.1);
+    position:fixed;
+    top:0;
+    right:0;
+    left:0px;
+    height:116px;
+    z-index:3
+}
+
+.header .section-content{
+    overflow:visible;
+    position:absolute;
+    top:50%;
+    left:0;
+    right:0;
+    -webkit-transform:translateY(-50%);
+    -moz-transform:translateY(-50%);
+    -ms-transform:translateY(-50%);
+    -o-transform:translateY(-50%);
+    transform:translateY(-50%)
+}
+
+.header-wrap{
+    display:-webkit-box;
+    display:-webkit-flex;
+    display:-moz-box;
+    display:-ms-flexbox;
+    display:flex;
+    -webkit-box-align:center;
+    -webkit-align-items:center;
+    -moz-box-align:center;
+    -ms-flex-align:center;
+    align-items:center;
+    -webkit-box-pack:justify;
+    -webkit-justify-content:space-between;
+    -moz-box-pack:justify;
+    -ms-flex-pack:justify;
+    justify-content:space-between
+}
+
+.header-button{
+    display:-webkit-box;
+    display:-webkit-flex;
+    display:-moz-box;
+    display:-ms-flexbox;
+    display:flex;
+    -webkit-box-align:center;
+    -webkit-align-items:center;
+    -moz-box-align:center;
+    -ms-flex-align:center;
+    align-items:center
+}
+
+.header-logo {
+    font-size: 70px;
+    font-weight: bold;
+    color: #F5F5F5; 
+    margin-right: auto; 
+    padding-left: 0vw; 
+}
+
+.header-icon {
+    display: flex;
+    align-items: center;
+    padding-right: 0vw;
+}
+
+/* 
+ * ----------------------------
+ * Main Content Section
+ * ----------------------------
+ */
+
+.block {
+    display: flex;
+    flex-grow: 1;
+    background-color: #121218;
+    font-size: clamp(16px,2vw,60px); 
+    font-weight: 650;
+    color: #F5F5F5;
+}
+
+.block-schedule {
+    background-color: #1E3E62;
+    height: 67vh;
+}
+
+.button-main {
+    font-size: clamp(9px,0.7vw,16px);
+    color: #121218;
+    width: 2vw;
+    height: 2vw;
+    background-color: #F5F5F5;
+    margin: 0 auto;
+}
+
+.grade-block {
+    background-color: #1E3E62; 
+    max-height: 20%;
+    max-height: 100px;
+    display: flex;
+    justify-content: space-between;  /* Размещение элементов по бокам */
+    align-items: center;
+    padding: 0 1px;
+    color: #F5F5F5;
+    font-size: 16px;
+}
+
+.block-naked {
+    background-color: #1E3E62;
+    height: 100%; 
+}
+
+/* 
+ * ----------------------------
+ * Grades Section
+ * ----------------------------
+ */
+
+.grade-box {
+    background-color: #F5F5F5;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #1E3E62;
+}
+
+.grades {
+    display: flex;
+    gap: 8px; 
+}
+
+ .button-grade {
+    font-size: clamp(9px,0.7vw,16px);
+    color: #121218;
+    width: 6vw;
+    height: 2vw;
+    background-color: #F5F5F5;
+    margin: 0 auto;
+}
+
+/* 
+ * ----------------------------
+ * Buttons
+ * ----------------------------
+ */
+
+ .btn-info{
+    color:#fff;
+    background-color:#0da8e4!important;
+    border-color:#0da8e4!important
+}
+a.primary-btn{
+    background:#05143f;
+    padding:7px 20px;
+    text-align:center;
+    display:inline-block;
+    color:#fff;
+    border-radius:2px;
+    font-size:14px;
+    margin-top:5px
+}
+a.primary-btn:hover{
+    background:#0da8e4;
+    color:#fff
+}
+
+.active-link {
+  font-weight: bold;
+}
+
