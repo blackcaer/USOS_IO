@@ -23,13 +23,13 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      const csrfToken = this.cookieService.getCookie('XSRF-TOKEN');
-      const headers = new HttpHeaders().set('HTTP_X_XSRF_TOKEN', csrfToken);
+      // const csrfToken = this.cookieService.getCookie('XSRF-TOKEN');
+      // const headers = new HttpHeaders().set('HTTP_X_XSRF_TOKEN', csrfToken);
       const formData = new FormData();
       formData.append('username', this.loginForm.get('username')?.value);
       formData.append('password', this.loginForm.get('password')?.value);
 
-      this.http.post('http://localhost:8000/auth/login/', formData, { headers }).subscribe({
+      this.http.post('http://localhost:8000/auth/login/', formData, { withCredentials: true }).subscribe({
         next: (response: any) => {
           if (response.csrftoken) {
             localStorage.setItem('csrftoken', response.csrftoken);
