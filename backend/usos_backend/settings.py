@@ -147,7 +147,7 @@ CSRF_TRUSTED_ORIGINS = [
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",  # Ваш адрес фронтенда (поменяйте порт, если он другой)
+    "http://localhost:4200", 
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -159,3 +159,6 @@ CORS_ALLOW_METHODS = [
     "DELETE",
     "OPTIONS",
 ]
+
+CORS_ALLOW_HEADERS = ('content-disposition', 'accept-encoding',
+                      'content-type', 'accept', 'origin', 'authorization','HTTP_X_XSRF_TOKEN','XSRF-TOKEN')
