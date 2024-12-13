@@ -1,0 +1,60 @@
+/* Контейнер для всего расписания */
+.schedule-container {
+    display: flex;
+    background-color: #1a2b4f;
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Колонка времени */
+  .time-column {
+    width: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .time-slot {
+    height: 60px;
+    text-align: center;
+    font-size: 12px;
+    border-top: 1px solid #334875;
+    color: #ccc;
+  }
+  
+  /* Колонка событий */
+  .events-column {
+    flex: 1;
+    position: relative;
+    margin-left: 10px;
+    background-color: #112244;
+    border-radius: 8px;
+    padding: 10px;
+    overflow: hidden;
+  }
+  
+  /* Событие */
+  .event {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 5px;
+    padding: 5px;
+    background-color: #fff;
+    border-radius: 8px;
+    color: black;
+    font-size: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .event-title {
+    font-weight: bold;
+  }
+  
+  .event-time {
+    font-size: 10px;
+    color: #666;
+  }
+  

@@ -1,3 +1,4 @@
+import { AuthService } from './services/auth.service';
 import { Component } from '@angular/core';
 
 @Component({
@@ -6,5 +7,13 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'frontend-no-standalone';
+  constructor(public authService: AuthService) {
+
+  }
+
+  title = 'USOS';
+
+  mainLogout() {
+    this.authService.logout();
+  }
 }

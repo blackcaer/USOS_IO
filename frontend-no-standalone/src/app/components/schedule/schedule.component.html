@@ -10,12 +10,92 @@
 
 
             <div class="grid grid-cols-5 gap-5 mt-4 ml-6 mr-6 mb-6">
+                <!--<div class="section-content rounded-xl col-span-1 block-schedule"></div>
                 <div class="section-content rounded-xl col-span-1 block-schedule"></div>
                 <div class="section-content rounded-xl col-span-1 block-schedule"></div>
                 <div class="section-content rounded-xl col-span-1 block-schedule"></div>
-                <div class="section-content rounded-xl col-span-1 block-schedule"></div>
-                <div class="section-content rounded-xl col-span-1 block-schedule"></div>
+                <div class="section-content rounded-xl col-span-1 block-schedule"></div>-->
                 
+                <div class="schedule-container col-span-1">
+                    <div class="time-column">
+                      <div class="time-slot" *ngFor="let hour of hours">{{ hour }}</div>
+                    </div>
+                    <div class="events-column">
+                      <div 
+                        class="event" 
+                        *ngFor="let event of events" 
+                        [style.top]="event.top" 
+                        [style.height]="event.height">
+                        <div class="event-title">{{ event.title }}</div>
+                        <div class="event-time">{{ event.time }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="schedule-container col-span-1">
+                    <div class="time-column">
+                      <div class="time-slot" *ngFor="let hour of hours">{{ hour }}</div>
+                    </div>
+                    <div class="events-column">
+                      <div 
+                        class="event" 
+                        *ngFor="let event of events" 
+                        [style.top]="event.top" 
+                        [style.height]="event.height">
+                        <div class="event-title">{{ event.title }}</div>
+                        <div class="event-time">{{ event.time }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="schedule-container col-span-1">
+                    <div class="time-column">
+                      <div class="time-slot" *ngFor="let hour of hours">{{ hour }}</div>
+                    </div>
+                    <div class="events-column">
+                      <div 
+                        class="event" 
+                        *ngFor="let event of events" 
+                        [style.top]="event.top" 
+                        [style.height]="event.height">
+                        <div class="event-title">{{ event.title }}</div>
+                        <div class="event-time">{{ event.time }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="schedule-container col-span-1">
+                    <div class="time-column">
+                      <div class="time-slot" *ngFor="let hour of hours">{{ hour }}</div>
+                    </div>
+                    <div class="events-column">
+                      <div 
+                        class="event" 
+                        *ngFor="let event of events" 
+                        [style.top]="event.top" 
+                        [style.height]="event.height">
+                        <div class="event-title">{{ event.title }}</div>
+                        <div class="event-time">{{ event.time }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="schedule-container col-span-1">
+                    <div class="time-column">
+                      <div class="time-slot" *ngFor="let hour of hours">{{ hour }}</div>
+                    </div>
+                    <div class="events-column">
+                      <div 
+                        class="event" 
+                        *ngFor="let event of events" 
+                        [style.top]="event.top" 
+                        [style.height]="event.height">
+                        <div class="event-title">{{ event.title }}</div>
+                        <div class="event-time">{{ event.time }}</div>
+                      </div>
+                    </div>
+                  </div>
+
             </div>
 
         </div>
