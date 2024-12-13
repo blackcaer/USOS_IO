@@ -33,6 +33,10 @@ export class LoginComponent {
 
       this.authService.login(username, password).subscribe({
         next: (response: any) => {
+<<<<<<< Updated upstream
+=======
+          console.log(response);
+>>>>>>> Stashed changes
           this.message = 'Logowanie się udało';
           this.messageType = 'success';
           this.router.navigate(['/']);

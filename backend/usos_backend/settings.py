@@ -162,3 +162,5 @@ CORS_ALLOW_METHODS = [
 
 CORS_ALLOW_HEADERS = ('content-disposition', 'accept-encoding',
                       'content-type', 'accept', 'origin', 'authorization','HTTP_X_XSRF_TOKEN','XSRF-TOKEN')
+
+SESSION_COOKIE_HTTPONLY = False
