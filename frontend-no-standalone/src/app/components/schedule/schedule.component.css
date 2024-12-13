@@ -1,7 +1,7 @@
 /* Контейнер для всего расписания */
 .schedule-container {
     display: flex;
-    background-color: #1a2b4f;
+    background-color: #1E3E62;
     padding: 10px;
     border-radius: 8px;
     color: white;
@@ -20,7 +20,7 @@
     height: 60px;
     text-align: center;
     font-size: 12px;
-    border-top: 1px solid #334875;
+    border-top: 1px solid #1E3E62;
     color: #ccc;
   }
   
@@ -29,7 +29,7 @@
     flex: 1;
     position: relative;
     margin-left: 10px;
-    background-color: #112244;
+    background-color: #0B192C;
     border-radius: 8px;
     padding: 10px;
     overflow: hidden;
@@ -57,4 +57,5 @@
     font-size: 10px;
     color: #666;
   }
+
   
