@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
 import { UserService } from '../../services/user.service';
 
 @Component({
@@ -11,27 +10,106 @@ import { UserService } from '../../services/user.service';
 export class MainBlocksComponent {
 
 private currentUserId: number;
-
+lastGrades = [
+  { name: 'Matematyka', grade: -2 },
+  { name: 'Informatyka', grade: 4 },
+  { name: 'Angielski', grade: 4 },
+  { name: 'Matematyka', grade: 1 },
+  { name: 'Chemia', grade: 2 }
+];
 
 constructor(private http: HttpClient,
             private userService: UserService
 ) {
-  const storedUserId = localStorage.getItem('currentUserId');
-  this.currentUserId = storedUserId ? parseInt(storedUserId, 10) : 0;
+  this.currentUserId = this.userService.getUserIdAsInt();
 }
 
-ngOnInit() {
-  console.log(this.userService.getAllUsersSubjects(this.currentUserId));
-}
+  ngOnInit() {
+    this.fillLastGrades();
+  }
 
+  async fillLastGrades() {
+    this.lastGrades = [];
+  
+    try {
+      const subjectsMap = await this.userService.getAllUsersSubjects(this.currentUserId);
+      const allGrades: { name: string, grade: number, timestamp: Date }[] = [];
+  
+      for (const [groupId, subjects] of subjectsMap) {
+        for (const subject of subjects) {
+          const gradesWithTimestamps = await this.userService.getUsersGradesFromSubjectWithTimestamp(this.currentUserId, subject.id);
+  
+          gradesWithTimestamps.forEach(grade => {
+            allGrades.push({
+              name: subject.name,
+              grade: this.userService.parseGradeValue(grade.value),
+              timestamp: grade.timestamp
+            });
+          });
+        }
+      }
+  
+      const sortedGrades = allGrades.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 
-  lastGrades = [
-    { name: 'Matematyka', grade: -2 },
-    { name: 'Informatyka', grade: 4 },
-    { name: 'Angielski', grade: 4 },
-    { name: 'Matematyka', grade: 1 },
-    { name: 'Chemia', grade: 2 }
+      const lastFiveGrades = sortedGrades.slice(0, 5);
+  
+      this.lastGrades = lastFiveGrades;
+  
+      console.log('Ostatnie 5 ocen:', this.lastGrades);
+    } catch (error) {
+      console.error('Błąd podczas ładowania ostatnich ocen:', error);
+    }
+  }
+
+  hours = [
+    "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
   ];
+  
+  events = [
+    {
+      title: "Język angielski",
+      time: "8:00 - 8:45",
+      start: "8:00",
+      end: "8:45",
+      top: "0px",
+      height: "45px"
+    },
+    {
+      title: "Matematyka",
+      time: "8:50 - 9:35",
+      start: "8:50",
+      end: "9:35",
+      top: "50px",
+      height: "45px"
+    },
+    {
+      title: "Wychowanie fizyczne",
+      time: "9:40 - 10:25",
+      start: "9:40",
+      end: "10:25",
+      top: "100px",
+      height: "45px"
+    },
+    {
+      title: "Biologia",
+      time: "10:45 - 11:30",
+      start: "10:45",
+      end: "11:30",
+      top: "225px",
+      height: "45px"
+    },
+    {
+      title: "Historia",
+      time: "13:25 - 14:10",
+      start: "13:25",
+      end: "14:10",
+      top: "505px",
+      height: "45px"
+    }
+  ];
+
+
+  
 }
 
 
