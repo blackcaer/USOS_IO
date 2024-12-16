@@ -26,6 +26,9 @@ export class AuthService {
           const xsrfToken = this.cookieService.getCookie('XSRF_TOKEN');
           const sessionid = this.cookieService.getCookie('sessionid');
 
+          if (!!response.id) {
+            localStorage.setItem('currentUserId', response.id);
+          }
           if (!!xsrfToken) {
             localStorage.setItem('xsrftoken', xsrfToken);
           }
@@ -46,13 +49,15 @@ export class AuthService {
   logout() {
     localStorage.removeItem('xsrftoken');
     localStorage.removeItem('sessionid');
+    localStorage.removeItem('currentUserId');
     this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
     const xsrfToken = localStorage.getItem('xsrftoken');
     const sessionId = localStorage.getItem('sessionid');
-    return !!xsrfToken && !!sessionId;
+    const currentUserId = localStorage.getItem('currentUserId');
+    return !!xsrfToken && !!sessionId && !!currentUserId;
   }
 }
 
