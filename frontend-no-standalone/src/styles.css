@@ -207,6 +207,33 @@ a,a:hover{
  * ----------------------------
  */
 
+ .button-link {
+    font-size: clamp(9px,0.7vw,16px);
+    width: 3vw;
+    height: 3vw;
+    border-radius: 10px;
+    background-color: #121218;
+    margin: 0 auto;
+    font-weight: Bold;
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+}
+
+.button-link:hover {
+    background-color: #1E3E62;
+    color: white;
+    box-shadow: 0 0 20px #6fc5ff50;
+    transform: scale(1.1);
+}
+
+.button-link:active {
+    background-color: #3d94cf;
+    transition: all 0.25s;
+    -webkit-transition: all 0.25s;
+    box-shadow: none;
+    transform: scale(0.98);
+}
+
 .block {
     display: flex;
     flex-grow: 1;
@@ -228,7 +255,26 @@ a,a:hover{
     height: 2vw;
     background-color: #F5F5F5;
     margin: 0 auto;
+    font-weight: Bold;
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
 }
+
+.button-main:hover {
+    background-color: #1E3E62;
+    color: white;
+    box-shadow: 0 0 20px #6fc5ff50;
+    transform: scale(1.1);
+}
+
+.button-main:active {
+    background-color: #3d94cf;
+    transition: all 0.25s;
+    -webkit-transition: all 0.25s;
+    box-shadow: none;
+    transform: scale(0.98);
+}
+  
 
 .grade-block {
     background-color: #1E3E62; 
