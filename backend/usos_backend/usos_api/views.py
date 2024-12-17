@@ -28,7 +28,7 @@ from .models import (
     User, Grade, GradeColumn, ScheduledMeeting, ParentConsent, ConsentTemplate, StudentGroup, SchoolSubject, Meeting, Attendance, Message
 )
 from .serializers import (
-    UserSerializer, GradeSerializer, GradeColumnSerializer, ScheduledMeetingSerializer,
+    AttendanceBulkSerializer, UserSerializer, GradeSerializer, GradeColumnSerializer, ScheduledMeetingSerializer,
     ParentConsentSerializer, ConsentTemplateSerializer, StudentGroupSerializer, SchoolSubjectSerializer,
     StudentSerializer, TeacherSerializer, ParentSerializer, MeetingSerializer, AttendanceSerializer, MessageSerializer
 )
@@ -90,65 +90,9 @@ class GradeViewSet(ModelViewSet):
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
     permission_classes = [IsAuthenticated]
+    
+    
 
-
-class MeetingViewSet(viewsets.ModelViewSet):
-    queryset = Meeting.objects.all()
-    serializer_class = MeetingSerializer
-    permission_classes = [IsAuthenticated]
-
-    def create(self, request):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def retrieve(self, request, pk=None):
-        meeting = self.get_object()
-        serializer = self.get_serializer(meeting)
-        return Response(serializer.data)
-
-    def destroy(self, request, pk=None):
-        meeting = self.get_object()
-        meeting.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @action(detail=True, methods=['put'], url_path='update-attendance')
-    def update_attendance(self, request, pk=None):
-        meeting = self.get_object()
-        attendance_data = request.data.get('attendance')
-        for attendance in attendance_data:
-            attendance_instance, created = Attendance.objects.update_or_create(
-                meeting=meeting,
-                student_id=attendance['student_id'],
-                defaults={'status': attendance['status'], 'absence_reason': attendance.get(
-                    'absence_reason')}
-            )
-        return Response({'status': 'attendance updated'})
-
-    @action(detail=False, methods=['get'], url_path='schedule')
-    def get_schedule(self, request):
-        start_of_week = timezone.now().date(
-        ) - timezone.timedelta(days=timezone.now().date().weekday())
-        end_of_week = start_of_week + timezone.timedelta(days=6)
-        meetings = self.get_queryset().filter(
-            start_time__date__range=[start_of_week, end_of_week])
-        serializer = self.get_serializer(meetings, many=True)
-        return Response(serializer.data)
-
-
-"""class UserCreateViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)"""
 
 # APIViews
 
@@ -450,4 +394,94 @@ class TeacherSubjectsView(APIView):
         group = get_object_or_404(StudentGroup, id=group_id, teacher=teacher)
         subjects = group.schoolsubject_set.all()
         serializer = SchoolSubjectSerializer(subjects, many=True)
+        return Response(serializer.data)
+
+
+class MeetingListCreateView(APIView):
+    """
+    GET - Zwraca listę wszystkich spotkań
+    POST - Tworzy nowe spotkanie
+    """
+    serializer_class = MeetingSerializer
+
+    def get(self, request):
+        past_meetings = Meeting.objects.all()
+        serializer = MeetingSerializer(past_meetings, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = MeetingSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# /meetings/{meeting_id}/ (GET, DELETE)
+class MeetingDetailView(APIView):
+    """
+    GET - Szczegóły spotkania
+    DELETE - Usuwa spotkanie
+    """
+    serializer_class = MeetingSerializer
+
+    def get(self, request, meeting_id):
+        meeting = get_object_or_404(Meeting, pk=meeting_id)
+        serializer = MeetingSerializer(meeting)
+        return Response(serializer.data)
+
+    def delete(self, request, meeting_id):
+        meeting = get_object_or_404(Meeting, pk=meeting_id)
+        meeting.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# /meetings/{meeting_id}/attendance (GET, POST, PUT)
+class MeetingAttendanceView(APIView):
+    """
+    POST - Tworzy listę obecności dla spotkania (bulk create)
+    PUT - Aktualizuje listę obecności dla spotkania (bulk update)
+    """
+    def get(self, request, meeting_id):
+        # Pobiera listę obecności dla spotkania
+        meeting = get_object_or_404(Meeting, pk=meeting_id)
+        attendances = Attendance.objects.filter(meeting=meeting)
+        serializer = AttendanceSerializer(attendances, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, meeting_id):
+        # Tworzy nową listę obecności dla spotkania
+        meeting = get_object_or_404(Meeting, pk=meeting_id)
+        
+        # Pobierz listę studentów z grupy przedmiotu
+        student_group = meeting.school_subject.student_group
+        valid_student_ids = student_group.students.values_list('user_id', flat=True)
+        
+        # Dodaj meeting_id do każdego elementu w request.data i sprawdź czy student jest w grupie
+        for item in request.data:
+            item['meeting'] = meeting_id
+            if item['student'] not in valid_student_ids:
+                return Response({'error': 'Student not in the valid student group'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = AttendanceSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# /meetings/schedule/ (GET)
+class MeetingScheduleView(APIView):
+    """
+    GET - Zwraca harmonogram spotkań na bieżący tydzień
+    """
+    serializer_class = MeetingSerializer
+
+    def get(self, request):
+        start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
+        end_of_week = start_of_week + timedelta(days=7)
+        meetings = Meeting.objects.filter(
+            teacher=request.user,
+            start_time__date__range=[start_of_week, end_of_week]
+        )
+        serializer = MeetingSerializer(meetings, many=True)
         return Response(serializer.data)

@@ -155,12 +155,9 @@ class GradeColumnDetailSerializer(serializers.ModelSerializer):
 
 
 class ScheduledMeetingSerializer(serializers.ModelSerializer):
-    duration = serializers.DurationField(default=timedelta(minutes=45))
-
     class Meta:
         model = ScheduledMeeting
-        fields = ['id', 'title', 'description', 'start_time',
-                  'duration', 'teacher', 'school_subject']
+        fields = ['id', 'title', 'description', 'start_time', 'teacher', 'school_subject']
 
 
 class ParentConsentSerializer(serializers.ModelSerializer):
@@ -177,12 +174,9 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
 
 
 class MeetingSerializer(serializers.ModelSerializer):
-    duration = serializers.DurationField(default=timedelta(minutes=45))
-
     class Meta:
         model = Meeting
-        fields = ['id', 'title', 'description', 'start_time',
-                  'duration', 'teacher', 'school_subject']
+        fields = ['id', 'title', 'description', 'start_time', 'teacher', 'school_subject']
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
@@ -190,6 +184,24 @@ class AttendanceSerializer(serializers.ModelSerializer):
         model = Attendance
         fields = ['id', 'student', 'status', 'absence_reason', 'meeting']
 
+class BulkAttendanceSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        attendance_mapping = {att.id: att for att in instance}
+        updated_attendances = []
+        for item in validated_data:
+            attendance = attendance_mapping.get(item['id'])
+            if attendance:
+                for attr, value in item.items():
+                    setattr(attendance, attr, value)
+                updated_attendances.append(attendance)
+        Attendance.objects.bulk_update(updated_attendances, ['status', 'absence_reason'])
+        return updated_attendances
+
+class AttendanceBulkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = '__all__'
+        list_serializer_class = BulkAttendanceSerializer
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
