@@ -147,7 +147,7 @@ class SchoolSubject(models.Model):
 class Grade(models.Model):
     value = models.ForeignKey(
         CategoryGradeValue, on_delete=models.SET_NULL, null=True)
-    timestamp = models.DateField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=timezone.now)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     grade_column = models.ForeignKey("GradeColumn", on_delete=models.CASCADE)
     count_to_avg = models.BooleanField(default=True)
