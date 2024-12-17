@@ -167,14 +167,23 @@ class GradeColumn(models.Model):
 
 
 class Attendance(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    status = models.ForeignKey(
-        CategoryAttendanceStatus, on_delete=models.SET_NULL, null=True)
-    meeting = models.ForeignKey("Meeting", on_delete=models.CASCADE)
-    absence_reason = models.TextField(blank=False, null=True)
+    STATUS_CHOICES = [
+        ('P', 'Present'),    # Obecny
+        ('A', 'Absent'),     # Nieobecny
+        ('L', 'Late'),       # Spóźniony
+        ('E', 'Excused'),    # Usprawiedliwiony
+    ]
+
+    student = models.ForeignKey('Student', on_delete=models.CASCADE, related_name='attendances')
+    meeting = models.ForeignKey('Meeting', on_delete=models.CASCADE, related_name='attendances')
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P')
+    absence_reason = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('meeting', 'student') 
 
     def __str__(self):
-        return f"{self.status} for meeting {self.meeting}"
+        return f"{self.student.user.username} - {self.status} at {self.meeting.title}"
 
 
 class ConsentTemplate(models.Model):

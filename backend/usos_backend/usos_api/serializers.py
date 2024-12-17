@@ -190,6 +190,24 @@ class AttendanceSerializer(serializers.ModelSerializer):
         model = Attendance
         fields = ['id', 'student', 'status', 'absence_reason', 'meeting']
 
+class BulkAttendanceSerializer(serializers.ListSerializer):
+    def update(self, instance, validated_data):
+        attendance_mapping = {att.id: att for att in instance}
+        updated_attendances = []
+        for item in validated_data:
+            attendance = attendance_mapping.get(item['id'])
+            if attendance:
+                for attr, value in item.items():
+                    setattr(attendance, attr, value)
+                updated_attendances.append(attendance)
+        Attendance.objects.bulk_update(updated_attendances, ['status', 'absence_reason'])
+        return updated_attendances
+
+class AttendanceBulkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = '__all__'
+        list_serializer_class = BulkAttendanceSerializer
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:

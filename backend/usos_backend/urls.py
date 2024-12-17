@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from usos_backend.usos_api.views import (
-    custom_login_view, custom_logout_view, CurrentUserView, UserInfoView,
+    MeetingAttendanceView, MeetingDetailView, MeetingListCreateView, MeetingScheduleView, custom_login_view, custom_logout_view, CurrentUserView, UserInfoView,
     StudentViewSet, TeacherViewSet, ParentViewSet, GradeViewSet,
     GradeColumnView, GradeListCreateView, GradeDetailView, ScheduleView, 
-    ConsentTemplateView, FeedView, MeetingViewSet, GradeColumnDetailView, SchoolSubjectViewSet,
+    ConsentTemplateView, FeedView, GradeColumnDetailView, SchoolSubjectViewSet,
     StudentGroupViewSet, ScheduledMeetingViewSet, AttendanceViewSet, 
     ConsentTemplateViewSet, ParentConsentViewSet, MessageViewSet, GradeColumnViewSet,
     StudentGroupsView, StudentSubjectsView, ParentChildrenView, TeacherGroupsView, TeacherSubjectsView, UserViewSet
@@ -17,7 +17,7 @@ router.register('teachers', TeacherViewSet, basename='teacher')
 router.register('parents', ParentViewSet, basename='parent')
 router.register('grades', GradeViewSet, basename='grade')
 router.register('users', UserViewSet, basename='user')
-router.register('meetings', MeetingViewSet, basename='meeting')
+
 router.register('subjects', SchoolSubjectViewSet, basename='subject')
 router.register('student-groups', StudentGroupViewSet, basename='studentgroup')
 router.register('scheduled-meetings', ScheduledMeetingViewSet, basename='scheduledmeeting')
@@ -48,7 +48,13 @@ urlpatterns = [
     path('grades/columns/<int:subject_id>/', GradeColumnView.as_view(), name='grade_columns'),
     path('grades/columns/<int:subject_id>/<int:column_id>/', GradeColumnDetailView.as_view(), name='grade_column_detail'),
     
-    path('meetings/schedule/', ScheduleView.as_view(), name='schedule'),
+    #path('meetings/schedule/', ScheduleView.as_view(), name='schedule'),
+
+    path('meetings/', MeetingListCreateView.as_view(), name='meeting-list-create'),
+    path('meetings/<int:meeting_id>/', MeetingDetailView.as_view(), name='meeting-detail'),
+    path('meetings/<int:meeting_id>/attendance/', MeetingAttendanceView.as_view(), name='meeting-attendance'),
+    path('meetings/schedule/', MeetingScheduleView.as_view(), name='meeting-schedule'),
+    
     path('econsent/templates/<int:template_consent_id>/', ConsentTemplateView.as_view(), name='consent_template_detail'),
     path('feed/<int:user_id>/', FeedView.as_view(), name='user_feed'),
 ]
