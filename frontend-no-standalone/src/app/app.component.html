@@ -24,10 +24,16 @@
               				<div class="header-logo">
                 				<span [routerLink]="'/main'" style="cursor: pointer;">USOS</span>	
               				</div>
-
-							<svg xmlns="http://www.w3.org/2000/svg" height="50px" viewBox="0 -960 960 960" width="50px" fill="#F5F5F5" (click)=mainLogout() style="cursor: pointer;">
-								<path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/>
-							</svg>
+							  
+							  <!-- logout -->
+							  	<button class="Btn" (click)=mainLogout()>
+									<div class="sign">
+										<svg xmlns="http://www.w3.org/2000/svg" height="50px" viewBox="0 -960 960 960" width="50px" fill="#F5F5F5" style="cursor: pointer;">
+										<path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/>
+										</svg>
+									</div>
+									<div class="text">Logout</div>
+								</button>
 
               				<div class="header-icon">
                					<svg xmlns="http://www.w3.org/2000/svg" height="50px" viewBox="0 -960 960 960" width="50px" fill="#F5F5F5">
