@@ -155,12 +155,9 @@ class GradeColumnDetailSerializer(serializers.ModelSerializer):
 
 
 class ScheduledMeetingSerializer(serializers.ModelSerializer):
-    duration = serializers.DurationField(default=timedelta(minutes=45))
-
     class Meta:
         model = ScheduledMeeting
-        fields = ['id', 'title', 'description', 'start_time',
-                  'duration', 'teacher', 'school_subject']
+        fields = ['id', 'title', 'description', 'start_time', 'teacher', 'school_subject']
 
 
 class ParentConsentSerializer(serializers.ModelSerializer):
@@ -177,12 +174,9 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
 
 
 class MeetingSerializer(serializers.ModelSerializer):
-    duration = serializers.DurationField(default=timedelta(minutes=45))
-
     class Meta:
         model = Meeting
-        fields = ['id', 'title', 'description', 'start_time',
-                  'duration', 'teacher', 'school_subject']
+        fields = ['id', 'title', 'description', 'start_time', 'teacher', 'school_subject']
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
