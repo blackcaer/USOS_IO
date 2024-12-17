@@ -399,13 +399,13 @@ class TeacherSubjectsView(APIView):
 
 class MeetingListCreateView(APIView):
     """
-    GET - Zwraca listę spotkań
+    GET - Zwraca listę wszystkich spotkań
     POST - Tworzy nowe spotkanie
     """
     serializer_class = MeetingSerializer
 
     def get(self, request):
-        past_meetings = Meeting.objects.filter(start_time__lt=timezone.now())
+        past_meetings = Meeting.objects.all()
         serializer = MeetingSerializer(past_meetings, many=True)
         return Response(serializer.data)
 
@@ -436,29 +436,38 @@ class MeetingDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# /meetings/{meeting_id}/attendance (GET, PUT)
+# /meetings/{meeting_id}/attendance (GET, POST, PUT)
 class MeetingAttendanceView(APIView):
     """
-    GET - Pobiera listę obecności dla spotkania
-    PUT - Aktualizuje listę obecności (bulk update)
+    POST - Tworzy listę obecności dla spotkania (bulk create)
+    PUT - Aktualizuje listę obecności dla spotkania (bulk update)
     """
-    serializer_class = AttendanceSerializer
-    
     def get(self, request, meeting_id):
+        # Pobiera listę obecności dla spotkania
         meeting = get_object_or_404(Meeting, pk=meeting_id)
         attendances = Attendance.objects.filter(meeting=meeting)
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data)
 
-    def put(self, request, meeting_id):
+    def post(self, request, meeting_id):
+        # Tworzy nową listę obecności dla spotkania
         meeting = get_object_or_404(Meeting, pk=meeting_id)
-        attendances = Attendance.objects.filter(meeting=meeting)
-        serializer = AttendanceBulkSerializer(instance=attendances, data=request.data, many=True)
+        
+        # Pobierz listę studentów z grupy przedmiotu
+        student_group = meeting.school_subject.student_group
+        valid_student_ids = student_group.students.values_list('user_id', flat=True)
+        
+        # Dodaj meeting_id do każdego elementu w request.data i sprawdź czy student jest w grupie
+        for item in request.data:
+            item['meeting'] = meeting_id
+            if item['student'] not in valid_student_ids:
+                return Response({'error': 'Student not in the valid student group'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer = AttendanceSerializer(data=request.data, many=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 # /meetings/schedule/ (GET)
 class MeetingScheduleView(APIView):
