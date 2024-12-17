@@ -214,18 +214,57 @@ class ParentConsent(models.Model):
     def __str__(self):
         return f"Consent by {self.parent_user} for {self.child_user}"
 
+    
 
 class ScheduledMeeting(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, default="")
-    start_time = models.DateTimeField()
-    teacher = models.ForeignKey(
-        'Teacher', on_delete=models.CASCADE, related_name='scheduled_meetings')
-    school_subject = models.ForeignKey(
-        'SchoolSubject', on_delete=models.CASCADE)
+    DAYS_OF_WEEK = [
+        (1, "Poniedziałek"),
+        (2, "Wtorek"),
+        (3, "Środa"),
+        (4, "Czwartek"),
+        (5, "Piątek")
+    ]
+    LESSON_SLOTS = [
+    (1, "08:00 - 08:45"),
+    (2, "08:55 - 09:40"),
+    (3, "09:50 - 10:35"),
+    (4, "10:45 - 11:30"),
+    (5, "11:40 - 12:25"),
+    (6, "12:45 - 13:30"),
+    (7, "13:40 - 14:25"),
+    (8, "14:35 - 15:20")
+    ]
 
+    PLACES = [
+    (10, "Sala 10"),
+    (11, "Sala 11"),
+    (12, "Sala 12"),
+    (13, "Sala 13"),
+    (14, "Sala 14"),
+    (15, "Sala 15"),
+    (16, "Sala 16"),
+    (17, "Sala 17"),
+    (18, "Sala 18"),
+    (19, "Sala 19"),
+    (20, "Sala 20")
+]
+
+    description = models.TextField(blank=True, default="")
+    day_of_week = models.IntegerField(choices=DAYS_OF_WEEK)
+    slot = models.IntegerField(choices=LESSON_SLOTS)  # "slots" for lessons
+    teacher = models.ForeignKey(
+        'Teacher', on_delete=models.CASCADE, related_name='scheduled_meetings'
+    )
+    school_subject = models.ForeignKey(
+        'SchoolSubject', on_delete=models.CASCADE
+    )
+    place = models.IntegerField(choices=PLACES)
+    
+    class Meta:
+        unique_together = [['day_of_week', 'slot', 'school_subject'],['day_of_week', 'slot', 'teacher'],['day_of_week', 'slot', 'place']]
+        
     def __str__(self):
-        return self.title
+        return f"{self.school_subject.subject_name} (Day: {self.day_of_week}, Slot: {self.slot} Place: {self.place})"
 
 
 class Meeting(models.Model):

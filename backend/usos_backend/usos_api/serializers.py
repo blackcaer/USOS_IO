@@ -155,10 +155,12 @@ class GradeColumnDetailSerializer(serializers.ModelSerializer):
 
 
 class ScheduledMeetingSerializer(serializers.ModelSerializer):
+    teacher = TeacherSerializer()
+    school_subject = SchoolSubjectSerializer()
+
     class Meta:
         model = ScheduledMeeting
-        fields = ['id', 'title', 'description', 'start_time', 'teacher', 'school_subject']
-
+        fields = ['id', 'description', 'day_of_week', 'slot', 'teacher', 'school_subject', 'place']
 
 class ParentConsentSerializer(serializers.ModelSerializer):
     class Meta:
