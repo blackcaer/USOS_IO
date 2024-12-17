@@ -17,11 +17,19 @@ lastGrades = [
   { name: 'Matematyka', grade: 1 },
   { name: 'Chemia', grade: 2 }
 ];
+hours = [
+  "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
+];
 
 constructor(private http: HttpClient,
             private userService: UserService
 ) {
   this.currentUserId = this.userService.getUserIdAsInt();
+
+  this.events = this.events.map(event => ({
+    ...event,
+    ...this.calculateEventStyles(event)
+  }));
 }
 
   ngOnInit() {
@@ -61,10 +69,24 @@ constructor(private http: HttpClient,
     }
   }
 
-  hours = [
-    "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
-  ];
+  calculateEventStyles(event: any) {
+    const timeToMinutes = (time: string): number => {
+      const [hours, minutes] = time.split(":").map(Number);
+      return hours * 60 + minutes;
+    };
   
+    const coef = 0.87;
+    const startOfDay = timeToMinutes(this.hours[0]);
+    const startMinutes = (timeToMinutes(event.start) - startOfDay);
+    const endMinutes = (timeToMinutes(event.end) - startOfDay);
+  
+    const top = `${coef * startMinutes}px`;
+    const height = `${0.94 * (endMinutes - startMinutes)}px`;
+  
+    return { top, height };
+ 
+  }; 
+
   events = [
     {
       title: "Język angielski",
@@ -103,13 +125,10 @@ constructor(private http: HttpClient,
       time: "13:25 - 14:10",
       start: "13:25",
       end: "14:10",
-      top: "505px",
+      top: "305px",
       height: "45px"
     }
-  ];
-
-
-  
+  ];  
 }
 
 

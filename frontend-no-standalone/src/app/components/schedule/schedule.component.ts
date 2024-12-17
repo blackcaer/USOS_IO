@@ -9,7 +9,7 @@ export class ScheduleComponent {
   hours = [
     "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
   ];
-  
+
   events = [
     {
       title: "Język angielski",
@@ -48,8 +48,36 @@ export class ScheduleComponent {
       time: "13:25 - 14:10",
       start: "13:25",
       end: "14:10",
-      top: "505px",
+      top: "305px",
       height: "45px"
     }
   ];
+
+  ngOnInit() {
+    this.events = this.events.map(event => ({
+      ...event,
+      ...this.calculateEventStyles(event)
+    }));
+  }
+
+  calculateEventStyles = (event: any) => {
+    const timeToMinutes = (time: string): number => {
+      const [hours, minutes] = time.split(":").map(Number);
+      return hours * 60 + minutes;
+    };
+  
+    const coef = 1.03;
+    const startOfDay = timeToMinutes(this.hours[0]);
+    const startMinutes = (timeToMinutes(event.start) - startOfDay);
+    const endMinutes = coef * (timeToMinutes(event.end) - startOfDay);
+  
+    const top = `${startMinutes}px`;
+    const height = `${endMinutes - startMinutes}px`;
+  
+    return { top, height };
+ 
+  }; 
+
+
+  
 }
