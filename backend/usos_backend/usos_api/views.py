@@ -440,24 +440,21 @@ class MeetingDetailView(APIView):
 class MeetingAttendanceView(APIView):
     """
     POST - Tworzy listę obecności dla spotkania (bulk create)
-    PUT - Aktualizuje listę obecności dla spotkania (bulk update)
+    np. [{"student": 1, "status": "P"}, {"student": 2, "status": "A"}]
+    Ważne żeby studenci byli z grupy która faktycznie ma te zajęcia, inaczej error "Student not in the valid student group"
     """
     def get(self, request, meeting_id):
-        # Pobiera listę obecności dla spotkania
         meeting = get_object_or_404(Meeting, pk=meeting_id)
         attendances = Attendance.objects.filter(meeting=meeting)
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data)
 
     def post(self, request, meeting_id):
-        # Tworzy nową listę obecności dla spotkania
         meeting = get_object_or_404(Meeting, pk=meeting_id)
         
-        # Pobierz listę studentów z grupy przedmiotu
         student_group = meeting.school_subject.student_group
         valid_student_ids = student_group.students.values_list('user_id', flat=True)
         
-        # Dodaj meeting_id do każdego elementu w request.data i sprawdź czy student jest w grupie
         for item in request.data:
             item['meeting'] = meeting_id
             if item['student'] not in valid_student_ids:
