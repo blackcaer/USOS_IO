@@ -11,14 +11,15 @@ import { GradesComponent } from './components/grades/grades.component';
 import { ScheduleComponent } from './components/schedule/schedule.component';
 import { MainBlocksComponent } from './components/main-blocks/main-blocks.component';
 import { RouterModule, Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
-  {path: 'statistics', component: StatisticsComponent},
-  {path: 'grades', component: GradesComponent},
-  {path: 'schedule', component: ScheduleComponent},
-  {path: 'main', component: MainBlocksComponent},
+  {path: 'statistics', component: StatisticsComponent, canActivate: [authGuard]},
+  {path: 'grades', component: GradesComponent, canActivate: [authGuard]},
+  {path: 'schedule', component: ScheduleComponent, canActivate: [authGuard]},
+  {path: 'main', component: MainBlocksComponent, canActivate: [authGuard]},
   {path: '', redirectTo: 'main', pathMatch: 'full'},
   {path: '**', redirectTo: 'main', pathMatch: 'full'}
 ];
