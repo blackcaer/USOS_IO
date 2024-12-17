@@ -188,12 +188,15 @@ class ScheduledMeetingEndpointTests(APITestCase):
         self.user = User.objects.create_user(
             username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
         self.teacher = Teacher.objects.create(user=self.user)
+        self.student_group = StudentGroup.objects.create(name="Group 1", level=1)
+        self.school_subject = SchoolSubject.objects.create(subject_name="Math", student_group=self.student_group)
         self.scheduled_meeting = ScheduledMeeting.objects.create(
-            title="Test Meeting",
+            description="Test Description",
+            day_of_week=1,  # Poniedziałek
+            slot=1,  # 08:00 - 08:45
             teacher=self.teacher,
-            school_subject=SchoolSubject.objects.create(
-                subject_name="Math", student_group=StudentGroup.objects.create(name="Group 1", level=1)),
-            start_time=timezone.now() + timedelta(days=1)
+            school_subject=self.school_subject,
+            place=10  # Sala 10
         )
         self.client.login(username='teacher_test', password='testpass')
 
@@ -203,10 +206,14 @@ class ScheduledMeetingEndpointTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_scheduled_meeting_detail_endpoint(self):
-        url = reverse('scheduledmeeting-detail',
-                      args=[self.scheduled_meeting.id])
+        url = reverse('scheduledmeeting-detail', args=[self.scheduled_meeting.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['title'], self.scheduled_meeting.title)
+        self.assertEqual(response.data['description'], self.scheduled_meeting.description)
+        self.assertEqual(response.data['day_of_week'], self.scheduled_meeting.day_of_week)
+        self.assertEqual(response.data['slot'], self.scheduled_meeting.slot)
+        self.assertEqual(response.data['place'], self.scheduled_meeting.place)
 
 
 class AttendanceEndpointTests(APITestCase):
