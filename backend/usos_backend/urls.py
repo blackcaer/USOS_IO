@@ -48,12 +48,10 @@ urlpatterns = [
     path('grades/columns/<int:subject_id>/', GradeColumnView.as_view(), name='grade_columns'),
     path('grades/columns/<int:subject_id>/<int:column_id>/', GradeColumnDetailView.as_view(), name='grade_column_detail'),
     
-    #path('meetings/schedule/', ScheduleView.as_view(), name='schedule'),
-
     path('meetings/', MeetingListCreateView.as_view(), name='meeting-list-create'),
     path('meetings/<int:meeting_id>/', MeetingDetailView.as_view(), name='meeting-detail'),
-    path('meetings/<int:meeting_id>/attendance/', MeetingAttendanceView.as_view(), name='meeting-attendance'),
     path('meetings/schedule/', MeetingScheduleView.as_view(), name='meeting-schedule'),
+    path('meetings/<int:meeting_id>/attendance/', MeetingAttendanceView.as_view(), name='meeting-attendance'),
     
     path('econsent/templates/<int:template_consent_id>/', ConsentTemplateView.as_view(), name='consent_template_detail'),
     path('feed/<int:user_id>/', FeedView.as_view(), name='user_feed'),
