@@ -91,10 +91,10 @@ class Student(models.Model):
         User, on_delete=models.CASCADE, primary_key=True)
     parents = models.ManyToManyField(
         "Parent", related_name="children", blank=True)
-    
+
     class Meta:
         ordering = ['user']
-        
+
     def __str__(self):
         return f"Student: {self.user.username}"
 
@@ -105,7 +105,7 @@ class Teacher(models.Model):
 
     class Meta:
         ordering = ['user']
-        
+
     def __str__(self):
         return f"Teacher: {self.user.username}"
 
@@ -116,7 +116,7 @@ class Parent(models.Model):
 
     class Meta:
         ordering = ['user']
-        
+
     def __str__(self):
         return f"Parent: {self.user.username}"
 
@@ -124,11 +124,11 @@ class Parent(models.Model):
 class StudentGroup(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
-    #category = models.ForeignKey(
-    #    CategoryStudentGroup, on_delete=models.SET_NULL, null=True)
     level = models.IntegerField()
     section = models.CharField(max_length=50, blank=True, null=True)
     students = models.ManyToManyField(Student, related_name="student_groups")
+
+    unique_together = [['section', 'level', 'name']]
 
     def __str__(self):
         return self.name
@@ -139,6 +139,8 @@ class SchoolSubject(models.Model):
     description = models.TextField(blank=True, default="")
     is_mandatory = models.BooleanField(default=False)
     student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
+
+    unique_together = [['student_group', 'subject_name']]
 
     def __str__(self):
         return f"{self.subject_name} for {self.student_group}"
@@ -151,6 +153,8 @@ class Grade(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     grade_column = models.ForeignKey("GradeColumn", on_delete=models.CASCADE)
     count_to_avg = models.BooleanField(default=True)
+
+    unique_together = [['student', 'grade_column']]
 
     def __str__(self):
         return f"{self.value} for {self.student}"
@@ -174,13 +178,16 @@ class Attendance(models.Model):
         ('E', 'Excused'),    # Usprawiedliwiony
     ]
 
-    student = models.ForeignKey('Student', on_delete=models.CASCADE, related_name='attendances')
-    meeting = models.ForeignKey('Meeting', on_delete=models.CASCADE, related_name='attendances')
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P')
+    student = models.ForeignKey(
+        'Student', on_delete=models.CASCADE, related_name='attendances')
+    meeting = models.ForeignKey(
+        'Meeting', on_delete=models.CASCADE, related_name='attendances')
+    status = models.CharField(
+        max_length=1, choices=STATUS_CHOICES, default='P')
     absence_reason = models.TextField(blank=True, null=True)
 
     class Meta:
-        unique_together = ('meeting', 'student') 
+        unique_together = ('meeting', 'student')
 
     def __str__(self):
         return f"{self.student.user.username} - {self.status} at {self.meeting.title}"
@@ -214,7 +221,6 @@ class ParentConsent(models.Model):
     def __str__(self):
         return f"Consent by {self.parent_user} for {self.child_user}"
 
-    
 
 class ScheduledMeeting(models.Model):
     DAYS_OF_WEEK = [
@@ -225,29 +231,29 @@ class ScheduledMeeting(models.Model):
         (5, "Piątek")
     ]
     LESSON_SLOTS = [
-    (1, "08:00 - 08:45"),
-    (2, "08:55 - 09:40"),
-    (3, "09:50 - 10:35"),
-    (4, "10:45 - 11:30"),
-    (5, "11:40 - 12:25"),
-    (6, "12:45 - 13:30"),
-    (7, "13:40 - 14:25"),
-    (8, "14:35 - 15:20")
+        (1, "08:00 - 08:45"),
+        (2, "08:55 - 09:40"),
+        (3, "09:50 - 10:35"),
+        (4, "10:45 - 11:30"),
+        (5, "11:40 - 12:25"),
+        (6, "12:45 - 13:30"),
+        (7, "13:40 - 14:25"),
+        (8, "14:35 - 15:20")
     ]
 
     PLACES = [
-    (10, "Sala 10"),
-    (11, "Sala 11"),
-    (12, "Sala 12"),
-    (13, "Sala 13"),
-    (14, "Sala 14"),
-    (15, "Sala 15"),
-    (16, "Sala 16"),
-    (17, "Sala 17"),
-    (18, "Sala 18"),
-    (19, "Sala 19"),
-    (20, "Sala 20")
-]
+        (10, "Sala 10"),
+        (11, "Sala 11"),
+        (12, "Sala 12"),
+        (13, "Sala 13"),
+        (14, "Sala 14"),
+        (15, "Sala 15"),
+        (16, "Sala 16"),
+        (17, "Sala 17"),
+        (18, "Sala 18"),
+        (19, "Sala 19"),
+        (20, "Sala 20")
+    ]
 
     description = models.TextField(blank=True, default="")
     day_of_week = models.IntegerField(choices=DAYS_OF_WEEK)
@@ -259,10 +265,11 @@ class ScheduledMeeting(models.Model):
         'SchoolSubject', on_delete=models.CASCADE
     )
     place = models.IntegerField(choices=PLACES)
-    
+
     class Meta:
-        unique_together = [['day_of_week', 'slot', 'school_subject'],['day_of_week', 'slot', 'teacher'],['day_of_week', 'slot', 'place']]
-        
+        unique_together = [['day_of_week', 'slot', 'school_subject'], [
+            'day_of_week', 'slot', 'teacher'], ['day_of_week', 'slot', 'place']]
+
     def __str__(self):
         return f"{self.school_subject.subject_name} (Day: {self.day_of_week}, Slot: {self.slot} Place: {self.place})"
 
