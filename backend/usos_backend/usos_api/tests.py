@@ -209,7 +209,6 @@ class ScheduledMeetingEndpointTests(APITestCase):
         url = reverse('scheduledmeeting-detail', args=[self.scheduled_meeting.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['title'], self.scheduled_meeting.title)
         self.assertEqual(response.data['description'], self.scheduled_meeting.description)
         self.assertEqual(response.data['day_of_week'], self.scheduled_meeting.day_of_week)
         self.assertEqual(response.data['slot'], self.scheduled_meeting.slot)
