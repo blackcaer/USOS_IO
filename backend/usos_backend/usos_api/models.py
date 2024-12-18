@@ -255,14 +255,13 @@ class ScheduledMeeting(models.Model):
         (20, "Sala 20")
     ]
 
-    description = models.TextField(blank=True, default="")
     day_of_week = models.IntegerField(choices=DAYS_OF_WEEK)
     slot = models.IntegerField(choices=LESSON_SLOTS)  # "slots" for lessons
     teacher = models.ForeignKey(
         'Teacher', on_delete=models.CASCADE, related_name='scheduled_meetings'
     )
     school_subject = models.ForeignKey(
-        'SchoolSubject', on_delete=models.CASCADE
+        SchoolSubject, on_delete=models.CASCADE
     )
     place = models.IntegerField(choices=PLACES)
 
@@ -271,7 +270,7 @@ class ScheduledMeeting(models.Model):
             'day_of_week', 'slot', 'teacher'], ['day_of_week', 'slot', 'place']]
 
     def __str__(self):
-        return f"{self.school_subject.subject_name} (Day: {self.day_of_week}, Slot: {self.slot} Place: {self.place})"
+        return f"{self.school_subject.subject_name} ({self.school_subject.student_group.name} {self.teacher.user.username} Day: {self.day_of_week}, Slot: {self.slot} Place: {self.place})"
 
 
 class Meeting(models.Model):

@@ -162,7 +162,7 @@ class ScheduledMeetingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ScheduledMeeting
-        fields = ['id', 'description', 'day_of_week', 'slot', 'teacher', 'school_subject', 'place']
+        fields = ['id', 'day_of_week', 'slot', 'teacher', 'school_subject', 'place']
 
 class ParentConsentSerializer(serializers.ModelSerializer):
     class Meta:
