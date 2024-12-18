@@ -20,7 +20,7 @@ router.register('users', UserViewSet, basename='user')
 
 router.register('subjects', SchoolSubjectViewSet, basename='subject')
 router.register('student-groups', StudentGroupViewSet, basename='studentgroup')
-router.register('scheduled-meetings', ScheduledMeetingViewSet, basename='scheduledmeeting')
+#router.register('scheduled-meetings', ScheduledMeetingViewSet, basename='scheduledmeeting')
 router.register('attendances', AttendanceViewSet, basename='attendance')
 router.register('consent-templates', ConsentTemplateViewSet, basename='consenttemplate')
 router.register('parent-consents', ParentConsentViewSet, basename='parentconsent')

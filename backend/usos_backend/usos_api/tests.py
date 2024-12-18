@@ -182,14 +182,32 @@ class GradeEndpointTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class ScheduledMeetingEndpointTests(APITestCase):
+from .utils import get_scheduled_meetings
+
+class ScheduledMeetingEndpointTests(TestCase):
 
     def setUp(self):
-        self.user = User.objects.create_user(
-            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
-        self.teacher = Teacher.objects.create(user=self.user)
+        self.client = APIClient()
+
+        # Create users
+        self.teacher_user = User.objects.create_user(
+            username="teacher_test", role="teacher", email="teacher@example.com", password="password")
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+
+        self.student_user = User.objects.create_user(
+            username="student_test", role="student", email="student@example.com", password="password")
+        self.student = Student.objects.create(user=self.student_user)
+
+        self.parent_user = User.objects.create_user(
+            username="parent_test", role="parent", email="parent@example.com", password="password")
+        self.parent = Parent.objects.create(user=self.parent_user)
+        self.parent.children.add(self.student)
+
         self.student_group = StudentGroup.objects.create(name="Group 1", level=1)
+        self.student_group.students.add(self.student)
+
         self.school_subject = SchoolSubject.objects.create(subject_name="Math", student_group=self.student_group)
+
         self.scheduled_meeting = ScheduledMeeting.objects.create(
             day_of_week=1,  # Poniedziałek
             slot=1,  # 08:00 - 08:45
@@ -197,22 +215,76 @@ class ScheduledMeetingEndpointTests(APITestCase):
             school_subject=self.school_subject,
             place=10  # Sala 10
         )
-        self.client.login(username='teacher_test', password='testpass')
 
-    def test_scheduled_meeting_list_endpoint(self):
-        url = reverse('scheduledmeeting-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Create additional users and groups
+        self.other_teacher_user = User.objects.create_user(
+            username="other_teacher_test", role="teacher", email="other_teacher@example.com", password="password")
+        self.other_teacher = Teacher.objects.create(user=self.other_teacher_user)
+
+        self.other_student_user = User.objects.create_user(
+            username="other_student_test", role="student", email="other_student@example.com", password="password")
+        self.other_student = Student.objects.create(user=self.other_student_user)
+
+        self.other_parent_user = User.objects.create_user(
+            username="other_parent_test", role="parent", email="other_parent@example.com", password="password")
+        
+        self.other_parent = Parent.objects.create(user=self.other_parent_user)
+        self.other_parent.children.add(self.other_student)
+
+        self.other_student_group = StudentGroup.objects.create(name="Group 2", level=2)
+        self.other_student_group.students.add(self.other_student)
+
+        self.other_school_subject = SchoolSubject.objects.create(subject_name="Science", student_group=self.other_student_group)
+
+        self.other_scheduled_meeting = ScheduledMeeting.objects.create(
+            day_of_week=2,  # Wtorek
+            slot=2,  # 08:55 - 09:40
+            teacher=self.other_teacher,
+            school_subject=self.other_school_subject,
+            place=11  # Sala 11
+        )
+
+        self.client.login(username='teacher_test', password='password')
 
     def test_scheduled_meeting_detail_endpoint(self):
-        url = reverse('scheduledmeeting-detail', args=[self.scheduled_meeting.id])
+        url = reverse('meeting-schedule')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['day_of_week'], self.scheduled_meeting.day_of_week)
-        self.assertEqual(response.data['slot'], self.scheduled_meeting.slot)
-        self.assertEqual(response.data['place'], self.scheduled_meeting.place)
+        self.assertEqual(response.data[0]['day_of_week'], self.scheduled_meeting.day_of_week)
+        self.assertEqual(response.data[0]['slot'], self.scheduled_meeting.slot)
+        self.assertEqual(response.data[0]['place'], self.scheduled_meeting.place)
 
+    def test_get_scheduled_meetings_for_student(self):
+        meetings = get_scheduled_meetings(self.student_user, None, None)
+        self.assertIn(self.scheduled_meeting, meetings)
+        self.assertNotIn(self.other_scheduled_meeting, meetings)
 
+    def test_get_scheduled_meetings_for_parent(self):
+        meetings = get_scheduled_meetings(self.parent_user, None, None)
+        self.assertIn(self.scheduled_meeting, meetings)
+        self.assertNotIn(self.other_scheduled_meeting, meetings)
+
+    def test_get_scheduled_meetings_for_teacher(self):
+        meetings = get_scheduled_meetings(self.teacher_user, None, None)
+        self.assertIn(self.scheduled_meeting, meetings)
+        self.assertNotIn(self.other_scheduled_meeting, meetings)
+
+    def test_get_scheduled_meetings_for_other_student(self):
+        meetings = get_scheduled_meetings(self.other_student_user, None, None)
+        self.assertIn(self.other_scheduled_meeting, meetings)
+        self.assertNotIn(self.scheduled_meeting, meetings)
+
+    def test_get_scheduled_meetings_for_other_parent(self):
+        meetings = get_scheduled_meetings(self.other_parent_user, None, None)
+        self.assertIn(self.other_scheduled_meeting, meetings)
+        self.assertNotIn(self.scheduled_meeting, meetings)
+
+    def test_get_scheduled_meetings_for_other_teacher(self):
+        meetings = get_scheduled_meetings(self.other_teacher_user, None, None)
+        self.assertIn(self.other_scheduled_meeting, meetings)
+        self.assertNotIn(self.scheduled_meeting, meetings)
+        
+        
 class AttendanceEndpointTests(APITestCase):
 
     def setUp(self):
