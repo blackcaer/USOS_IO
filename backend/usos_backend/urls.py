@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from usos_backend.usos_api.views import (
-    MeetingAttendanceView, MeetingDetailView, MeetingListCreateView, MeetingScheduleView, custom_login_view, custom_logout_view, CurrentUserView, UserInfoView,
+    MeetingAttendanceView, MeetingDetailView, MeetingListCreateView, ScheduledMeetingView, custom_login_view, custom_logout_view, CurrentUserView, UserInfoView,
     StudentViewSet, TeacherViewSet, ParentViewSet, GradeViewSet,
     GradeColumnView, GradeListCreateView, GradeDetailView, ScheduleView, 
     ConsentTemplateView, FeedView, GradeColumnDetailView, SchoolSubjectViewSet,
@@ -50,7 +50,7 @@ urlpatterns = [
     
     path('meetings/', MeetingListCreateView.as_view(), name='meeting-list-create'),
     path('meetings/<int:meeting_id>/', MeetingDetailView.as_view(), name='meeting-detail'),
-    path('meetings/schedule/', MeetingScheduleView.as_view(), name='meeting-schedule'),
+    path('meetings/schedule/', ScheduledMeetingView.as_view(), name='meeting-schedule'),
     path('meetings/<int:meeting_id>/attendance/', MeetingAttendanceView.as_view(), name='meeting-attendance'),
     
     path('econsent/templates/<int:template_consent_id>/', ConsentTemplateView.as_view(), name='consent_template_detail'),

@@ -1,5 +1,6 @@
-# from django.shortcuts import render
 from datetime import timedelta
+
+from backend.usos_backend.usos_api.utils import get_scheduled_meetings
 from .models import Student, Teacher, Parent
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework.response import Response
@@ -18,9 +19,6 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 from django.http import JsonResponse, HttpResponse
-import json
-
-from usos_backend.usos_api.serializers import GroupSerializer
 
 from rest_framework import viewsets, generics
 from rest_framework.permissions import IsAuthenticated
@@ -90,8 +88,6 @@ class GradeViewSet(ModelViewSet):
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
     permission_classes = [IsAuthenticated]
-    
-    
 
 
 # APIViews
@@ -116,12 +112,14 @@ def custom_login_view(request):
         form = AuthenticationForm()
     return render(request, 'registration/login.html', {'form': form})
 
+
 @csrf_exempt
 def custom_logout_view(request):
     if request.method == 'POST':
         logout(request)
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'method not allowed'}, status=405)
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CurrentUserView(APIView):
@@ -132,14 +130,6 @@ class CurrentUserView(APIView):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
-    def put(self, request):
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
@@ -148,15 +138,6 @@ class UserInfoView(APIView):
         user = get_object_or_404(User, id=user_id)
         serializer = UserSerializer(user)
         return Response(serializer.data)
-
-    """def put(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
-        serializer = UserSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)"""
-
 
 class GradeListCreateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -443,6 +424,7 @@ class MeetingAttendanceView(APIView):
     np. [{"student": 1, "status": "P"}, {"student": 2, "status": "A"}]
     Ważne żeby studenci byli z grupy która faktycznie ma te zajęcia, inaczej error "Student not in the valid student group"
     """
+
     def get(self, request, meeting_id):
         meeting = get_object_or_404(Meeting, pk=meeting_id)
         attendances = Attendance.objects.filter(meeting=meeting)
@@ -451,15 +433,16 @@ class MeetingAttendanceView(APIView):
 
     def post(self, request, meeting_id):
         meeting = get_object_or_404(Meeting, pk=meeting_id)
-        
+
         student_group = meeting.school_subject.student_group
-        valid_student_ids = student_group.students.values_list('user_id', flat=True)
-        
+        valid_student_ids = student_group.students.values_list(
+            'user_id', flat=True)
+
         for item in request.data:
             item['meeting'] = meeting_id
             if item['student'] not in valid_student_ids:
                 return Response({'error': 'Student not in the valid student group'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         serializer = AttendanceSerializer(data=request.data, many=True)
         if serializer.is_valid():
             serializer.save()
@@ -467,18 +450,20 @@ class MeetingAttendanceView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # /meetings/schedule/ (GET)
-class MeetingScheduleView(APIView):
+
+
+class ScheduledMeetingView(APIView):
     """
     GET - Zwraca harmonogram spotkań na bieżący tydzień
     """
-    serializer_class = MeetingSerializer
+    serializer_class = ScheduledMeetingSerializer
 
     def get(self, request):
         start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
         end_of_week = start_of_week + timedelta(days=7)
-        meetings = Meeting.objects.filter(
-            teacher=request.user,
-            start_time__date__range=[start_of_week, end_of_week]
-        )
-        serializer = MeetingSerializer(meetings, many=True)
+
+        scheduled_meetings = get_scheduled_meetings(
+            request.user, start_of_week, end_of_week)
+
+        serializer = ScheduledMeetingSerializer(scheduled_meetings, many=True)
         return Response(serializer.data)
