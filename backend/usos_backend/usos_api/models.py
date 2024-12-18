@@ -88,7 +88,7 @@ class User(AbstractUser):
 
 class Student(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True)
+        User, on_delete=models.CASCADE, primary_key=True,related_name="related_student")
     parents = models.ManyToManyField(
         "Parent", related_name="children", blank=True)
 
@@ -101,7 +101,7 @@ class Student(models.Model):
 
 class Teacher(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True)
+        User, on_delete=models.CASCADE, primary_key=True,related_name="related_teacher")
 
     class Meta:
         ordering = ['user']
@@ -112,7 +112,7 @@ class Teacher(models.Model):
 
 class Parent(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True)
+        User, on_delete=models.CASCADE, primary_key=True,related_name="related_parent")
 
     class Meta:
         ordering = ['user']
