@@ -1,4 +1,4 @@
-from backend.usos_backend.usos_api.models import ScheduledMeeting
+from usos_backend.usos_api.models import ScheduledMeeting
 
 
 def get_scheduled_meetings(user, start_of_week, end_of_week):

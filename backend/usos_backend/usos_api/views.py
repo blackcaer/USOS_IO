@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from backend.usos_backend.usos_api.utils import get_scheduled_meetings
+from usos_backend.usos_api.utils import get_scheduled_meetings
 from .models import Student, Teacher, Parent
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework.response import Response
