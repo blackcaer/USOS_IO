@@ -468,3 +468,116 @@ class GradeColumnEndpointTests(APITestCase):
         url = reverse('gradecolumn-detail', args=[self.grade_column.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class UserViewSetTests(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.admin_user = User.objects.create_superuser(
+            username='admin', password='adminpass', email='admin@admin.com')
+        self.client.login(username='admin', password='adminpass')
+
+    def test_create_user(self):
+        url = reverse('user-list')
+        data = {
+            'username': 'newuser',
+            'password': 'newpass',
+            'email': 'newuser@example.com',
+            'role': 'student'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(User.objects.count(), 2)
+
+    def test_update_user(self):
+        user = User.objects.create_user(
+            username='testuser', password='testpass', email='testuser@example.com', role='student')
+        url = reverse('user-detail', args=[user.id])
+        data = {
+            'first_name': 'UpdatedName'
+        }
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertEqual(user.first_name, 'UpdatedName')
+
+
+class GradeListCreateViewTests(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.student_user = User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl")
+        self.student = Student.objects.create(user=self.student_user)
+        self.teacher_user = User.objects.create_user(
+            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+        self.student_group = StudentGroup.objects.create(name="Group 1", level=1)
+        self.student_group.students.add(self.student)
+        self.school_subject = SchoolSubject.objects.create(subject_name="Math", student_group=self.student_group)
+        self.grade_column = GradeColumn.objects.create(title="Test Column", school_subject=self.school_subject)
+        self.grade_value = CategoryGradeValue.objects.create(code="A", name="Excellent")
+        self.client.login(username='teacher_test', password='testpass')
+
+    def test_create_grade(self):
+        url = reverse('user_subject_grades', args=[self.student.user_id, self.school_subject.id])
+        data = {
+            'value': self.grade_value.code,
+            'grade_column': self.grade_column.id,
+            'count_to_avg': True
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Grade.objects.count(), 1)
+
+    def test_get_grades(self):
+        Grade.objects.create(student=self.student, grade_column=self.grade_column, value=self.grade_value)
+        url = reverse('user_subject_grades', args=[self.student.user_id, self.school_subject.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+
+class ScheduledMeetingViewTests(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.teacher_user = User.objects.create_user(
+            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+        self.student_user = User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl")
+        self.student = Student.objects.create(user=self.student_user)
+        self.student_group = StudentGroup.objects.create(name="Group 1", level=1)
+        self.student_group.students.add(self.student)
+        self.school_subject = SchoolSubject.objects.create(subject_name="Math", student_group=self.student_group)
+        self.scheduled_meeting = ScheduledMeeting.objects.create(
+            day_of_week=1, slot=1, teacher=self.teacher, school_subject=self.school_subject, place=10)
+        self.client.login(username='teacher_test', password='testpass')
+
+    def test_get_scheduled_meetings(self):
+        url = reverse('meeting-schedule')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+
+class ParentChildrenViewTests(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.parent_user = User.objects.create_user(
+            username='parent_test', password='testpass', role='parent', email="parent@parent.pl")
+        self.parent = Parent.objects.create(user=self.parent_user)
+        self.student_user = User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl")
+        self.student = Student.objects.create(user=self.student_user)
+        self.parent.children.add(self.student)
+        self.client.login(username='parent_test', password='testpass')
+
+    def test_get_children(self):
+        url = reverse('parent_children', args=[self.parent.user_id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)

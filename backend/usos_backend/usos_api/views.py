@@ -157,7 +157,7 @@ class GradeListCreateView(APIView):
         subject = get_object_or_404(SchoolSubject, id=subject_id)
 
         data = request.data.copy()
-        data['student'] = student.user_id  # Użyj user_id zamiast id
+        data['student'] = student.user_id
         serializer = GradeSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
