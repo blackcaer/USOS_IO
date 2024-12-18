@@ -191,7 +191,6 @@ class ScheduledMeetingEndpointTests(APITestCase):
         self.student_group = StudentGroup.objects.create(name="Group 1", level=1)
         self.school_subject = SchoolSubject.objects.create(subject_name="Math", student_group=self.student_group)
         self.scheduled_meeting = ScheduledMeeting.objects.create(
-            description="Test Description",
             day_of_week=1,  # Poniedziałek
             slot=1,  # 08:00 - 08:45
             teacher=self.teacher,
@@ -209,7 +208,6 @@ class ScheduledMeetingEndpointTests(APITestCase):
         url = reverse('scheduledmeeting-detail', args=[self.scheduled_meeting.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['description'], self.scheduled_meeting.description)
         self.assertEqual(response.data['day_of_week'], self.scheduled_meeting.day_of_week)
         self.assertEqual(response.data['slot'], self.scheduled_meeting.slot)
         self.assertEqual(response.data['place'], self.scheduled_meeting.place)
