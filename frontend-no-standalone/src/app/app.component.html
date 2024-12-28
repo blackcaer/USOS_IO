@@ -17,10 +17,11 @@
 		<!-- PAGE CONTAINER-->
 		<div class="page-container w-full">
 			<!-- HEADER -->
-			<header class="header">
+			<header class="header" *ngIf="showHeader">
 				<div class="section-content section-content-p30">
 					<div class="container-fluid">
 						<div class="header-wrap">
+							<!-- cut start -->
               				<div class="header-logo">
                 				<span [routerLink]="'/main'" style="cursor: pointer;">USOS</span>	
               				</div>
@@ -40,6 +41,7 @@
                   					<path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/>
                 				</svg>
               				</div>
+							<!-- cut stop -->
 						</div>
 					</div>
 				</div>

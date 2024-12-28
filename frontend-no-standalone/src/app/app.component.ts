@@ -1,5 +1,6 @@
 import { AuthService } from './services/auth.service';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -7,11 +8,15 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  constructor(public authService: AuthService) {
-
-  }
-
   title = 'USOS';
+  showHeader: boolean = true; // Flaga do zarządzania widocznością nagłówka
+
+  constructor(public authService: AuthService, private router: Router) {
+    // Nasłuchuje zmian w ścieżkach i aktualizuje widoczność nagłówka
+    this.router.events.subscribe(() => {
+      this.showHeader = this.router.url !== '/login';
+    });
+  }
 
   mainLogout() {
     this.authService.logout();

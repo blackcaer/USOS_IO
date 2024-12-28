@@ -1,5 +1,6 @@
  /* logout button start */
  .Btn {
+    margin-right:10px ;
     display: flex;
     align-items: center;
     justify-content: flex-start;
