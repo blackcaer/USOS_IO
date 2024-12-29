@@ -2,14 +2,14 @@ export class User {
     constructor(
       public id: number,
       public username: string,
-      public first_name: string,
-      public last_name: string,
+      public firstName: string,
+      public lastName: string,
       public email: string,
       public status: string,
-      public birth_date: string,
+      public birthDate: string,
       public sex: string,
-      public phone_number: string,
-      public photo_url: string,
+      public phoneNumber: string,
+      public photoUrl: string,
       public role: string
     ) {}
   
@@ -24,7 +24,7 @@ export class User {
         response.birth_date,
         response.sex,
         response.phone_number,
-        response.photo_url,
+        response.photoГrl,
         response.role
       );
     }

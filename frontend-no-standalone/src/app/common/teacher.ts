@@ -2,7 +2,7 @@ import { User } from "./user";
 
 export class Teacher {
     constructor(
-        public user_id: number,
+        public userId: number,
         public user: User
       ) {}
     

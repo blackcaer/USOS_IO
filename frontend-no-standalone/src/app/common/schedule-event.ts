@@ -4,7 +4,7 @@ import { Teacher } from "./teacher";
 export class ScheduleEvent {
     constructor(
       public id: number,
-      public day_of_week: number,
+      public dayOfWeek: number,
       public slot: number,
       public teacher: Teacher,
       public school_subject: SchoolSubject,
