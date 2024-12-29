@@ -16,21 +16,32 @@
                 <div class="section-content rounded-xl col-span-1 block-schedule"></div>
                 <div class="section-content rounded-xl col-span-1 block-schedule"></div>-->
                 
-                <div class="schedule-container col-span-1">
-                    <div class="time-column">
-                      <div class="time-slot" *ngFor="let hour of hours">{{ hour }}</div>
-                    </div>
-                    <div class="events-column">
-                      <div 
-                        class="event" 
-                        *ngFor="let event of events" 
-                        [style.top]="event.top" 
-                        [style.height]="event.height">
-                        <div class="event-title">{{ event.title }}</div>
-                        <div class="event-time">{{ event.time }}</div>
-                      </div>
+                <!--
+                <div class="schedule-container grid grid-cols-12 gap-4">
+                  
+                  <div class="time-column col-span-2">
+                    <div 
+                      class="time-slot h-16 border-b border-gray-300 text-center" 
+                      *ngFor="let hour of hours">
+                      {{ hour }}
                     </div>
                   </div>
+                
+                  
+                  <div class="events-column col-span-10 relative">
+                    
+                    <div *ngFor="let event of events" 
+                      class="absolute bg-blue-500 text-white rounded shadow-md p-2"
+                      [style.top]="event.top" 
+                      [style.height]="event.height"
+                      [style.width]="'90%'"
+                      [style.left]="'calc(((event.day_of_week - 1) % 5) * 20%)'">
+                      <div class="event-title">{{ event.title }}</div>
+                      <div class="event-time">{{ event.time }}</div>
+                      <div class="event-place">{{ event.place }}</div>
+                    </div>
+                  </div>
+                </div>
 
                   <div class="schedule-container col-span-1">
                     <div class="time-column">
@@ -97,6 +108,26 @@
                   </div>
 
             </div>
+            -->
+            <!--<div class="schedule-container">
+              <div class="schedule-header">Мое расписание</div>
+              <div class="schedule-days">
+                <div class="schedule-day" *ngFor="let day of [1, 2, 3, 4, 5]">
+                  <div class="day-title">День {{ day }}</div>
+                  <div 
+                    class="schedule-event" 
+                    *ngFor="let event of events.filter(e => e.day_of_week === day)">
+                    <div class="event-time">{{ event.time }}</div>
+                    <div class="event-title">{{ event.title }}</div>
+                    <div class="event-place">Аудитория: {{ event.place }}</div>
+                  </div>
+                  <div *ngIf="!events.some(e => e.day_of_week === day)" class="empty-event">
+                    Нет занятий
+                  </div>
+                </div>
+              </div>
+            </div>
+          -->
 
         </div>
     </div>

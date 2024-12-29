@@ -1,27 +1,31 @@
 export class User {
-    id: number | null;
-    first_name: string;
-    last_name: string;
-    username: string;
-    email: string;
-    phone_number: string | null;
-    photo_url: string | null;
-    birth_date: string;
-    role: string;
-    sex: string;
-    status: string;
-
-    constructor(data: Partial<User> = {}) {
-    this.id = data.id || null;
-    this.first_name = data.first_name || '';
-    this.last_name = data.last_name || '';
-    this.username = data.username || '';
-    this.email = data.email || '';
-    this.phone_number = data.phone_number || null;
-    this.photo_url = data.photo_url || null;
-    this.birth_date = data.birth_date || '';
-    this.role = data.role || '';
-    this.sex = data.sex || '';
-    this.status = data.status || '';
+    constructor(
+      public id: number,
+      public username: string,
+      public first_name: string,
+      public last_name: string,
+      public email: string,
+      public status: string,
+      public birth_date: string,
+      public sex: string,
+      public phone_number: string,
+      public photo_url: string,
+      public role: string
+    ) {}
+  
+    static fromApiResponse(response: any): User {
+      return new User(
+        response.id,
+        response.username,
+        response.first_name,
+        response.last_name,
+        response.email,
+        response.status,
+        response.birth_date,
+        response.sex,
+        response.phone_number,
+        response.photo_url,
+        response.role
+      );
     }
-}
+  }

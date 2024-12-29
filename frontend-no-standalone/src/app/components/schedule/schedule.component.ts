@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-schedule',
@@ -6,6 +7,9 @@ import { Component } from '@angular/core';
   styleUrl: './schedule.component.css'
 })
 export class ScheduleComponent {
+  constructor(private userService: UserService) {
+  }
+
   hours = [
     "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
   ];
@@ -17,7 +21,9 @@ export class ScheduleComponent {
       start: "8:00",
       end: "8:45",
       top: "0px",
-      height: "45px"
+      height: "45px",
+      place: 1,
+      day_of_week: 1
     },
     {
       title: "Matematyka",
@@ -25,7 +31,9 @@ export class ScheduleComponent {
       start: "8:50",
       end: "9:35",
       top: "50px",
-      height: "45px"
+      height: "45px",
+      place: 1,
+      day_of_week: 1
     },
     {
       title: "Wychowanie fizyczne",
@@ -33,7 +41,9 @@ export class ScheduleComponent {
       start: "9:40",
       end: "10:25",
       top: "100px",
-      height: "45px"
+      height: "45px",
+      place: 1,
+      day_of_week: 1
     },
     {
       title: "Biologia",
@@ -41,7 +51,9 @@ export class ScheduleComponent {
       start: "10:45",
       end: "11:30",
       top: "225px",
-      height: "45px"
+      height: "45px",
+      place: 1,
+      day_of_week: 1
     },
     {
       title: "Historia",
@@ -49,35 +61,66 @@ export class ScheduleComponent {
       start: "13:25",
       end: "14:10",
       top: "305px",
-      height: "45px"
+      height: "45px",
+      place: 1,
+      day_of_week: 1
     }
   ];
 
-  ngOnInit() {
-    this.events = this.events.map(event => ({
-      ...event,
-      ...this.calculateEventStyles(event)
-    }));
+  async ngOnInit() {
+    // await this.fillEvents();
+    console.log(this.events);
+  } 
+
+
+
+  /*async fillEvents() {
+    try {
+      const schedule = await this.userService.getUserSchedule();
+      const scheduleSlots = [
+        { slot: 1, start: "08:00", end: "08:45", top: "0px", height: "45px" },
+        { slot: 2, start: "08:55", end: "09:40", top: "50px", height: "45px" },
+        { slot: 3, start: "09:50", end: "10:35", top: "100px", height: "45px" },
+        { slot: 4, start: "10:45", end: "11:30", top: "150px", height: "45px" },
+        { slot: 5, start: "11:40", end: "12:25", top: "200px", height: "45px" },
+        { slot: 6, start: "12:45", end: "13:30", top: "250px", height: "45px" },
+        { slot: 7, start: "13:40", end: "14:25", top: "300px", height: "45px" },
+        { slot: 8, start: "14:35", end: "15:20", top: "350px", height: "45px" },
+      ];
+
+      this.events = [];
+      this.events = schedule.map((event) => {
+        const slotInfo = scheduleSlots.find((slot) => slot.slot === event.slot);
+
+        if (slotInfo) {
+          return {
+            title: event.title,
+            time: `${slotInfo.start} - ${slotInfo.end}`,
+            start: slotInfo.start,
+            end: slotInfo.end,
+            top: slotInfo.top,
+            height: slotInfo.height,
+            day_of_week: event.day_of_week,
+            place: event.place
+          };
+        }
+
+        return {
+          title: event.title,
+          time: "",
+          start: "",
+          end: "",
+          top: "0px",
+          height: "0px",
+          day_of_week: 1,
+          place: 1
+        };
+      });
+
+      
+    } catch (error) {
+      console.error("Błąd przy ładowaniu planu zajęć", error);
+    }
   }
-
-  calculateEventStyles = (event: any) => {
-    const timeToMinutes = (time: string): number => {
-      const [hours, minutes] = time.split(":").map(Number);
-      return hours * 60 + minutes;
-    };
-  
-    const coef = 1.03;
-    const startOfDay = timeToMinutes(this.hours[0]);
-    const startMinutes = (timeToMinutes(event.start) - startOfDay);
-    const endMinutes = coef * (timeToMinutes(event.end) - startOfDay);
-  
-    const top = `${startMinutes}px`;
-    const height = `${endMinutes - startMinutes}px`;
-  
-    return { top, height };
- 
-  }; 
-
-
-  
+  */
 }

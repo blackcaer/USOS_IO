@@ -9,28 +9,24 @@ import { UserService } from '../../services/user.service';
 })
 export class MainBlocksComponent {
 
-private currentUserId: number;
-lastGrades = [
-  { name: 'Matematyka', grade: -2 },
-  { name: 'Informatyka', grade: 4 },
-  { name: 'Angielski', grade: 4 },
-  { name: 'Matematyka', grade: 1 },
-  { name: 'Chemia', grade: 2 }
-];
-hours = [
-  "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
-];
+  private currentUserId: number;
+  lastGrades = [
+    { name: 'Matematyka', grade: -2 },
+    { name: 'Informatyka', grade: 4 },
+    { name: 'Angielski', grade: 4 },
+    { name: 'Matematyka', grade: 1 },
+    { name: 'Chemia', grade: 2 }
+  ];
+  hours = [
+    "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
+  ];
 
-constructor(private http: HttpClient,
-            private userService: UserService
-) {
-  this.currentUserId = this.userService.getUserIdAsInt();
+  constructor(private http: HttpClient,
+              private userService: UserService
+  ) {
+    this.currentUserId = this.userService.getUserIdAsInt();
 
-  this.events = this.events.map(event => ({
-    ...event,
-    ...this.calculateEventStyles(event)
-  }));
-}
+  }
 
   ngOnInit() {
     this.fillLastGrades();
@@ -41,50 +37,32 @@ constructor(private http: HttpClient,
   
     try {
       const subjectsMap = await this.userService.getAllUsersSubjects(this.currentUserId);
-      const allGrades: { name: string, grade: number, timestamp: Date }[] = [];
+      const allGrades: { name: string, grade: number, date: Date }[] = [];
   
-      for (const [groupId, subjects] of subjectsMap) {
+      for (const [groupId, subjects] of subjectsMap.entries()) {
         for (const subject of subjects) {
-          const gradesWithTimestamps = await this.userService.getUsersGradesFromSubjectWithTimestamp(this.currentUserId, subject.id);
+          try {
+            const grades = await this.userService.getUsersGradesFromSubject(this.currentUserId, subject.id);
   
-          gradesWithTimestamps.forEach(grade => {
-            allGrades.push({
-              name: subject.name,
-              grade: this.userService.parseGradeValue(grade.value),
-              timestamp: grade.timestamp
+            grades.forEach(grade => {
+              allGrades.push({
+                name: subject.subjectName,
+                grade: this.userService.parseGradeValue(grade.value),
+                date: grade.timestamp
+              });
             });
-          });
+          } catch (error) {
+            console.error(`Błąd podczas ładowania ocen для przedmiotu ${subject.subjectName} (группа ${groupId}):`, error);
+          }
         }
       }
   
-      const sortedGrades = allGrades.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-
-      const lastFiveGrades = sortedGrades.slice(0, 5);
+      const sortedGrades = allGrades.sort((a, b) => b.date.getTime() - a.date.getTime());
   
-      this.lastGrades = lastFiveGrades;
-  
-      console.log('Ostatnie 5 ocen:', this.lastGrades);
+      this.lastGrades = sortedGrades.slice(0, 5);
     } catch (error) {
       console.error('Błąd podczas ładowania ostatnich ocen:', error);
-    }
-  }
-
-  calculateEventStyles(event: any) {
-    const timeToMinutes = (time: string): number => {
-      const [hours, minutes] = time.split(":").map(Number);
-      return hours * 60 + minutes;
-    };
-  
-    const coef = 0.87;
-    const startOfDay = timeToMinutes(this.hours[0]);
-    const startMinutes = (timeToMinutes(event.start) - startOfDay);
-    const endMinutes = (timeToMinutes(event.end) - startOfDay);
-  
-    const top = `${coef * startMinutes}px`;
-    const height = `${0.94 * (endMinutes - startMinutes)}px`;
-  
-    return { top, height };
- 
+    } 
   }; 
 
   events = [
@@ -130,5 +108,4 @@ constructor(private http: HttpClient,
     }
   ];  
 }
-
 
