@@ -20,6 +20,9 @@ export class MainBlocksComponent {
   hours = [
     "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
   ];
+  weekEvents: { [key: number]: any[] } = {};
+  currentDay: number = new Date().getDay();
+  currentDayName: string = this.getDayName(this.currentDay);
 
   constructor(private http: HttpClient,
               private userService: UserService
@@ -28,8 +31,9 @@ export class MainBlocksComponent {
 
   }
 
-  ngOnInit() {
-    this.fillLastGrades();
+  async ngOnInit() {
+    await this.fillLastGrades();
+    await this.fillEvents();
   }
 
   async fillLastGrades() {
@@ -65,47 +69,55 @@ export class MainBlocksComponent {
     } 
   }; 
 
-  events = [
-    {
-      title: "Język angielski",
-      time: "8:00 - 8:45",
-      start: "8:00",
-      end: "8:45",
-      top: "0px",
-      height: "45px"
-    },
-    {
-      title: "Matematyka",
-      time: "8:50 - 9:35",
-      start: "8:50",
-      end: "9:35",
-      top: "50px",
-      height: "45px"
-    },
-    {
-      title: "Wychowanie fizyczne",
-      time: "9:40 - 10:25",
-      start: "9:40",
-      end: "10:25",
-      top: "100px",
-      height: "45px"
-    },
-    {
-      title: "Biologia",
-      time: "10:45 - 11:30",
-      start: "10:45",
-      end: "11:30",
-      top: "225px",
-      height: "45px"
-    },
-    {
-      title: "Historia",
-      time: "13:25 - 14:10",
-      start: "13:25",
-      end: "14:10",
-      top: "305px",
-      height: "45px"
+  async fillEvents() {
+    try {
+      const schedule = await this.userService.getUserSchedule();
+      const scheduleSlots = [
+        { slot: 1, start: "08:00", end: "08:45", top: "4px", height: "42px" },
+        { slot: 2, start: "08:55", end: "09:40", top: "50px", height: "42px" },
+        { slot: 3, start: "09:50", end: "10:35", top: "96px", height: "42px" },
+        { slot: 4, start: "10:45", end: "11:30", top: "142px", height: "42px" },
+        { slot: 5, start: "11:40", end: "12:25", top: "188px", height: "42px" },
+        { slot: 6, start: "12:45", end: "13:30", top: "134px", height: "42px" },
+        { slot: 7, start: "13:40", end: "14:25", top: "180px", height: "42px" },
+        { slot: 8, start: "14:35", end: "15:20", top: "226px", height: "42px" },
+      ];
+  
+      this.weekEvents = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+  
+      schedule.forEach((event) => {
+        const slotInfo = scheduleSlots.find((slot) => slot.slot === event.slot);
+  
+        if (slotInfo) {
+          this.weekEvents[event.dayOfWeek].push({
+            title: event.school_subject.subjectName,
+            time: `${slotInfo.start} - ${slotInfo.end}`,
+            start: slotInfo.start,
+            end: slotInfo.end,
+            top: slotInfo.top,
+            height: slotInfo.height,
+            place: event.place,
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Błąd przy ładowaniu planu zajęć", error);
     }
-  ];  
+  }
+
+  showNextDay() {
+    this.currentDay = this.currentDay === 5 ? 1 : this.currentDay + 1;
+    this.currentDayName = this.getDayName(this.currentDay);
+  }
+
+  showPreviousDay() {
+    this.currentDay = this.currentDay === 1 ? 5 : this.currentDay - 1;
+    this.currentDayName = this.getDayName(this.currentDay);
+  }
+
+  getDayName(day: number): string {
+    const days = ['Poniedziałek', 'Wtorek', 'Środa', 'Ćwarte', 'Piątek'];
+    return days[day - 1];
+  }
 }
 

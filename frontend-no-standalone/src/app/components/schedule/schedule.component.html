@@ -129,8 +129,10 @@
                         [style.top]="event.top" 
                         [style.height]="event.height">
                         <div class="event-title">{{ event.title }}</div>
-                        <div class="event-time">{{ event.time }}</div>
-                        <!-- <div class="event-place">Sala: {{ event.place }}</div> -->
+                        <div class="event-details">
+                          <div class="event-time">{{ event.time }}</div>
+                          <div class="event-place">Sala: {{ event.place }}</div>
+                        </div>
                       </div>
                       <div *ngIf="weekEvents[day].length === 0" class="empty-event">
                         Dzień wolny
@@ -139,29 +141,6 @@
                   </div>
 
             </div>
-            
-
-            <!--
-            <div class="schedule-container">
-              <div class="schedule-header">Мое расписание</div>
-              <div class="schedule-days">
-                <div class="schedule-day" *ngFor="let day of [1, 2, 3, 4, 5]">
-                  <div class="day-title">День {{ day }}</div>
-                  <div 
-                    class="schedule-event" 
-                    *ngFor="let event of events.filter(e => e.day_of_week === day)">
-                    <div class="event-time">{{ event.time }}</div>
-                    <div class="event-title">{{ event.title }}</div>
-                    <div class="event-place">Аудитория: {{ event.place }}</div>
-                  </div>
-                  <div *ngIf="!events.some(e => e.day_of_week === day)" class="empty-event">
-                    Нет занятий
-                  </div>
-                </div>
-              </div>
-            </div>
-          -->
-
         </div>
     </div>
 </div>
