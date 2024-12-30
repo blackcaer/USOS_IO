@@ -54,7 +54,7 @@
                           <div class="event-place">Sala: {{ event.place }}</div>
                         </div>
                       </div>
-                      <div *ngIf="weekEvents[currentDay].length === 0" class="empty-event">
+                      <div *ngIf="weekEvents[currentDay] && weekEvents[currentDay].length === 0" class="empty-event">
                         Dzień wolny
                       </div>
                     </div>

@@ -61,7 +61,6 @@ export class UserService {
     const url = `http://localhost:8000/meetings/schedule/`;
     try {
       const response = await lastValueFrom(this.http.get<getScheduleEventResponse[]>(url, { withCredentials: true }));
-      console.log(response);
       return response.map(element => ScheduleEvent.fromApiResponse(element));
 
     } catch (error) {

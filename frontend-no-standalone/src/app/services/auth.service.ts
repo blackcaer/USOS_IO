@@ -26,6 +26,11 @@ export class AuthService {
           const xsrfToken = this.cookieService.getCookie('XSRF_TOKEN');
           const sessionid = this.cookieService.getCookie('sessionid');
 
+          console.log(response);
+
+          if (!!response.role) {
+            localStorage.setItem('currentUserRole', response.role);
+          }
           if (!!response.id) {
             localStorage.setItem('currentUserId', response.id);
           }
@@ -50,6 +55,7 @@ export class AuthService {
     localStorage.removeItem('xsrftoken');
     localStorage.removeItem('sessionid');
     localStorage.removeItem('currentUserId');
+    localStorage.removeItem('currentUserRole');
     this.router.navigate(['/login']);
   }
 
