@@ -74,6 +74,10 @@ export class UserService {
     return storedUserId ? parseInt(storedUserId, 10) : -1;
   }
 
+  getUserRole(): string {
+    return localStorage.getItem('currentUserRole')!;
+  }
+
   parseGradeValue(value: string): number {
     const gradeMap: { [key: string]: number } = {
       'GRADE5': 5,

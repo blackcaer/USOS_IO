@@ -26,8 +26,6 @@ export class AuthService {
           const xsrfToken = this.cookieService.getCookie('XSRF_TOKEN');
           const sessionid = this.cookieService.getCookie('sessionid');
 
-          console.log(response);
-
           if (!!response.role) {
             localStorage.setItem('currentUserRole', response.role);
           }

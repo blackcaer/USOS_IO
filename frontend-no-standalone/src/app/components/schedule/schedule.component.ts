@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { UserService } from '../../services/user.service';
+import { ScheduleEvent } from '../../common/schedule-event';
 
 @Component({
   selector: 'app-schedule',
@@ -13,13 +14,25 @@ export class ScheduleComponent {
   hours = [
     "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
   ];
-
   weekEvents: { [key: number]: any[] } = {};
+  userRole: string = "";
+  isInfoOpen: boolean = false;
+  infoEvent: any = null;
 
   async ngOnInit() {
     await this.fillEvents();
+    this.userRole = this.userService.getUserRole();
   } 
 
+  openInfo(event: any) {
+    this.infoEvent = event;
+    console.log(this.infoEvent);
+    this.isInfoOpen = true;
+  }
+
+  closeInfo() {
+    this.isInfoOpen = false;
+  }
 
   async fillEvents() {
     try {
@@ -42,13 +55,12 @@ export class ScheduleComponent {
   
         if (slotInfo) {
           this.weekEvents[event.dayOfWeek].push({
-            title: event.school_subject.subjectName,
+            eventInfo: event,
             time: `${slotInfo.start} - ${slotInfo.end}`,
             start: slotInfo.start,
             end: slotInfo.end,
             top: slotInfo.top,
-            height: slotInfo.height,
-            place: event.place,
+            height: slotInfo.height
           });
         }
       });
