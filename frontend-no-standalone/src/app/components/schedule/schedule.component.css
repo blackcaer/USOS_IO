@@ -123,3 +123,7 @@
     justify-content: center;
     cursor: pointer;
   }
+
+  p {
+    color: #F5F5F5
+  }

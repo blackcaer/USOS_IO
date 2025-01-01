@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { ScheduleEvent } from '../../common/schedule-event';
+import { Student } from '../../common/student';
 
 @Component({
   selector: 'app-schedule',
@@ -18,6 +19,7 @@ export class ScheduleComponent {
   userRole: string = "";
   isInfoOpen: boolean = false;
   infoEvent: any = null;
+  subjectStudentList: Array<Student> = [];
 
   async ngOnInit() {
     await this.fillEvents();
@@ -28,10 +30,28 @@ export class ScheduleComponent {
     this.infoEvent = event;
     console.log(this.infoEvent);
     this.isInfoOpen = true;
+
+    if (this.userService.getUserRole() === 'teacher') {
+      this.fillSubjectStudentList(event);
+      console.log(this.subjectStudentList);
+    }
+  }
+
+  fillSubjectStudentList(event: any) {
+    for (let tempStudentId of event.eventInfo.school_subject.studentGroup.students) {
+      const tempStudent = this.userService.getStudent(tempStudentId);
+      tempStudent.then( student => {
+        if (!!student) {
+          this.subjectStudentList.push(student);
+        }
+      });
+      
+    }
   }
 
   closeInfo() {
     this.isInfoOpen = false;
+    this.subjectStudentList = [];
   }
 
   async fillEvents() {

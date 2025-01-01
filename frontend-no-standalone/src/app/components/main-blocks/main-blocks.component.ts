@@ -27,7 +27,7 @@ export class MainBlocksComponent {
   constructor(private http: HttpClient,
               private userService: UserService
   ) {
-    this.currentUserId = this.userService.getUserIdAsInt();
+    this.currentUserId = this.userService.getCurrentUserIdAsInt();
 
   }
 
@@ -116,7 +116,7 @@ export class MainBlocksComponent {
   }
 
   getDayName(day: number): string {
-    const days = ['Poniedziałek', 'Wtorek', 'Środa', 'Ćwarte', 'Piątek'];
+    const days = ['Poniedziałek', 'Wtorek', 'Środa', 'Ćwartek', 'Piątek'];
     return days[day - 1];
   }
 }

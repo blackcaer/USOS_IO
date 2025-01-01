@@ -20,7 +20,7 @@ export class GradesComponent {
   ];
 
   constructor(private userService: UserService) {
-    this.currentUserId = this.userService.getUserIdAsInt();
+    this.currentUserId = this.userService.getCurrentUserIdAsInt();
   }
 
   ngOnInit() {

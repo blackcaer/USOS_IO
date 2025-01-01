@@ -14,7 +14,7 @@
           <p>Содержимое для родителя</p>
         </div>
         <div *ngSwitchCase="'teacher'">
-          <p>Содержимое для учителя</p>
+          <p *ngFor="let student of subjectStudentList">{{student.user.firstName}} {{student.user.lastName}}</p>
         </div>
         <div *ngSwitchCase="'student'">
           <p>Czas: {{ infoEvent.time }}</p>
