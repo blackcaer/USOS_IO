@@ -167,15 +167,23 @@ class ScheduledMeetingSerializer(serializers.ModelSerializer):
 class ParentConsentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ParentConsent
-        fields = ['id', 'parent_user', 'child_user',
-                  'consent', 'is_consent', 'url']
-
+        fields = ['id', 'parent_user', 'child_user', 'consent', 'is_consent', 'file']
 
 class ConsentTemplateSerializer(serializers.ModelSerializer):
+    parent_consents = ParentConsentSerializer(many=True, read_only=True)
+
     class Meta:
         model = ConsentTemplate
-        fields = ['id', 'title', 'description', 'end_date', 'students']
+        fields = ['id', 'title', 'description', 'end_date', 'students', 'parent_consents']
 
+    def __init__(self, *args, **kwargs):
+        fields = kwargs.pop('fields', None)
+        super().__init__(*args, **kwargs)
+        if fields:
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
 
 class MeetingSerializer(serializers.ModelSerializer):
     class Meta:

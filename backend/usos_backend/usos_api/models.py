@@ -192,36 +192,6 @@ class Attendance(models.Model):
     def __str__(self):
         return f"{self.student.user.username} - {self.status} at {self.meeting.title}"
 
-
-class ConsentTemplate(models.Model):
-    author = models.ForeignKey('Teacher', on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, default="")
-    end_date = models.DateField()
-    students = models.ManyToManyField(
-        Student, related_name="consent_templates")
-
-    def time_to_end(self):
-        return (self.end_date - timezone.now().date()).days
-
-    def is_active(self):
-        return timezone.now().date() <= self.end_date
-
-    def __str__(self):
-        return f"ConsentTemplate {self.title} by {self.author} (Active: {self.is_active()})"
-
-
-class ParentConsent(models.Model):
-    parent_user = models.ForeignKey('Parent', on_delete=models.CASCADE)
-    child_user = models.ForeignKey('Student', on_delete=models.CASCADE)
-    consent = models.ForeignKey(ConsentTemplate, on_delete=models.CASCADE)
-    is_consent = models.BooleanField(default=False)
-    url = models.URLField(blank=True, null=True)
-
-    def __str__(self):
-        return f"Consent by {self.parent_user} for {self.child_user}"
-
-
 class ScheduledMeeting(models.Model):
     DAYS_OF_WEEK = [
         (1, "Poniedziałek"),
@@ -296,3 +266,34 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.title} (from {self.sender})"
+
+
+class ConsentTemplate(models.Model):
+    author = models.ForeignKey('Teacher', on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, default="")
+    end_date = models.DateField()
+    students = models.ManyToManyField(
+        Student, related_name="consent_templates")
+
+    def time_to_end(self):
+        return (self.end_date - timezone.now().date()).days
+
+    def is_active(self):
+        return timezone.now().date() <= self.end_date
+
+    def __str__(self):
+        return f"ConsentTemplate {self.title} by {self.author} (Active: {self.is_active()})"
+
+
+class ParentConsent(models.Model):
+    parent_user = models.ForeignKey('Parent', on_delete=models.CASCADE)
+    child_user = models.ForeignKey('Student', on_delete=models.CASCADE)
+    consent = models.ForeignKey(ConsentTemplate, on_delete=models.CASCADE, related_name='parent_consents')
+    is_consent = models.CharField(max_length=2, choices=[('Y', 'Yes'), ('N', 'No'), ('U', 'Unknown')], default='U')
+    file = models.FileField(upload_to='consents/', blank=True, null=True)
+
+    unique_together = [['parent_user', 'child_user', 'consent']]
+
+    def __str__(self):
+        return f"Consent by {self.parent_user} for {self.child_user}"
