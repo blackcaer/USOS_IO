@@ -608,7 +608,7 @@ class ElectronicConsentTests(APITestCase):
 
     def test_get_parent_consent_detail(self):
         parent_consent = ParentConsent.objects.create(
-            parent_user=self.parent, child_user=self.student, consent=self.consent_template)
+            parent_user=self.parent, child_user=self.student, consent=self.consent_template,is_consent=True)
         url = reverse('parent_consent_detail', args=[parent_consent.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -618,12 +618,12 @@ class ElectronicConsentTests(APITestCase):
         url = reverse('parent_consent_submit', args=[self.consent_template.id])
         data = {
             'child_user': self.student.user_id,
-            'is_consent': 'Y'
+            'is_consent': True
         }
         response = self.client.post(url, data, format='multipart')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(ParentConsent.objects.count(), 1)
-        self.assertEqual(ParentConsent.objects.get().is_consent, 'Y')
+        self.assertEqual(ParentConsent.objects.get().is_consent, True)
 
     def test_get_consent_templates(self):
         self.client.login(username='teacher_test', password='testpass')
