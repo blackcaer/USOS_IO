@@ -59,7 +59,7 @@ urlpatterns = [
     path('meetings/schedule/', ScheduledMeetingView.as_view(), name='meeting-schedule'),
     path('meetings/<int:meeting_id>/attendance/', MeetingAttendanceView.as_view(), name='meeting-attendance'),
     
-    path('econsent/pending/', PendingConsentsView.as_view(), name='pending_consents'),
+    path('econsent/templates/pending/', PendingConsentsView.as_view(), name='pending_consents'),
     path('econsent/<int:parent_consent_id>/', ParentConsentDetailView.as_view(), name='parent_consent_detail'),
     path('econsent/templates/', ConsentTemplateListView.as_view(), name='consent_template_list'),
     path('econsent/templates/<int:consent_template_id>/', ConsentTemplateDetailView.as_view(), name='consent_template_detail'),
