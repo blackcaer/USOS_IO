@@ -66,8 +66,7 @@ class User(AbstractUser):
         ('parent', 'Parent'),
         ('teacher', 'Teacher'),
     ]
-    role = models.CharField(
-        max_length=10, choices=ROLE_CHOICES, editable=False)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     first_name = models.CharField(max_length=255, default="first_name")
     last_name = models.CharField(max_length=255, default="last_name")
     email = models.EmailField(unique=True, default="email@example.com")
