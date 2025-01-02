@@ -734,3 +734,37 @@ class ElectronicConsentTests(APITestCase):
         url = reverse('consent_template_detail', args=[self.consent_template.id])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class ConsentTemplateModelTests(TestCase):
+
+    def setUp(self):
+        self.teacher_user = User.objects.create_user(
+            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+        self.parent_user = User.objects.create_user(
+            username='parent_test', password='testpass', role='parent', email="parent@parent.pl")
+        self.parent = Parent.objects.create(user=self.parent_user)
+        self.student_user = User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl")
+        self.student = Student.objects.create(user=self.student_user)
+        self.parent.children.add(self.student)
+        self.consent_template = ConsentTemplate.objects.create(
+            title="Test Consent", author=self.teacher, end_date=timezone.now().date() + timedelta(days=10))
+        self.consent_template.students.add(self.student)
+
+    def test_what_parent_submitted_no_consent(self):
+        result = self.consent_template.what_parent_submitted(self.parent)
+        self.assertIsNone(result)
+
+    def test_what_parent_submitted_with_consent(self):
+        ParentConsent.objects.create(
+            parent_user=self.parent, child_user=self.student, consent=self.consent_template, is_consent=True)
+        result = self.consent_template.what_parent_submitted(self.parent)
+        self.assertTrue(result)
+
+    def test_what_parent_submitted_with_rejection(self):
+        ParentConsent.objects.create(
+            parent_user=self.parent, child_user=self.student, consent=self.consent_template, is_consent=False)
+        result = self.consent_template.what_parent_submitted(self.parent)
+        self.assertFalse(result)

@@ -281,6 +281,12 @@ class ConsentTemplate(models.Model):
 
     def time_to_end(self):
         return (self.end_date - timezone.now().date()).days
+    
+    def what_parent_submitted(self,parent):
+        parent_consent = self.parent_consents.filter(parent_user=parent).first()
+        if parent_consent is None:
+            return None
+        return parent_consent.is_consent
 
     def is_active(self):
         return timezone.now().date() <= self.end_date
