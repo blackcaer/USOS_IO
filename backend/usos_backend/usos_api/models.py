@@ -128,7 +128,8 @@ class StudentGroup(models.Model):
     section = models.CharField(max_length=50, blank=True, null=True)
     students = models.ManyToManyField(Student, related_name="student_groups")
 
-    unique_together = [['section', 'level', 'name']]
+    class Meta:
+        unique_together = [['section', 'level', 'name']]
 
     def __str__(self):
         return self.name
@@ -140,7 +141,8 @@ class SchoolSubject(models.Model):
     is_mandatory = models.BooleanField(default=False)
     student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
 
-    unique_together = [['student_group', 'subject_name']]
+    class Meta:
+        unique_together = [['student_group', 'subject_name']]
 
     def __str__(self):
         return f"{self.subject_name} for {self.student_group}"
@@ -154,7 +156,8 @@ class Grade(models.Model):
     grade_column = models.ForeignKey("GradeColumn", on_delete=models.CASCADE)
     count_to_avg = models.BooleanField(default=True)
 
-    unique_together = [['student', 'grade_column']]
+    class Meta:
+        unique_together = [['student', 'grade_column']]
 
     def __str__(self):
         return f"{self.value} for {self.student}"
@@ -293,7 +296,8 @@ class ParentConsent(models.Model):
     is_consent = models.CharField(max_length=2, choices=[('Y', 'Yes'), ('N', 'No'), ('U', 'Unknown')], default='U')
     file = models.FileField(upload_to='consents/', blank=True, null=True)
 
-    unique_together = [['parent_user', 'child_user', 'consent']]
+    class Meta:
+        unique_together = [['parent_user', 'child_user', 'consent']]
 
     def __str__(self):
         return f"Consent by {self.parent_user} for {self.child_user}"
