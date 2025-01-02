@@ -6,16 +6,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from django.contrib.auth.models import Group  # , User
 from rest_framework import permissions, viewsets, status
-from rest_framework.decorators import action
 from django.utils import timezone
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 from django.http import JsonResponse, HttpResponse
@@ -31,6 +28,15 @@ from .serializers import (
     StudentSerializer, TeacherSerializer, ParentSerializer, MeetingSerializer, AttendanceSerializer, MessageSerializer
 )
 
+def get_consent_template_serializer(request, consent_template, many=False):
+    context = {'request': request}
+    if request.user.role == 'teacher':
+        return ConsentTemplateSerializer(consent_template, many=many, context=context)
+    if request.user.role == 'parent':
+        return ConsentTemplateSerializer(consent_template, fields=['id', 'title', 'description', 'end_date', 'parent_submission'], many=many, context=context)
+    else:
+        raise PermissionError("User role not supported for this view")
+    
 class IsParent(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.role == 'parent'
@@ -482,14 +488,14 @@ class ScheduledMeetingView(APIView):
 
         serializer = ScheduledMeetingSerializer(scheduled_meetings, many=True)
         return Response(serializer.data)
-
+    
 class PendingConsentsView(APIView):
     permission_classes = [IsAuthenticated, IsParent]
 
     def get(self, request):
         parent = get_object_or_404(Parent, user=request.user)
         pending_consents = ConsentTemplate.objects.filter(students__parents=parent)
-        serializer = ConsentTemplateSerializer(pending_consents, many=True)
+        serializer = get_consent_template_serializer(request, pending_consents, many=True)
         return Response(serializer.data)
 
 class ParentConsentDetailView(APIView):
@@ -525,10 +531,7 @@ class ConsentTemplateDetailView(APIView):
 
     def get(self, request, consent_template_id):
         consent_template = get_object_or_404(ConsentTemplate, id=consent_template_id)
-        if request.user.role == 'teacher':
-            serializer = ConsentTemplateSerializer(consent_template)
-        else:
-            serializer = ConsentTemplateSerializer(consent_template, fields=['id', 'title', 'description', 'end_date', 'students'])
+        serializer = get_consent_template_serializer(request, consent_template)
         return Response(serializer.data)
 
     def delete(self, request, consent_template_id):

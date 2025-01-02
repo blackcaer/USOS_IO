@@ -325,7 +325,7 @@ class ParentConsentEndpointTests(APITestCase):
         self.consent_template = ConsentTemplate.objects.create(title="Test Consent", author=Teacher.objects.create(user=User.objects.create_user(
             username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")), end_date=timezone.now().date() + timedelta(days=10))
         self.parent_consent = ParentConsent.objects.create(
-            parent_user=self.parent, child_user=self.student, consent=self.consent_template)
+            parent_user=self.parent, child_user=self.student, consent=self.consent_template, is_consent=True)
         self.client.login(username='parent_test', password='testpass')
 
     def test_parent_consent_list_endpoint(self):
@@ -600,11 +600,23 @@ class ElectronicConsentTests(APITestCase):
         self.consent_template = ConsentTemplate.objects.create(
             title="Test Consent", author=self.teacher, end_date=timezone.now().date() + timedelta(days=10))
         self.client.login(username='parent_test', password='testpass')
+        self.consent_template.students.set([self.student])
 
     def test_get_pending_consents(self):
         url = reverse('pending_consents')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('parent_submission', response.data[0])
+        self.assertIsNone(response.data[0]['parent_submission'])
+
+    def test_get_pending_consents_with_submission(self):
+        ParentConsent.objects.create(
+            parent_user=self.parent, child_user=self.student, consent=self.consent_template, is_consent=True)
+        url = reverse('pending_consents')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('parent_submission', response.data[0])
+        self.assertTrue(response.data[0]['parent_submission'])
 
     def test_get_parent_consent_detail(self):
         parent_consent = ParentConsent.objects.create(

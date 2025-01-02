@@ -171,11 +171,11 @@ class ParentConsentSerializer(serializers.ModelSerializer):
 
 class ConsentTemplateSerializer(serializers.ModelSerializer):
     parent_consents = ParentConsentSerializer(many=True, read_only=True)
+    parent_submission = serializers.SerializerMethodField()
 
     class Meta:
         model = ConsentTemplate
-        fields = ['id', 'title', 'description', 'end_date', 'students', 'parent_consents', 'author']
-
+        fields = ['id', 'title', 'description', 'end_date', 'students', 'parent_consents', 'author', 'parent_submission']
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('fields', None)
@@ -185,6 +185,13 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
             existing = set(self.fields)
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
+
+    def get_parent_submission(self, obj):
+        request = self.context.get('request')
+        if request and request.user.role == 'parent':
+            parent = Parent.objects.get(user=request.user)
+            return obj.what_parent_submitted(parent)
+        return None
 
 class MeetingSerializer(serializers.ModelSerializer):
     class Meta:
