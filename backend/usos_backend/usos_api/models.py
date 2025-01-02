@@ -96,7 +96,7 @@ class Student(models.Model):
         ordering = ['user']
 
     def __str__(self):
-        return f"Student: {self.user.username}"
+        return f"{self.user.username} (student)"
 
 
 class Teacher(models.Model):
@@ -160,7 +160,7 @@ class Grade(models.Model):
         unique_together = [['student', 'grade_column']]
 
     def __str__(self):
-        return f"{self.value} for {self.student}"
+        return f"{self.value} for {self.student} at {self.grade_column}"
 
 
 class GradeColumn(models.Model):
