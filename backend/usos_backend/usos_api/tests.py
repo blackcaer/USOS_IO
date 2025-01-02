@@ -116,7 +116,7 @@ class StudentEndpointTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_student_detail_endpoint(self):
-        url = reverse('student-detail', args=[self.student.user.id])
+        url = reverse('student-detail', args=[self.student.user_id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -135,7 +135,7 @@ class TeacherEndpointTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_teacher_detail_endpoint(self):
-        url = reverse('teacher-detail', args=[self.teacher.user.id])
+        url = reverse('teacher-detail', args=[self.teacher.user_id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -154,7 +154,7 @@ class ParentEndpointTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_parent_detail_endpoint(self):
-        url = reverse('parent-detail', args=[self.parent.user.id])
+        url = reverse('parent-detail', args=[self.parent.user_id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -581,3 +581,156 @@ class ParentChildrenViewTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
+
+
+class ElectronicConsentTests(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.parent_user = User.objects.create_user(
+            username='parent_test', password='testpass', role='parent', email="parent@parent.pl")
+        self.parent = Parent.objects.create(user=self.parent_user)
+        self.student_user = User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl")
+        self.student = Student.objects.create(user=self.student_user)
+        self.parent.children.add(self.student)
+        self.teacher_user = User.objects.create_user(
+            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+        self.consent_template = ConsentTemplate.objects.create(
+            title="Test Consent", author=self.teacher, end_date=timezone.now().date() + timedelta(days=10))
+        self.client.login(username='parent_test', password='testpass')
+
+    def test_get_pending_consents(self):
+        url = reverse('pending_consents')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_parent_consent_detail(self):
+        parent_consent = ParentConsent.objects.create(
+            parent_user=self.parent, child_user=self.student, consent=self.consent_template)
+        url = reverse('parent_consent_detail', args=[parent_consent.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], parent_consent.id)
+
+    def test_create_parent_consent(self):
+        url = reverse('parent_consent_submit', args=[self.consent_template.id])
+        data = {
+            'child_user': self.student.user_id,
+            'is_consent': 'Y'
+        }
+        response = self.client.post(url, data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ParentConsent.objects.count(), 1)
+        self.assertEqual(ParentConsent.objects.get().is_consent, 'Y')
+
+    def test_get_consent_templates(self):
+        self.client.login(username='teacher_test', password='testpass')
+        url = reverse('consent_template_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_consent_template(self):
+        self.client.login(username='teacher_test', password='testpass')
+        url = reverse('consent_template_list')
+        data = {
+            'title': 'New Consent',
+            'description': 'New Description',
+            'end_date': (timezone.now().date() + timedelta(days=10)).isoformat(),
+            'students': [self.student.user_id]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ConsentTemplate.objects.count(), 2)
+
+    def test_get_consent_template_detail_teacher(self):
+        self.client.login(username='teacher_test', password='testpass')
+        url = reverse('consent_template_detail', args=[self.consent_template.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('parent_consents', response.data)
+
+    def test_get_consent_template_detail_parent(self):
+        url = reverse('consent_template_detail', args=[self.consent_template.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('parent_consents', response.data)
+
+    def test_delete_consent_template(self):
+        self.client.login(username='teacher_test', password='testpass')
+        url = reverse('consent_template_detail', args=[self.consent_template.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(ConsentTemplate.objects.count(), 0)
+
+    def test_parent_cannot_create_consent_template(self):
+        url = reverse('consent_template_list')
+        data = {
+            'title': 'New Consent',
+            'description': 'New Description',
+            'end_date': (timezone.now().date() + timedelta(days=10)).isoformat(),
+            'students': [self.student.user_id]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_student_cannot_create_consent_template(self):
+        self.client.login(username='student_test', password='testpass')
+        url = reverse('consent_template_list')
+        data = {
+            'title': 'New Consent',
+            'description': 'New Description',
+            'end_date': (timezone.now().date() + timedelta(days=10)).isoformat(),
+            'students': [self.student.user_id]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_teacher_can_create_consent_template(self):
+        self.client.login(username='teacher_test', password='testpass')
+        url = reverse('consent_template_list')
+        data = {
+            'title': 'New Consent',
+            'description': 'New Description',
+            'end_date': (timezone.now().date() + timedelta(days=10)).isoformat(),
+            'students': [self.student.user_id]
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ConsentTemplate.objects.count(), 2)
+
+    def test_teacher_can_get_consent_template_list(self):
+        self.client.login(username='teacher_test', password='testpass')
+        url = reverse('consent_template_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_parent_cannot_get_consent_template_list(self):
+        url = reverse('consent_template_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_student_cannot_get_consent_template_list(self):
+        self.client.login(username='student_test', password='testpass')
+        url = reverse('consent_template_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_teacher_can_delete_consent_template(self):
+        self.client.login(username='teacher_test', password='testpass')
+        url = reverse('consent_template_detail', args=[self.consent_template.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(ConsentTemplate.objects.count(), 0)
+
+    def test_parent_cannot_delete_consent_template(self):
+        url = reverse('consent_template_detail', args=[self.consent_template.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_student_cannot_delete_consent_template(self):
+        self.client.login(username='student_test', password='testpass')
+        url = reverse('consent_template_detail', args=[self.consent_template.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

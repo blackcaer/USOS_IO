@@ -293,7 +293,7 @@ class ParentConsent(models.Model):
     parent_user = models.ForeignKey('Parent', on_delete=models.CASCADE)
     child_user = models.ForeignKey('Student', on_delete=models.CASCADE)
     consent = models.ForeignKey(ConsentTemplate, on_delete=models.CASCADE, related_name='parent_consents')
-    is_consent = models.CharField(max_length=2, choices=[('Y', 'Yes'), ('N', 'No'), ('U', 'Unknown')], default='U')
+    is_consent = models.CharField(max_length=2, choices=[('Y', 'Yes'), ('N', 'No')])
     file = models.FileField(upload_to='consents/', blank=True, null=True)
 
     class Meta:
