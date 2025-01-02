@@ -512,7 +512,8 @@ class ConsentTemplateListView(APIView):
     def post(self, request):
         teacher = get_object_or_404(Teacher, user=request.user)
         data = request.data.copy()
-        data['author'] = teacher.user # Primary key for teacher is user field (user.id)
+        data['author'] = teacher.user_id
+
         serializer = ConsentTemplateSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -551,23 +552,9 @@ class ParentConsentSubmitView(APIView):
             'is_consent': request.data.get('is_consent'),
             'file': request.FILES.get('file') if 'file' in request.FILES else None
         }
-        print("Request Data:", data)  # Debug statement
         serializer = ParentConsentSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print("Validation Errors:", serializer.errors)  # Debug statement
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class ConsentTemplateCreateView(APIView):
-    permission_classes = [IsAuthenticated, IsTeacher]
-
-    def post(self, request):
-        teacher = get_object_or_404(Teacher, user=request.user)
-        data = request.data.copy()
-        data['author'] = teacher.id
-        serializer = ConsentTemplateSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

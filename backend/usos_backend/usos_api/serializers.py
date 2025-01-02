@@ -174,7 +174,8 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ConsentTemplate
-        fields = ['id', 'title', 'description', 'end_date', 'students', 'parent_consents']
+        fields = ['id', 'title', 'description', 'end_date', 'students', 'parent_consents', 'author']
+
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('fields', None)
