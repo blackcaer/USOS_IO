@@ -61,7 +61,7 @@ export class ScheduleComponent {
     if (this.userService.getUserRole() === 'teacher') {
       this.fillSubjectStudentList(event);
       console.log(this.subjectStudentList);
-      this.fillMeetingData(event);
+      this.getPostMeetingData(event);
     }
   }
 
