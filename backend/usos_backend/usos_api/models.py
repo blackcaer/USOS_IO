@@ -66,8 +66,7 @@ class User(AbstractUser):
         ('parent', 'Parent'),
         ('teacher', 'Teacher'),
     ]
-    role = models.CharField(
-        max_length=10, choices=ROLE_CHOICES, editable=False)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     first_name = models.CharField(max_length=255, default="first_name")
     last_name = models.CharField(max_length=255, default="last_name")
     email = models.EmailField(unique=True, default="email@example.com")
@@ -88,7 +87,7 @@ class User(AbstractUser):
 
 class Student(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True,related_name="related_student")
+        User, on_delete=models.CASCADE, primary_key=True, related_name="related_student")
     parents = models.ManyToManyField(
         "Parent", related_name="children", blank=True)
 
@@ -96,12 +95,13 @@ class Student(models.Model):
         ordering = ['user']
 
     def __str__(self):
-        return f"Student: {self.user.username}"
+        student_groups = ", ".join([group.name for group in self.student_groups.all()])
+        return f"{self.user.username} ({student_groups})"
 
 
 class Teacher(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True,related_name="related_teacher")
+        User, on_delete=models.CASCADE, primary_key=True, related_name="related_teacher")
 
     class Meta:
         ordering = ['user']
@@ -112,7 +112,7 @@ class Teacher(models.Model):
 
 class Parent(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True,related_name="related_parent")
+        User, on_delete=models.CASCADE, primary_key=True, related_name="related_parent")
 
     class Meta:
         ordering = ['user']
@@ -128,7 +128,8 @@ class StudentGroup(models.Model):
     section = models.CharField(max_length=50, blank=True, null=True)
     students = models.ManyToManyField(Student, related_name="student_groups")
 
-    unique_together = [['section', 'level', 'name']]
+    class Meta:
+        unique_together = [['section', 'level', 'name']]
 
     def __str__(self):
         return self.name
@@ -140,7 +141,8 @@ class SchoolSubject(models.Model):
     is_mandatory = models.BooleanField(default=False)
     student_group = models.ForeignKey(StudentGroup, on_delete=models.CASCADE)
 
-    unique_together = [['student_group', 'subject_name']]
+    class Meta:
+        unique_together = [['student_group', 'subject_name']]
 
     def __str__(self):
         return f"{self.subject_name} for {self.student_group}"
@@ -154,10 +156,11 @@ class Grade(models.Model):
     grade_column = models.ForeignKey("GradeColumn", on_delete=models.CASCADE)
     count_to_avg = models.BooleanField(default=True)
 
-    unique_together = [['student', 'grade_column']]
+    class Meta:
+        unique_together = [['student', 'grade_column']]
 
     def __str__(self):
-        return f"{self.value} for {self.student}"
+        return f"{self.value} for {self.student} at {self.grade_column}"
 
 
 class GradeColumn(models.Model):
@@ -191,6 +194,7 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.student.user.username} - {self.status} at {self.meeting.title}"
+
 
 class ScheduledMeeting(models.Model):
     DAYS_OF_WEEK = [
@@ -279,6 +283,13 @@ class ConsentTemplate(models.Model):
     def time_to_end(self):
         return (self.end_date - timezone.now().date()).days
 
+    def what_parent_submitted(self, parent):
+        parent_consent = self.parent_consents.filter(
+            parent_user=parent).first()
+        if parent_consent is None:
+            return None
+        return parent_consent.is_consent
+
     def is_active(self):
         return timezone.now().date() <= self.end_date
 
@@ -289,11 +300,13 @@ class ConsentTemplate(models.Model):
 class ParentConsent(models.Model):
     parent_user = models.ForeignKey('Parent', on_delete=models.CASCADE)
     child_user = models.ForeignKey('Student', on_delete=models.CASCADE)
-    consent = models.ForeignKey(ConsentTemplate, on_delete=models.CASCADE, related_name='parent_consents')
-    is_consent = models.CharField(max_length=2, choices=[('Y', 'Yes'), ('N', 'No'), ('U', 'Unknown')], default='U')
+    consent = models.ForeignKey(
+        ConsentTemplate, on_delete=models.CASCADE, related_name='parent_consents')
+    is_consent = models.BooleanField()
     file = models.FileField(upload_to='consents/', blank=True, null=True)
 
-    unique_together = [['parent_user', 'child_user', 'consent']]
+    class Meta:
+        unique_together = [['parent_user', 'child_user', 'consent']]
 
     def __str__(self):
         return f"Consent by {self.parent_user} for {self.child_user}"

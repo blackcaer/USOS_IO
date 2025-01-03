@@ -6,16 +6,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from django.contrib.auth.models import Group  # , User
 from rest_framework import permissions, viewsets, status
-from rest_framework.decorators import action
 from django.utils import timezone
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 from django.http import JsonResponse, HttpResponse
@@ -32,9 +29,40 @@ from .serializers import (
 )
 
 
+def get_consent_template_serializer(request, consent_template, many=False):
+    context = {'request': request}
+    if request.user.role == 'teacher':
+        return ConsentTemplateSerializer(consent_template, fields=['id', 'title', 'description', 'end_date',
+                  'students', 'parent_consents', 'author'], many=many, context=context)
+    if request.user.role == 'parent':
+        return ConsentTemplateSerializer(consent_template, fields=['id', 'title', 'description', 'end_date', 'parent_submission','author'], many=many, context=context)
+    else:
+        raise PermissionError("User role not supported for this view")
+
+
+class IsParent(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.role == 'parent'
+
+
+class IsTeacher(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.role == 'teacher'
+
+
+class IsStudent(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.role == 'student'
+
+
+class IsParentOrTeacher(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.role in ['parent', 'teacher']
+
+
 class UserViewSet(viewsets.ModelViewSet):
     """
-    Be careful xd
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -59,7 +87,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class StudentViewSet(viewsets.ModelViewSet):
     """
-    FOR BACKEND DEVELOPMENT ONLY! (probably won't be supported)
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
     """
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
@@ -68,7 +96,7 @@ class StudentViewSet(viewsets.ModelViewSet):
 
 class TeacherViewSet(viewsets.ModelViewSet):
     """
-    FOR BACKEND DEVELOPMENT ONLY! (probably won't be supported)
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
     """
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
@@ -77,7 +105,7 @@ class TeacherViewSet(viewsets.ModelViewSet):
 
 class ParentViewSet(viewsets.ModelViewSet):
     """
-    FOR BACKEND DEVELOPMENT ONLY! (probably won't be supported)
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
     """
     queryset = Parent.objects.all()
     serializer_class = ParentSerializer
@@ -85,6 +113,9 @@ class ParentViewSet(viewsets.ModelViewSet):
 
 
 class GradeViewSet(ModelViewSet):
+    """
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
+    """
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
     permission_classes = [IsAuthenticated]
@@ -130,6 +161,7 @@ class CurrentUserView(APIView):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
+
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
@@ -138,6 +170,7 @@ class UserInfoView(APIView):
         user = get_object_or_404(User, id=user_id)
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
 
 class GradeListCreateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -274,48 +307,72 @@ class GradeColumnDetailView(APIView):
 
 
 class SchoolSubjectViewSet(viewsets.ModelViewSet):
+    """
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
+    """
     queryset = SchoolSubject.objects.all()
     serializer_class = SchoolSubjectSerializer
     permission_classes = [IsAuthenticated]
 
 
 class StudentGroupViewSet(viewsets.ModelViewSet):
+    """
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
+    """
     queryset = StudentGroup.objects.all()
     serializer_class = StudentGroupSerializer
     permission_classes = [IsAuthenticated]
 
 
 class ScheduledMeetingViewSet(viewsets.ModelViewSet):
+    """
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
+    """
     queryset = ScheduledMeeting.objects.all()
     serializer_class = ScheduledMeetingSerializer
     permission_classes = [IsAuthenticated]
 
 
 class AttendanceViewSet(viewsets.ModelViewSet):
+    """
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
+    """
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
     permission_classes = [IsAuthenticated]
 
 
 class ConsentTemplateViewSet(viewsets.ModelViewSet):
+    """
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
+    """
     queryset = ConsentTemplate.objects.all()
     serializer_class = ConsentTemplateSerializer
     permission_classes = [IsAuthenticated]
 
 
 class ParentConsentViewSet(viewsets.ModelViewSet):
+    """
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
+    """
     queryset = ParentConsent.objects.all()
     serializer_class = ParentConsentSerializer
     permission_classes = [IsAuthenticated]
 
 
 class MessageViewSet(viewsets.ModelViewSet):
+    """
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
+    """
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
 
 
 class GradeColumnViewSet(viewsets.ModelViewSet):
+    """
+    IT IS NOT PART OF THE API, IT IS USED FOR TESTING PURPOSES ONLY
+    """
     queryset = GradeColumn.objects.all()
     serializer_class = GradeColumnSerializer
     permission_classes = [IsAuthenticated]
@@ -466,4 +523,129 @@ class ScheduledMeetingView(APIView):
             request.user, start_of_week, end_of_week)
 
         serializer = ScheduledMeetingSerializer(scheduled_meetings, many=True)
+        return Response(serializer.data)
+
+
+class PendingConsentsView(APIView):
+    permission_classes = [IsAuthenticated, IsParent]
+
+    def get(self, request):
+        parent = get_object_or_404(Parent, user=request.user)
+        pending_consents = ConsentTemplate.objects.filter(
+            students__parents=parent, end_date__gte=timezone.now().date())
+        serializer = get_consent_template_serializer(
+            request, pending_consents, many=True)
+        return Response(serializer.data)
+
+
+class ParentConsentDetailView(APIView):
+    permission_classes = [IsAuthenticated, IsParentOrTeacher]
+
+    def get(self, request, parent_consent_id):
+        parent_consent = get_object_or_404(ParentConsent, id=parent_consent_id)
+        if not parent_consent.consent.is_active():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = ParentConsentSerializer(parent_consent)
+        return Response(serializer.data)
+
+
+class ConsentTemplateListView(APIView):
+    permission_classes = [IsAuthenticated, IsTeacher]
+
+    def get(self, request):
+        teacher = get_object_or_404(Teacher, user=request.user)
+        consent_templates = ConsentTemplate.objects.filter(author=teacher, end_date__gte=timezone.now().date())
+        serializer = ConsentTemplateSerializer(consent_templates, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        teacher = get_object_or_404(Teacher, user=request.user)
+        data = request.data.copy()
+        data['author'] = teacher.user_id
+
+        serializer = ConsentTemplateSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ConsentTemplateDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, consent_template_id):
+        consent_template = get_object_or_404(
+            ConsentTemplate, id=consent_template_id)
+        if not consent_template.is_active():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = get_consent_template_serializer(request, consent_template)
+        return Response(serializer.data)
+
+    def delete(self, request, consent_template_id):
+        if request.user.role != 'teacher':
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        consent_template = get_object_or_404(
+            ConsentTemplate, id=consent_template_id)
+        consent_template.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ParentConsentSubmitView(APIView):
+    permission_classes = [IsAuthenticated, IsParent]
+    serializer_class = ParentConsentSerializer
+
+    def post(self, request, consent_template_id):
+        parent = get_object_or_404(Parent, user=request.user)
+        consent_template = get_object_or_404(
+            ConsentTemplate, id=consent_template_id)
+        data = {
+            'parent_user': parent.user.id,
+            'child_user': request.data.get('child_user'),
+            'consent': consent_template.id,
+            'is_consent': request.data.get('is_consent'),
+            'file': request.FILES.get('file') if 'file' in request.FILES else None
+        }
+        serializer = ParentConsentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentGroupListView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StudentGroupSerializer
+
+    def get(self, request):
+        student_groups = StudentGroup.objects.all()
+        serializer = StudentGroupSerializer(student_groups, many=True)
+        return Response(serializer.data)
+
+class StudentGroupDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StudentGroupSerializer
+
+    def get(self, request, student_group_id):
+        student_group = get_object_or_404(StudentGroup, id=student_group_id)
+        serializer = StudentGroupSerializer(student_group)
+        return Response(serializer.data)
+
+class StudentGroupStudentsView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StudentSerializer
+
+    def get(self, request, student_group_id):
+        student_group = get_object_or_404(StudentGroup, id=student_group_id)
+        students = student_group.students.all()
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data)
+
+class StudentGroupSubjectsView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SchoolSubjectSerializer
+
+    def get(self, request, student_group_id):
+        student_group = get_object_or_404(StudentGroup, id=student_group_id)
+        subjects = student_group.schoolsubject_set.all()
+        serializer = SchoolSubjectSerializer(subjects, many=True)
         return Response(serializer.data)
