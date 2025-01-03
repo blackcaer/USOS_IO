@@ -15,19 +15,25 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    role = serializers.ChoiceField(choices=['student', 'parent', 'teacher'], write_only=True)
+    role = serializers.ChoiceField(
+        choices=['student', 'parent', 'teacher'], write_only=True)
     first_name = serializers.CharField(default="first_name")
     last_name = serializers.CharField(default="last_name")
-    #email = serializers.EmailField(default="email@example.com")#unique
+    # email = serializers.EmailField(default="email@example.com")#unique
     birth_date = serializers.DateField(default="2010-01-01")
-    sex = serializers.ChoiceField(choices=[("M", "Male"), ("F", "Female")], default="M")
-    status = serializers.ChoiceField(choices=[("A", "Active"), ("U", "Inactive")], default="A")
-    phone_number = serializers.CharField(default="", allow_blank=True, allow_null=True)
-    photo_url = serializers.URLField(default="", allow_blank=True, allow_null=True)
+    sex = serializers.ChoiceField(
+        choices=[("M", "Male"), ("F", "Female")], default="M")
+    status = serializers.ChoiceField(
+        choices=[("A", "Active"), ("U", "Inactive")], default="A")
+    phone_number = serializers.CharField(
+        default="", allow_blank=True, allow_null=True)
+    photo_url = serializers.URLField(
+        default="", allow_blank=True, allow_null=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email', 'status', 'birth_date', 'sex', 'phone_number', 'photo_url', 'role']
+        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email',
+                  'status', 'birth_date', 'sex', 'phone_number', 'photo_url', 'role']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -67,7 +73,7 @@ class StudentSerializer(serializers.ModelSerializer):
         parents_data = validated_data.pop('parents', [])
         user = User.objects.create_user(**user_data)
         student = Student.objects.create(user=user, **validated_data)
-        student.parents.set(parents_data) 
+        student.parents.set(parents_data)
         return student
 
 
@@ -84,7 +90,7 @@ class ParentSerializer(serializers.ModelSerializer):
         children_data = validated_data.pop('children', [])
         user = User.objects.create_user(**user_data)
         parent = Parent.objects.create(user=user, **validated_data)
-        parent.children.set(children_data)  
+        parent.children.set(children_data)
         return parent
 
 
@@ -107,12 +113,12 @@ class StudentGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentGroup
         fields = ['id', 'name', 'description',
-                   'level', 'section', 'students']
+                  'level', 'section', 'students']
 
 
 class SchoolSubjectSerializer(serializers.ModelSerializer):
     student_group = StudentGroupSerializer()
-    
+
     class Meta:
         model = SchoolSubject
         fields = ['id', 'subject_name', 'description',
@@ -162,12 +168,16 @@ class ScheduledMeetingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ScheduledMeeting
-        fields = ['id', 'day_of_week', 'slot', 'teacher', 'school_subject', 'place']
+        fields = ['id', 'day_of_week', 'slot',
+                  'teacher', 'school_subject', 'place']
+
 
 class ParentConsentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ParentConsent
-        fields = ['id', 'parent_user', 'child_user', 'consent', 'is_consent', 'file']
+        fields = ['id', 'parent_user', 'child_user',
+                  'consent', 'is_consent', 'file']
+
 
 class ConsentTemplateSerializer(serializers.ModelSerializer):
     parent_consents = ParentConsentSerializer(many=True, read_only=True)
@@ -175,7 +185,8 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ConsentTemplate
-        fields = ['id', 'title', 'description', 'end_date', 'students', 'parent_consents', 'author', 'parent_submission']
+        fields = ['id', 'title', 'description', 'end_date',
+                  'students', 'parent_consents', 'author', 'parent_submission']
 
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('fields', None)
@@ -193,16 +204,19 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
             return obj.what_parent_submitted(parent)
         return None
 
+
 class MeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meeting
-        fields = ['id', 'title', 'description', 'start_time', 'teacher', 'school_subject']
+        fields = ['id', 'title', 'description',
+                  'start_time', 'teacher', 'school_subject']
 
 
 class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
         fields = ['id', 'student', 'status', 'absence_reason', 'meeting']
+
 
 class BulkAttendanceSerializer(serializers.ListSerializer):
     def update(self, instance, validated_data):
@@ -214,14 +228,17 @@ class BulkAttendanceSerializer(serializers.ListSerializer):
                 for attr, value in item.items():
                     setattr(attendance, attr, value)
                 updated_attendances.append(attendance)
-        Attendance.objects.bulk_update(updated_attendances, ['status', 'absence_reason'])
+        Attendance.objects.bulk_update(
+            updated_attendances, ['status', 'absence_reason'])
         return updated_attendances
+
 
 class AttendanceBulkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
         fields = '__all__'
         list_serializer_class = BulkAttendanceSerializer
+
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:

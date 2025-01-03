@@ -87,7 +87,7 @@ class User(AbstractUser):
 
 class Student(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True,related_name="related_student")
+        User, on_delete=models.CASCADE, primary_key=True, related_name="related_student")
     parents = models.ManyToManyField(
         "Parent", related_name="children", blank=True)
 
@@ -100,7 +100,7 @@ class Student(models.Model):
 
 class Teacher(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True,related_name="related_teacher")
+        User, on_delete=models.CASCADE, primary_key=True, related_name="related_teacher")
 
     class Meta:
         ordering = ['user']
@@ -111,7 +111,7 @@ class Teacher(models.Model):
 
 class Parent(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True,related_name="related_parent")
+        User, on_delete=models.CASCADE, primary_key=True, related_name="related_parent")
 
     class Meta:
         ordering = ['user']
@@ -193,6 +193,7 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.student.user.username} - {self.status} at {self.meeting.title}"
+
 
 class ScheduledMeeting(models.Model):
     DAYS_OF_WEEK = [
@@ -280,9 +281,10 @@ class ConsentTemplate(models.Model):
 
     def time_to_end(self):
         return (self.end_date - timezone.now().date()).days
-    
-    def what_parent_submitted(self,parent):
-        parent_consent = self.parent_consents.filter(parent_user=parent).first()
+
+    def what_parent_submitted(self, parent):
+        parent_consent = self.parent_consents.filter(
+            parent_user=parent).first()
         if parent_consent is None:
             return None
         return parent_consent.is_consent
@@ -297,7 +299,8 @@ class ConsentTemplate(models.Model):
 class ParentConsent(models.Model):
     parent_user = models.ForeignKey('Parent', on_delete=models.CASCADE)
     child_user = models.ForeignKey('Student', on_delete=models.CASCADE)
-    consent = models.ForeignKey(ConsentTemplate, on_delete=models.CASCADE, related_name='parent_consents')
+    consent = models.ForeignKey(
+        ConsentTemplate, on_delete=models.CASCADE, related_name='parent_consents')
     is_consent = models.BooleanField()
     file = models.FileField(upload_to='consents/', blank=True, null=True)
 
