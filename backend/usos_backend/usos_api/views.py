@@ -531,7 +531,7 @@ class PendingConsentsView(APIView):
     def get(self, request):
         parent = get_object_or_404(Parent, user=request.user)
         pending_consents = ConsentTemplate.objects.filter(
-            students__parents=parent)
+            students__parents=parent, end_date__gte=timezone.now().date())
         serializer = get_consent_template_serializer(
             request, pending_consents, many=True)
         return Response(serializer.data)
@@ -542,6 +542,8 @@ class ParentConsentDetailView(APIView):
 
     def get(self, request, parent_consent_id):
         parent_consent = get_object_or_404(ParentConsent, id=parent_consent_id)
+        if not parent_consent.consent.is_active():
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = ParentConsentSerializer(parent_consent)
         return Response(serializer.data)
 
@@ -551,7 +553,7 @@ class ConsentTemplateListView(APIView):
 
     def get(self, request):
         teacher = get_object_or_404(Teacher, user=request.user)
-        consent_templates = ConsentTemplate.objects.filter(author=teacher)
+        consent_templates = ConsentTemplate.objects.filter(author=teacher, end_date__gte=timezone.now().date())
         serializer = ConsentTemplateSerializer(consent_templates, many=True)
         return Response(serializer.data)
 
@@ -573,6 +575,8 @@ class ConsentTemplateDetailView(APIView):
     def get(self, request, consent_template_id):
         consent_template = get_object_or_404(
             ConsentTemplate, id=consent_template_id)
+        if not consent_template.is_active():
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = get_consent_template_serializer(request, consent_template)
         return Response(serializer.data)
 
