@@ -1,6 +1,6 @@
 <div class="main-content pt-28 flex overflow-y-auto">
-  <div *ngIf="isInfoOpen" class="modal">
-    <div class="modal-content">
+  <div *ngIf="isInfoOpen" class="modal fade-in">
+    <div class="modal-content scale-anim">
       <ng-container [ngSwitch]="userRole"> <!--Rodzic-->
         <div *ngSwitchCase="'parent'">
           <div class="modal-header">
