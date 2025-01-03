@@ -63,6 +63,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    student_groups_string = serializers.SerializerMethodField()
 
     class Meta:
         model = Student
@@ -82,11 +83,10 @@ class StudentSerializer(serializers.ModelSerializer):
 
 class ParentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    user_id = serializers.IntegerField(source='user.id', read_only=True)
 
     class Meta:
         model = Parent
-        fields = ['user_id', 'user', 'children']
+        fields = ['user_id','user', 'children']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
@@ -99,7 +99,6 @@ class ParentSerializer(serializers.ModelSerializer):
 
 class TeacherSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    user_id = serializers.IntegerField(source='user.id', read_only=True)
 
     class Meta:
         model = Teacher

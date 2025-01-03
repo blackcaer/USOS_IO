@@ -95,7 +95,8 @@ class Student(models.Model):
         ordering = ['user']
 
     def __str__(self):
-        return f"{self.user.username} (student)"
+        student_groups = ", ".join([group.name for group in self.student_groups.all()])
+        return f"{self.user.username} ({student_groups})"
 
 
 class Teacher(models.Model):
