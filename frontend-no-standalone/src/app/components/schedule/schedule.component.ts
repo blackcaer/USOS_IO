@@ -11,7 +11,7 @@ import { MeetingService } from '../../services/meeting.service';
 })
 export class ScheduleComponent {
   constructor(private userService: UserService,
-              private meetingService: MeetingService
+              private meetingService: MeetingService,
   ) {
   }
 
@@ -33,6 +33,18 @@ export class ScheduleComponent {
     await this.fillEvents();
     this.userRole = this.userService.getUserRole();
   } 
+
+  getActualWeek() {
+    this.currentData = new Date();
+    this.firstCurrentWeekDay = this.getStartOfWeek(this.currentData);
+    this.lastCurrentWeekDay = this.addDays(this.firstCurrentWeekDay, 6);
+  }
+
+  getFollowingWeek() {
+    this.currentData = new Date();
+    this.firstCurrentWeekDay = this.addDays(this.getStartOfWeek(this.currentData), 7);
+    this.lastCurrentWeekDay = this.addDays(this.firstCurrentWeekDay, 6);
+  }
 
   getStartOfWeek(date: Date, startDay: number = 1): Date {
     // startDay: 0 = Niedziela, 1 = Poniedziałek
@@ -108,6 +120,7 @@ export class ScheduleComponent {
   async fillEvents() {
     try {
       const schedule = await this.userService.getUserSchedule();
+      console.log(schedule);
       const scheduleSlots = [
         { slot: 1, start: "08:00", end: "08:45", top: "5px", height: "50px" },
         { slot: 2, start: "08:55", end: "09:40", top: "60px", height: "50px" },
