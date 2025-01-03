@@ -25,10 +25,30 @@ export class ScheduleComponent {
   infoEvent: any = null;
   subjectStudentList: Array<Student> = [];
 
+  currentData = new Date();
+  firstCurrentWeekDay = this.getStartOfWeek(this.currentData);
+  lastCurrentWeekDay = this.addDays(this.firstCurrentWeekDay, 6);
+
   async ngOnInit() {
     await this.fillEvents();
     this.userRole = this.userService.getUserRole();
   } 
+
+  getStartOfWeek(date: Date, startDay: number = 1): Date {
+    // startDay: 0 = Niedziela, 1 = Poniedziałek
+    const currentDay = date.getDay();
+    const diff = (currentDay < startDay ? currentDay + 7 : currentDay) - startDay;
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(date.getDate() - diff);
+    startOfWeek.setHours(0, 0, 0, 0);
+    return startOfWeek;
+  }
+
+  addDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
 
   startMeeting(event: any): void {
     const meetingData = this.getPostMeetingData(event);
@@ -44,12 +64,15 @@ export class ScheduleComponent {
   }
 
   getPostMeetingData(event: any): any {
+    const timeString = event.start;
+    const [hours, minutes] = timeString.split(":").map(Number);
+
     return {
-      title: "",
-      description: "",
-      start_time: "",
-      teacher: 1,
-      school_subject: 1
+      title: event.eventInfo.school_subject.subjectName,
+      description: event.eventInfo.school_subject.description,
+      start_time: new Date(this.addDays(this.firstCurrentWeekDay, event.eventInfo.dayOfWeek - 1).setHours(hours + 1, minutes)),
+      teacher: event.eventInfo.teacher.userId,
+      school_subject: event.eventInfo.school_subject.id
     }
   }
 

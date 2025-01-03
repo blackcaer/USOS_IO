@@ -61,7 +61,8 @@ export class AuthService {
     const xsrfToken = localStorage.getItem('xsrftoken');
     const sessionId = localStorage.getItem('sessionid');
     const currentUserId = localStorage.getItem('currentUserId');
-    return !!xsrfToken && !!sessionId && !!currentUserId;
+    const currentUserRole = localStorage.getItem('currentUserRole');
+    return !!xsrfToken && !!sessionId && !!currentUserId && !!currentUserRole;
   }
 }
 

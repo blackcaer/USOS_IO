@@ -56,7 +56,7 @@
             </tbody>
           </table>
           <div class="start-lecture-container">
-            <button class="start-lecture-button">Start Lekcji</button>
+            <button class="start-lecture-button" (click)="startMeeting(infoEvent)">Start Lekcji</button>
           </div>
         </div>
         <div *ngSwitchCase="'student'"> <!--Student-->
@@ -89,10 +89,21 @@
     <div class="section-content w-4/5" style="display: flex;">
         <div class="block rounded-xl flex flex-grow flex-col mt-6 mb-14 ml-6">
 
+          <!--
             <div class="grid grid-cols-3 gap-5 w-1/3">
                 <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center">Aktualny tydzień</div>
                 <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center">Następny tydzień</div>
                 <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center">Inny tydzień</div>
+            </div>
+          -->
+
+            <div class="button-container flex items-center gap-10 w-2/3">
+              <div class="buttons-wrapper grid grid-cols-3 gap-5 flex-grow">
+                <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center">Aktualny tydzień</div>
+                <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center">Następny tydzień</div>
+                <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center">Inny tydzień</div>
+              </div>
+              <div class="ml-auto mt-7">{{ this.firstCurrentWeekDay.getDate() }}.{{ this.firstCurrentWeekDay.getMonth() + 1 }}.{{ this.firstCurrentWeekDay.getFullYear() }}-{{ this.lastCurrentWeekDay.getDate() }}.{{ this.lastCurrentWeekDay.getMonth() + 1 }}.{{ this.lastCurrentWeekDay.getFullYear() }}</div>
             </div>
 
 
