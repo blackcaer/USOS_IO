@@ -66,7 +66,10 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ['user_id', 'user', 'parents']
+        fields = ['user_id', 'user', 'parents', 'student_groups_string']
+
+    def get_student_groups_string(self, obj):
+        return ", ".join([group.name for group in obj.student_groups.all()])
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
