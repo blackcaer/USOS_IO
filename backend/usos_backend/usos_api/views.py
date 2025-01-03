@@ -32,9 +32,10 @@ from .serializers import (
 def get_consent_template_serializer(request, consent_template, many=False):
     context = {'request': request}
     if request.user.role == 'teacher':
-        return ConsentTemplateSerializer(consent_template, many=many, context=context)
+        return ConsentTemplateSerializer(consent_template, fields=['id', 'title', 'description', 'end_date',
+                  'students', 'parent_consents', 'author'], many=many, context=context)
     if request.user.role == 'parent':
-        return ConsentTemplateSerializer(consent_template, fields=['id', 'title', 'description', 'end_date', 'parent_submission'], many=many, context=context)
+        return ConsentTemplateSerializer(consent_template, fields=['id', 'title', 'description', 'end_date', 'parent_submission','author'], many=many, context=context)
     else:
         raise PermissionError("User role not supported for this view")
 
