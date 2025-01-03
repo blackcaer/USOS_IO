@@ -1,6 +1,7 @@
 import { AuthService } from './services/auth.service';
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router,NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -12,10 +13,14 @@ export class AppComponent {
   showHeader: boolean = true; // Flaga do zarządzania widocznością nagłówka
 
   constructor(public authService: AuthService, private router: Router) {
-    // Nasłuchuje zmian w ścieżkach i aktualizuje widoczność nagłówka
-    this.router.events.subscribe(() => {
-      this.showHeader = this.router.url !== '/login';
-    });
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd) // Wymuszamy typowanie
+      )
+      .subscribe((event: NavigationEnd) => {
+        // Sprawdź, czy URL zaczyna się od '/login'
+        this.showHeader = !event.url.startsWith('/login');
+      });
   }
 
   mainLogout() {

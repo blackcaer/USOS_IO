@@ -46,6 +46,12 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: background-color 0.5s, color 0.5s;
+  }
+
+  .event:hover{
+    background-color: #1E3E62;
+    color: white;
   }
   
   .event-title {

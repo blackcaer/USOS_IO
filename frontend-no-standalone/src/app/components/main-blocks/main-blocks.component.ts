@@ -116,7 +116,7 @@ export class MainBlocksComponent {
   }
 
   getDayName(day: number): string {
-    const days = ['Poniedziałek', 'Wtorek', 'Środa', 'Ćwartek', 'Piątek'];
+    const days = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek'];
     return days[day - 1];
   }
 }

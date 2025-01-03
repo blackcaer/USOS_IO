@@ -347,7 +347,7 @@ a,a:hover{
 .button-main:hover {
     background-color: #1E3E62;
     color: white;
-    box-shadow: 0 0 20px #6fc5ff50;
+    box-shadow: 0 0 8px #6fc5ff50;
     transform: scale(1.1);
 }
 
@@ -374,7 +374,7 @@ a,a:hover{
 .button-link:hover {
     background-color: #1E3E62;
     color: white;
-    box-shadow: 0 0 20px #6fc5ff50;
+    box-shadow: 0 0 8px #6fc5ff50;
     transform: scale(1.1);
 }
 
