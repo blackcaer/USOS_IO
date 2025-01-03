@@ -1,28 +1,85 @@
 <div class="main-content pt-28 flex overflow-y-auto">
   <div *ngIf="isInfoOpen" class="modal">
     <div class="modal-content">
-      <div class="modal-header">
-        <h2>{{infoEvent.eventInfo.school_subject.subjectName}}</h2>
-        <span class="close-button" (click)="closeInfo()"> 
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
-            <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
-          </svg>
-        </span>
-      </div>
-      <ng-container [ngSwitch]="userRole">
+      <ng-container [ngSwitch]="userRole"> <!--Rodzic-->
         <div *ngSwitchCase="'parent'">
-          <p>Содержимое для родителя</p>
+          <div class="modal-header">
+            <h2>{{infoEvent.eventInfo.school_subject.subjectName}}</h2>
+            <span class="close-button" (click)="closeInfo()"> 
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
+                <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+              </svg>
+            </span>
+          </div>
         </div>
-        <div *ngSwitchCase="'teacher'">
-          <p *ngFor="let student of subjectStudentList">{{student.user.firstName}} {{student.user.lastName}}</p>
+        <div *ngSwitchCase="'teacher'"> <!--Nauczyciel-->
+          <div class="modal-header">
+            <h2>{{infoEvent.eventInfo.school_subject.subjectName}}</h2>
+            <div class="info-icons">            
+              <span class="info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" height="38px" viewBox="0 -960 960 960" width="38px" fill="#F5F5F5">
+                  <path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 294q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/>
+                </svg>
+                <span class="text-header">Sala {{infoEvent.eventInfo.place}}</span>
+              </span>
+              <span class="info-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" height="38px" viewBox="0 -960 960 960" width="38px" fill="#F5F5F5">
+                  <path d="M40-160v-112q0-34 17.5-62.5T104-378q62-31 126-46.5T360-440q66 0 130 15.5T616-378q29 15 46.5 43.5T680-272v112H40Zm720 0v-120q0-44-24.5-84.5T666-434q51 6 96 20.5t84 35.5q36 20 55 44.5t19 53.5v120H760ZM360-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm400-160q0 66-47 113t-113 47q-11 0-28-2.5t-28-5.5q27-32 41.5-71t14.5-81q0-42-14.5-81T544-792q14-5 28-6.5t28-1.5q66 0 113 47t47 113ZM120-240h480v-32q0-11-5.5-20T580-306q-54-27-109-40.5T360-360q-56 0-111 13.5T140-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T440-640q0-33-23.5-56.5T360-720q-33 0-56.5 23.5T280-640q0 33 23.5 56.5T360-560Zm0 320Zm0-400Z"/>
+                </svg>
+                <span class="text-header">Klasa {{infoEvent.eventInfo.school_subject.studentGroup.name}}</span>
+              </span>
+            </div>
+            <span class="close-button" (click)="closeInfo()"> 
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
+                <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+              </svg>
+            </span>
+          </div>
+          <table class="students-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Ocena</th>
+                <th>Obecność</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let student of subjectStudentList">
+                <td>{{student.user.firstName}} {{student.user.lastName}}</td>
+                <td>
+                  <input type="number" min="1" max="5" class="grade-input" />
+                </td>
+                <td>
+                  <input type="checkbox" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="start-lecture-container">
+            <button class="start-lecture-button">Start Lekcji</button>
+          </div>
         </div>
-        <div *ngSwitchCase="'student'">
+        <div *ngSwitchCase="'student'"> <!--Student-->
+          <div class="modal-header">
+            <h2>{{infoEvent.eventInfo.school_subject.subjectName}}</h2>
+            <span class="close-button" (click)="closeInfo()"> 
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
+                <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+              </svg>
+            </span>
+          </div>
           <p>Czas: {{ infoEvent.time }}</p>
           <p>Sala: {{ infoEvent.eventInfo.place }}</p>
           <p>Nauczyciel: {{ infoEvent.eventInfo.teacher.user.firstName }} {{ infoEvent.eventInfo.teacher.user.lastName }}</p>       
         </div>
         <div *ngSwitchDefault>
-          <p>Содержимое для других ролей</p>
+          <div class="modal-header">
+            <span class="close-button" (click)="closeInfo()"> 
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
+                <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+              </svg>
+            </span>
+          </div>
         </div>
       </ng-container>
     </div>

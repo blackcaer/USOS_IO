@@ -24,7 +24,7 @@ export class User {
         response.birth_date,
         response.sex,
         response.phone_number,
-        response.photoГrl,
+        response.photoUrl,
         response.role
       );
     }
