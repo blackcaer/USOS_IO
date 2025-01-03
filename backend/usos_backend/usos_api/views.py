@@ -605,3 +605,42 @@ class ParentConsentSubmitView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentGroupListView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StudentGroupSerializer
+
+    def get(self, request):
+        student_groups = StudentGroup.objects.all()
+        serializer = StudentGroupSerializer(student_groups, many=True)
+        return Response(serializer.data)
+
+class StudentGroupDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StudentGroupSerializer
+
+    def get(self, request, student_group_id):
+        student_group = get_object_or_404(StudentGroup, id=student_group_id)
+        serializer = StudentGroupSerializer(student_group)
+        return Response(serializer.data)
+
+class StudentGroupStudentsView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = StudentSerializer
+
+    def get(self, request, student_group_id):
+        student_group = get_object_or_404(StudentGroup, id=student_group_id)
+        students = student_group.students.all()
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data)
+
+class StudentGroupSubjectsView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SchoolSubjectSerializer
+
+    def get(self, request, student_group_id):
+        student_group = get_object_or_404(StudentGroup, id=student_group_id)
+        subjects = student_group.schoolsubject_set.all()
+        serializer = SchoolSubjectSerializer(subjects, many=True)
+        return Response(serializer.data)

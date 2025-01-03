@@ -804,3 +804,44 @@ class ConsentTemplateModelTests(TestCase):
             parent_user=self.parent, child_user=self.student, consent=self.consent_template, is_consent=False)
         result = self.consent_template.what_parent_submitted(self.parent)
         self.assertFalse(result)
+
+
+class StudentGroupsAPITests(APITestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            username='testuser', password='testpass', role='teacher', email="teacher@teacher.pl")
+        self.teacher = Teacher.objects.create(user=self.user)
+        self.student_group = StudentGroup.objects.create(name="Group 1", level=1)
+        self.student = Student.objects.create(user=User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl"))
+        self.student_group.students.add(self.student)
+        self.subject = SchoolSubject.objects.create(subject_name="Math", student_group=self.student_group)
+        self.client.login(username='testuser', password='testpass')
+
+    def test_get_all_student_groups(self):
+        url = reverse('student_group_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+    def test_get_student_group_info(self):
+        url = reverse('student_group_detail', args=[self.student_group.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['name'], self.student_group.name)
+
+    def test_get_students_for_student_group(self):
+        url = reverse('student_group_students', args=[self.student_group.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['user']['username'], self.student.user.username)
+
+    def test_get_subjects_for_student_group(self):
+        url = reverse('student_group_subjects', args=[self.student_group.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['subject_name'], self.subject.subject_name)

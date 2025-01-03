@@ -13,6 +13,9 @@ from usos_backend.usos_api.views import (
 from usos_backend.usos_api.views import (
     PendingConsentsView, ParentConsentDetailView, ConsentTemplateListView, ConsentTemplateDetailView, ParentConsentSubmitView
 )
+from usos_backend.usos_api.views import (
+    StudentGroupListView, StudentGroupDetailView, StudentGroupStudentsView, StudentGroupSubjectsView
+)
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -66,4 +69,9 @@ urlpatterns = [
     path('econsent/templates/<int:consent_template_id>/submit_consent/', ParentConsentSubmitView.as_view(), name='parent_consent_submit'),
     
     path('feed/<int:user_id>/', FeedView.as_view(), name='user_feed'),
+
+    path('student_groups/', StudentGroupListView.as_view(), name='student_group_list'),
+    path('student_groups/<int:student_group_id>/', StudentGroupDetailView.as_view(), name='student_group_detail'),
+    path('student_groups/<int:student_group_id>/students/', StudentGroupStudentsView.as_view(), name='student_group_students'),
+    path('student_groups/<int:student_group_id>/subjects/', StudentGroupSubjectsView.as_view(), name='student_group_subjects'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
