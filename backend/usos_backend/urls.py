@@ -16,6 +16,7 @@ from usos_backend.usos_api.views import (
 from usos_backend.usos_api.views import (
     StudentGroupListView, StudentGroupDetailView, StudentGroupStudentsView, StudentGroupSubjectsView
 )
+from usos_backend.usos_api.views import UserDetailView
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -45,6 +46,7 @@ urlpatterns = [
     
     path('user/', CurrentUserView.as_view(), name='current_user'),
     path('user/<int:user_id>/info/', UserInfoView.as_view(), name='user_info'),
+    path('test/', UserDetailView.as_view(), name='user_details'),
     
     path('user/<int:user_id>/student/groups/', StudentGroupsView.as_view(), name='student_groups'),
     path('user/<int:user_id>/student/groups/<int:group_id>/subjects/', StudentSubjectsView.as_view(), name='student_subjects'),

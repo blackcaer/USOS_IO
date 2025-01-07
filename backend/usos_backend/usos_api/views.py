@@ -28,7 +28,6 @@ from .serializers import (
     StudentSerializer, TeacherSerializer, ParentSerializer, MeetingSerializer, AttendanceSerializer, MessageSerializer
 )
 
-
 def get_consent_template_serializer(request, consent_template, many=False):
     context = {'request': request}
     if request.user.role == 'teacher':
@@ -649,3 +648,19 @@ class StudentGroupSubjectsView(APIView):
         subjects = student_group.schoolsubject_set.all()
         serializer = SchoolSubjectSerializer(subjects, many=True)
         return Response(serializer.data)
+
+class UserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response({
+            'user': serializer.data,
+            'role': user.role,
+            'permissions': {
+                'is_parent': IsParent().has_permission(request, self),
+                'is_teacher': IsTeacher().has_permission(request, self),
+                'is_parent_or_teacher': IsParentOrTeacher().has_permission(request, self),
+            }
+        })
