@@ -14,6 +14,7 @@ import { MainBlocksComponent } from './components/main-blocks/main-blocks.compon
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { ConsentsComponent } from './components/consents/consents.component';
 
 
 const routes: Routes = [
@@ -21,6 +22,7 @@ const routes: Routes = [
   {path: 'statistics', component: StatisticsComponent, canActivate: [authGuard]},
   {path: 'grades', component: GradesComponent, canActivate: [authGuard]},
   {path: 'schedule', component: ScheduleComponent, canActivate: [authGuard]},
+  {path: 'consents', component: ConsentsComponent, canActivate: [authGuard]},
   {path: 'main', component: MainBlocksComponent, canActivate: [authGuard]},
   {path: '', redirectTo: 'main', pathMatch: 'full'},
   {path: '**', redirectTo: 'main', pathMatch: 'full'}
@@ -33,7 +35,8 @@ const routes: Routes = [
     StatisticsComponent,
     GradesComponent,
     ScheduleComponent,
-    MainBlocksComponent
+    MainBlocksComponent,
+    ConsentsComponent
   ],
   imports: [
     BrowserModule,
