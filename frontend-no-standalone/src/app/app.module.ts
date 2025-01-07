@@ -3,10 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import {HttpClientXsrfModule} from '@angular/common/http';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatButtonModule } from '@angular/material/button';
+
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
@@ -47,10 +44,6 @@ const routes: Routes = [
       cookieName: 'csrftoken',
       headerName: 'X-CSRFToken',
     }),
-    MatDialogModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatButtonModule,
   ],
   providers: [
     provideAnimationsAsync()
