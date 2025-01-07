@@ -163,7 +163,11 @@ CORS_ALLOW_METHODS = [
     "OPTIONS",
 ]
 
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:4200',  # Adres twojego frontendu
+]
+
 CORS_ALLOW_HEADERS = ('content-disposition', 'accept-encoding',
-                      'content-type', 'accept', 'origin', 'authorization','HTTP_X_XSRF_TOKEN','XSRF-TOKEN')
+                      'content-type', 'accept', 'origin','withcredentials', 'authorization','HTTP_X_XSRF_TOKEN','XSRF-TOKEN')
 
 SESSION_COOKIE_HTTPONLY = False
