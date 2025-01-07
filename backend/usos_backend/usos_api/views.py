@@ -513,6 +513,7 @@ class ScheduledMeetingView(APIView):
     GET - Zwraca harmonogram spotkań na bieżący tydzień
     """
     serializer_class = ScheduledMeetingSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
