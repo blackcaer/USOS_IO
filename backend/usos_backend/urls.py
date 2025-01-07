@@ -17,6 +17,11 @@ from usos_backend.usos_api.views import (
     StudentGroupListView, StudentGroupDetailView, StudentGroupStudentsView, StudentGroupSubjectsView
 )
 from usos_backend.usos_api.views import UserDetailView
+from usos_backend.usos_api.views import (
+    ParentPermissionTestView,
+    TeacherPermissionTestView,
+    ParentAndTeacherPermissionTestView
+)
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -76,4 +81,8 @@ urlpatterns = [
     path('student_groups/<int:student_group_id>/', StudentGroupDetailView.as_view(), name='student_group_detail'),
     path('student_groups/<int:student_group_id>/students/', StudentGroupStudentsView.as_view(), name='student_group_students'),
     path('student_groups/<int:student_group_id>/subjects/', StudentGroupSubjectsView.as_view(), name='student_group_subjects'),
+
+    path('test/parentperm/', ParentPermissionTestView.as_view(), name='test_parent_perm'),
+    path('test/teacherperm/', TeacherPermissionTestView.as_view(), name='test_teacher_perm'),
+    path('test/parentandteacherperm/', ParentAndTeacherPermissionTestView.as_view(), name='test_parent_and_teacher_perm'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

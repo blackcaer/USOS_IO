@@ -664,3 +664,21 @@ class UserDetailView(APIView):
                 'is_parent_or_teacher': IsParentOrTeacher().has_permission(request, self),
             }
         })
+
+class ParentPermissionTestView(APIView):
+    permission_classes = [IsAuthenticated, IsParent]
+
+    def get(self, request):
+        return Response({'message': 'User has parent permissions'})
+
+class TeacherPermissionTestView(APIView):
+    permission_classes = [IsAuthenticated, IsTeacher]
+
+    def get(self, request):
+        return Response({'message': 'User has teacher permissions'})
+
+class ParentAndTeacherPermissionTestView(APIView):
+    permission_classes = [IsAuthenticated, IsParentOrTeacher]
+
+    def get(self, request):
+        return Response({'message': 'User has parent or teacher permissions'})
