@@ -845,3 +845,68 @@ class StudentGroupsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['subject_name'], self.subject.subject_name)
+
+
+class GetScheduledMeetingsTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+
+        # Create users
+        self.teacher_user = User.objects.create_user(
+            username="teacher_test", role="teacher", email="teacher@example.com", password="password")
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+
+        self.student_user = User.objects.create_user(
+            username="student_test", role="student", email="student@example.com", password="password")
+        self.student = Student.objects.create(user=self.student_user)
+
+        self.parent_user = User.objects.create_user(
+            username="parent_test", role="parent", email="parent@example.com", password="password")
+        self.parent = Parent.objects.create(user=self.parent_user)
+        self.parent.children.add(self.student)
+
+        self.student_group = StudentGroup.objects.create(
+            name="Group 1", level=1)
+        self.student_group.students.add(self.student)
+
+        self.school_subject = SchoolSubject.objects.create(
+            subject_name="Math", student_group=self.student_group)
+
+        self.scheduled_meeting = ScheduledMeeting.objects.create(
+            day_of_week=1,  # Poniedziałek
+            slot=1,  # 08:00 - 08:45
+            teacher=self.teacher,
+            school_subject=self.school_subject,
+            place=10  # Sala 10
+        )
+
+    def test_get_scheduled_meetings_for_student(self):
+        meetings = get_scheduled_meetings(self.student_user, None, None)
+        self.assertIn(self.scheduled_meeting, meetings)
+
+    def test_get_scheduled_meetings_for_teacher(self):
+        meetings = get_scheduled_meetings(self.teacher_user, None, None)
+        self.assertIn(self.scheduled_meeting, meetings)
+
+    def test_get_scheduled_meetings_for_parent(self):
+        meetings = get_scheduled_meetings(self.parent_user, None, None)
+        self.assertIn(self.scheduled_meeting, meetings)
+
+    def test_get_scheduled_meetings_for_student_with_date_range(self):
+        start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
+        end_of_week = start_of_week + timedelta(days=7)
+        meetings = get_scheduled_meetings(self.student_user, start_of_week, end_of_week)
+        self.assertIn(self.scheduled_meeting, meetings)
+
+    def test_get_scheduled_meetings_for_teacher_with_date_range(self):
+        start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
+        end_of_week = start_of_week + timedelta(days=7)
+        meetings = get_scheduled_meetings(self.teacher_user, start_of_week, end_of_week)
+        self.assertIn(self.scheduled_meeting, meetings)
+
+    def test_get_scheduled_meetings_for_parent_with_date_range(self):
+        start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
+        end_of_week = start_of_week + timedelta(days=7)
+        meetings = get_scheduled_meetings(self.parent_user, start_of_week, end_of_week)
+        self.assertIn(self.scheduled_meeting, meetings)
