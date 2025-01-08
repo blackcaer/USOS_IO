@@ -88,19 +88,19 @@
         <!-- schedule start -->
         <div class="block rounded-xl flex flex-grow flex-col mt-6 mb-14 ml-6">
           <!-- Button container -->
-          <div class="button-container flex flex-wrap items-center gap-6 w-full md:w-2/3">
-            <div class="buttons-wrapper grid grid-cols-1 grid-cols-3 gap-2 flex-grow">
-              <div class="button-main rounded-3xl px-4 py-2 mt-4 flex justify-center items-center" (click)="getActualWeek()">Aktualny tydzień</div>
-              <div class="button-main rounded-3xl px-4 py-2 mt-4 flex justify-center items-center" (click)="getFollowingWeek()">Następny tydzień</div>
-              <div class="button-main rounded-3xl px-4 py-2 mt-4 flex justify-center items-center">Inny tydzień</div>            
+          <div class="button-container flex flex-wrap items-center mt-4 w-full ">
+            <div class="buttons-wrapper flex ml-2 mr-5">
+              <div class="button-main rounded-3xl px-4 py-2 mt-4 mx-4 flex justify-center items-center" (click)="getActualWeek()">Aktualny tydzień</div>
+              <div class="button-main rounded-3xl px-4 py-2 mt-4 mx-4 flex justify-center items-center" (click)="getFollowingWeek()">Następny tydzień</div>
+              <div class="button-main rounded-3xl px-4 py-2 mt-4 mx-4 flex justify-center items-center">Inny tydzień</div>            
             </div>
-            <div class="ml-auto mt-4 text-sm md:text-base">
-              {{ firstCurrentWeekDay.getDate() }}.{{ firstCurrentWeekDay.getMonth() + 1 }}.{{ firstCurrentWeekDay.getFullYear() }}-{{ lastCurrentWeekDay.getDate() }}.{{ lastCurrentWeekDay.getMonth() + 1 }}.{{ lastCurrentWeekDay.getFullYear() }}
+            <div class="ml-6 mt-4 text-sm md:text-base">
+              {{ getFormattedDate(firstCurrentWeekDay) }} - {{ getFormattedDate(lastCurrentWeekDay) }}
             </div>
           </div>
         
           <!-- Schedule container -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-6 px-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-6 px-6 pb-6">
             <div class="schedule-container col-span-1" *ngFor="let day of [1, 2, 3, 4, 5]">
               <div class="time-column">
                 <div class="time-slot" *ngFor="let hour of hours">{{ hour }}</div>
