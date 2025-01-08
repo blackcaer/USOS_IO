@@ -184,7 +184,7 @@ class ParentConsentSerializer(serializers.ModelSerializer):
 class ConsentTemplateSerializer(serializers.ModelSerializer):
     parent_consents = ParentConsentSerializer(many=True, read_only=True)
     parent_submission = serializers.SerializerMethodField()
-
+    author = TeacherSerializer()
     class Meta:
         model = ConsentTemplate
         fields = ['id', 'title', 'description', 'end_date',
