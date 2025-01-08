@@ -88,76 +88,43 @@
     </div>
   </div>
 
-
-    <div class="section-content w-4/5" style="display: flex;">
+        <!-- schedule start -->
         <div class="block rounded-xl flex flex-grow flex-col mt-6 mb-14 ml-6">
-
-          <!--
-            <div class="grid grid-cols-3 gap-5 w-1/3">
-                <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center">Aktualny tydzień</div>
-                <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center">Następny tydzień</div>
-                <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center">Inny tydzień</div>
+          <!-- Button container -->
+          <div class="button-container flex flex-wrap items-center mt-4 w-full ">
+            <div class="buttons-wrapper flex ml-2 mr-5">
+              <div class="button-main rounded-3xl px-4 py-2 mt-4 mx-4 flex justify-center items-center" (click)="getActualWeek()">Aktualny tydzień</div>
+              <div class="button-main rounded-3xl px-4 py-2 mt-4 mx-4 flex justify-center items-center" (click)="getFollowingWeek()">Następny tydzień</div>
+              <div class="button-main rounded-3xl px-4 py-2 mt-4 mx-4 flex justify-center items-center">Inny tydzień</div>            
             </div>
-          -->
-
-            <div class="button-container flex items-center gap-10 w-2/3">
-              <div class="buttons-wrapper grid grid-cols-3 gap-5 flex-grow">
-                <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center" (click)="getActualWeek()">Aktualny tydzień</div>
-                <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center" (click)="getFollowingWeek()">Następny tydzień</div>
-                <div class="button-main rounded-3xl mx-4 ml-6 mt-7 col-span-1 w-full flex justify-center items-center">Inny tydzień</div>            
+            <div class="ml-6 mt-4 text-sm md:text-base">
+              {{ getFormattedDate(firstCurrentWeekDay) }} - {{ getFormattedDate(lastCurrentWeekDay) }}
+            </div>
+          </div>
+        
+          <!-- Schedule container -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-6 px-6 pb-6">
+            <div class="schedule-container col-span-1" *ngFor="let day of [1, 2, 3, 4, 5]">
+              <div class="time-column">
+                <div class="time-slot" *ngFor="let hour of hours">{{ hour }}</div>
               </div>
-              <div class="ml-auto mt-7">{{ this.firstCurrentWeekDay.getDate() }}.{{ this.firstCurrentWeekDay.getMonth() + 1 }}.{{ this.firstCurrentWeekDay.getFullYear() }}-{{ this.lastCurrentWeekDay.getDate() }}.{{ this.lastCurrentWeekDay.getMonth() + 1 }}.{{ this.lastCurrentWeekDay.getFullYear() }}</div>
-            </div>
-
-
-            <div class="grid grid-cols-5 gap-5 mt-4 ml-6 mr-6 mb-6">
-                <!--<div class="section-content rounded-xl col-span-1 block-schedule"></div>
-                <div class="section-content rounded-xl col-span-1 block-schedule"></div>
-                <div class="section-content rounded-xl col-span-1 block-schedule"></div>
-                <div class="section-content rounded-xl col-span-1 block-schedule"></div>
-                <div class="section-content rounded-xl col-span-1 block-schedule"></div>-->
-                
-                  <!-- <div class="schedule-container col-span-1">
-                    <div class="time-column">
-                      <div class="time-slot" *ngFor="let hour of hours">{{ hour }}</div>
-                    </div>
-                    <div class="events-column">
-                      <div 
-                        class="event" 
-                        *ngFor="let event of events" 
-                        [style.top]="event.top" 
-                        [style.height]="event.height">
-                        <div class="event-title">{{ event.title }}</div>
-                        <div class="event-time">{{ event.time }}</div>
-                      </div>
-                    </div>
-                  </div> -->
-
-                  <div class="schedule-container col-span-1" *ngFor="let day of [1, 2, 3, 4, 5]">
-                    <div class="time-column">
-                      <div class="time-slot" *ngFor="let hour of hours">{{ hour }}</div>
-                    </div>
-                    <div class="events-column">
-                      <div 
-                        class="event" 
-                        *ngFor="let event of weekEvents[day]" 
-                        [style.top]="event.top" 
-                        [style.height]="event.height"
-                        (click) = "openInfo(event)"
-                        style="cursor: pointer;">
-                        <div class="event-title">{{ event.eventInfo.school_subject.subjectName }}</div>
-                        <div class="event-details">
-                          <div class="event-time">{{ event.time }}</div>
-                          <div class="event-place">Sala: {{ event.eventInfo.place }}</div>
-                        </div>
-                      </div>
-                      <div *ngIf="weekEvents[day] && weekEvents[day].length === 0" class="empty-event">
-                        Dzień wolny
-                      </div>
-                    </div>
+              <div class="events-column relative">
+                <div 
+                  class="event absolute left-0 right-0 cursor-pointer" 
+                  *ngFor="let event of weekEvents[day]" 
+                  [style.top]="event.top" 
+                  [style.height]="event.height"
+                  (click)="openInfo(event)">
+                  <div class="event-title">{{ event.eventInfo.school_subject.subjectName }}</div>
+                  <div class="event-details">
+                    <div class="event-time">{{ event.time }}</div>
+                    <div class="event-place">Sala: {{ event.eventInfo.place }}</div>
                   </div>
-
+                </div>
+                <div *ngIf="weekEvents[day] && weekEvents[day].length === 0" class="empty-event text-center mt-4">
+                  Dzień wolny
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-</div>

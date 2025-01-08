@@ -289,3 +289,50 @@
     transform: scale(0.98);
   }
 
+  /* zmiany by elementy sie nie zbijaly w schedule */
+
+  /* Zapobieganie zbijaniu się elementów na małych ekranach */
+@media (max-width: 640px) { /* Tailwind's sm breakpoint */
+  .button-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .buttons-wrapper {
+    width: 100%;
+  }
+  
+  .ml-auto {
+    margin-left: 0;
+  }
+}
+
+/* Dodanie minimalnej szerokości do przycisków */
+.button-main {
+  min-width: 130px;
+  min-height: 30px;
+}
+
+/* Poprawa wyglądu na bardzo małych ekranach */
+@media (max-width: 480px) {
+  .button-main {
+    min-width: 100px;
+    font-size: 14px;
+  }
+  
+  .button-container {
+    gap: 4px;
+  }
+  
+  .buttons-wrapper {
+    gap: 2px;
+  }
+  
+  .ml-auto {
+    margin-left: 0;
+  }
+}
+
+ 
+
+ 
