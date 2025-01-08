@@ -441,6 +441,7 @@ class MeetingListCreateView(APIView):
     POST - Tworzy nowe spotkanie
     """
     serializer_class = MeetingSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         past_meetings = Meeting.objects.all()
@@ -462,6 +463,7 @@ class MeetingDetailView(APIView):
     DELETE - Usuwa spotkanie
     """
     serializer_class = MeetingSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, meeting_id):
         meeting = get_object_or_404(Meeting, pk=meeting_id)
@@ -481,6 +483,7 @@ class MeetingAttendanceView(APIView):
     np. [{"student": 1, "status": "P"}, {"student": 2, "status": "A"}]
     Ważne żeby studenci byli z grupy która faktycznie ma te zajęcia, inaczej error "Student not in the valid student group"
     """
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, meeting_id):
         meeting = get_object_or_404(Meeting, pk=meeting_id)
@@ -514,6 +517,7 @@ class ScheduledMeetingView(APIView):
     GET - Zwraca harmonogram spotkań na bieżący tydzień
     """
     serializer_class = ScheduledMeetingSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
