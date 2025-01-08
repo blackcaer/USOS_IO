@@ -28,6 +28,7 @@ from .serializers import (
     StudentSerializer, TeacherSerializer, ParentSerializer, MeetingSerializer, AttendanceSerializer, MessageSerializer
 )
 
+
 def get_consent_template_serializer(request, consent_template, many=False):
     context = {'request': request}
     if request.user.role == 'teacher':
@@ -513,7 +514,6 @@ class ScheduledMeetingView(APIView):
     GET - Zwraca harmonogram spotkań na bieżący tydzień
     """
     serializer_class = ScheduledMeetingSerializer
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
@@ -649,37 +649,3 @@ class StudentGroupSubjectsView(APIView):
         subjects = student_group.schoolsubject_set.all()
         serializer = SchoolSubjectSerializer(subjects, many=True)
         return Response(serializer.data)
-
-class UserDetailView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        serializer = UserSerializer(user)
-        return Response({
-            'user': serializer.data,
-            'role': user.role,
-            'permissions': {
-                'is_parent': IsParent().has_permission(request, self),
-                'is_teacher': IsTeacher().has_permission(request, self),
-                'is_parent_or_teacher': IsParentOrTeacher().has_permission(request, self),
-            }
-        })
-
-class ParentPermissionTestView(APIView):
-    permission_classes = [IsAuthenticated, IsParent]
-
-    def get(self, request):
-        return Response({'message': 'User has parent permissions'})
-
-class TeacherPermissionTestView(APIView):
-    permission_classes = [IsAuthenticated, IsTeacher]
-
-    def get(self, request):
-        return Response({'message': 'User has teacher permissions'})
-
-class ParentAndTeacherPermissionTestView(APIView):
-    permission_classes = [IsAuthenticated, IsParentOrTeacher]
-
-    def get(self, request):
-        return Response({'message': 'User has parent or teacher permissions'})
