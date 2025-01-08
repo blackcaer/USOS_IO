@@ -5,6 +5,8 @@ import { SchoolSubject } from '../common/school-subject';
 import { Grade } from '../common/grade';
 import { ScheduleEvent } from '../common/schedule-event';
 import { Student } from '../common/student';
+import { Teacher } from '../common/teacher';
+import { Parent } from '../common/parent';
 
 @Injectable({
   providedIn: 'root'
@@ -82,9 +84,38 @@ export class UserService {
     } 
   }
 
+  async getTeacher(userId: number): Promise<Teacher | null> {
+    const url = `http://localhost:8000/teachers/${userId}`;
+    try {
+      const response = await lastValueFrom(this.http.get<getTeacherResponse>(url, { withCredentials: true }));
+      return Teacher.fromApiResponse(response);
+    }
+    catch (error) {
+      console.error('Błąd w ładowaniu nauczyciela:', error);
+      return null;
+    } 
+  }
+
+  async getParent(userId: number): Promise<Parent | null> {
+    const url = `http://localhost:8000/parents/${userId}`;
+    try {
+      const response = await lastValueFrom(this.http.get<getParentResponse>(url, { withCredentials: true }));
+      return Parent.fromApiResponse(response);
+    }
+    catch (error) {
+      console.error('Błąd w ładowaniu rodzica:', error);
+      return null;
+    } 
+  }
+
   getCurrentUserIdAsInt(): number {
     const storedUserId = localStorage.getItem('currentUserId');
     return storedUserId ? parseInt(storedUserId, 10) : -1;
+  }
+
+  getUserToken(): string {
+    const storedUserToken = localStorage.getItem('xsrftoken')!;
+    return storedUserToken;
   }
 
   getUserRole(): string {
@@ -142,6 +173,12 @@ export interface getScheduleEventResponse {
 interface getTeacherResponse {
   user_id: number;
   user: getUserResponse;
+}
+
+interface getParentResponse {
+  userId: number;
+  user: getUserResponse;
+  children: number[];
 }
 
 interface getUserResponse {

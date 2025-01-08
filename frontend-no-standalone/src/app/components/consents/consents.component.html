@@ -1,8 +1,58 @@
 <div class="main-content pt-28 flex overflow-y-auto">
-    <div class="section-content w-4/5" style="display: flex;">
-        <div class="block rounded-xl flex flex-col mt-6 mb-14 ml-6">
 
-                
+    <div *ngIf="isInfoOpen" class="modal fade-in">
+        <div class="modal-content scale-anim">
+            <div class="modal-header">
+                <h2>{{ infoConsent?.title }}</h2>
+                <span class="close-button" (click)="closeInfo()"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
+                      <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+                    </svg>
+                </span>
+            </div> 
+            <p>{{ infoConsent?.description }}</p>     
+            <p style="margin-top: 10px; font-size: 18px; color: #F5F5F5;">
+              Termin potwierdzenia: {{ formatDate(infoConsent!.endDate) }}
+            </p>
+            <div style="margin-top: 20px;">
+                <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+                <button (click)="uploadFile()" class="mt-3 px-4 py-2 button-main rounded-3xl" style="max-width: 200px; width: 120px; height: 80px;">
+                  Wyślij potwierdzenie
+                </button>
+            </div>
         </div>
+    </div>    
+
+    <div class="section-content w-4/5" style="display: flex;">
+      <div class="block rounded-xl flex flex-col mt-6 mb-14 ml-6">
+        <ng-container [ngSwitch]="userRole">
+          <div *ngSwitchCase="'parent'">
+            <div
+              class="section-content block-naked mt-4 rounded-xl overflow-hidden mb-7 ml-7"
+              style="width: 96%; max-height: 600px; overflow-y: auto;"
+            >
+              <div
+                class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl"
+                style="height: auto; background: #1E3E62; padding: 16px;"
+                *ngFor="let p of pendingConsents"
+              >
+                <span class="ml-3" style="font-size: clamp(9px, 2.7vw, 44px);">
+                  {{ p.title }}
+                </span>
+                <p class="ml-3 text-sm mt-2" style="font-size: clamp(9px, 1.7vw, 22px);">
+                  Od: {{ p.author.user.firstName }} {{ p.author.user.lastName }}
+                </p>
+                <p class="ml-3 text-sm mt-1" style="font-size: clamp(9px, 1.7vw, 22px);">
+                  Status: {{ p.parentSubmission ? 'Przyjęta' : 'Nie przyjęta' }}
+                </p>
+                <button (click)="openInfo(p)" class="mt-3 ml-3 px-4 py-2 button-main rounded-3xl mx-4" style="max-width: 150px; width: 100px;">
+                  Szczegóły
+                </button>
+              </div>
+            </div>
+          </div>
+          <div *ngSwitchCase="'teacher'"></div>
+        </ng-container>
+      </div>
     </div>
   </div>

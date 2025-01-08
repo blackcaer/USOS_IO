@@ -1,8 +1,8 @@
 <div class="main-content pt-28 flex overflow-y-auto">
   <div *ngIf="isInfoOpen" class="modal fade-in">
     <div class="modal-content scale-anim">
-      <ng-container [ngSwitch]="userRole"> <!--Rodzic-->
-        <div *ngSwitchCase="'parent'">
+      <ng-container [ngSwitch]="userRole"> 
+        <div *ngSwitchCase="'parent'">  <!--Rodzic-->
           <div class="modal-header">
             <h2>{{infoEvent.eventInfo.school_subject.subjectName}}</h2>
             <span class="close-button" (click)="closeInfo()"> 
@@ -11,6 +11,9 @@
               </svg>
             </span>
           </div>
+          <p>Czas: {{ infoEvent.time }}</p>
+          <p>Sala: {{ infoEvent.eventInfo.place }}</p>
+          <p>Nauczyciel: {{ infoEvent.eventInfo.teacher.user.firstName }} {{ infoEvent.eventInfo.teacher.user.lastName }}</p>    
         </div>
         <div *ngSwitchCase="'teacher'"> <!--Nauczyciel-->
           <div class="modal-header">

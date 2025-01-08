@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { UserService } from '../../services/user.service';
@@ -34,6 +35,15 @@ export class MainBlocksComponent {
   async ngOnInit() {
     await this.fillLastGrades();
     await this.fillEvents();
+  }
+
+  async test() {
+    try {
+      const response = await lastValueFrom(this.http.get('http://localhost:8000/test/', { withCredentials: true }));
+      console.log('Ответ от сервера:', response);
+    } catch (error) {
+      console.error('Ошибка при запросе:', error);
+    }
   }
 
   async fillLastGrades() {
@@ -106,12 +116,12 @@ export class MainBlocksComponent {
   }
 
   showNextDay() {
-    this.currentDay = this.currentDay === 5 ? 1 : this.currentDay + 1;
+    this.currentDay = this.currentDay === 5 ? 5 : this.currentDay + 1;
     this.currentDayName = this.getDayName(this.currentDay);
   }
 
   showPreviousDay() {
-    this.currentDay = this.currentDay === 1 ? 5 : this.currentDay - 1;
+    this.currentDay = this.currentDay === 1 ? 1 : this.currentDay - 1;
     this.currentDayName = this.getDayName(this.currentDay);
   }
 
