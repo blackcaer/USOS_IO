@@ -184,7 +184,8 @@ class ParentConsentSerializer(serializers.ModelSerializer):
 class ConsentTemplateSerializer(serializers.ModelSerializer):
     parent_consents = ParentConsentSerializer(many=True, read_only=True)
     parent_submission = serializers.SerializerMethodField()
-    author = TeacherSerializer()
+    author = serializers.PrimaryKeyRelatedField(queryset=Teacher.objects.all())
+
     class Meta:
         model = ConsentTemplate
         fields = ['id', 'title', 'description', 'end_date',
@@ -205,6 +206,11 @@ class ConsentTemplateSerializer(serializers.ModelSerializer):
             parent = Parent.objects.get(user=request.user)
             return obj.what_parent_submitted(parent)
         return None
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['author'] = TeacherSerializer(instance.author).data
+        return representation
 
 
 class MeetingSerializer(serializers.ModelSerializer):
