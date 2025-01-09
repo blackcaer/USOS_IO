@@ -187,6 +187,7 @@ class GradeListCreateView(APIView):
         serializer = GradeSerializer(grades, many=True)
         return Response(serializer.data)
 
+    @csrf_exempt
     def post(self, request, user_id, subject_id):
         student = get_object_or_404(Student, user_id=user_id)
         subject = get_object_or_404(SchoolSubject, id=subject_id)
@@ -269,6 +270,7 @@ class GradeColumnView(APIView):
         serializer = GradeColumnSerializer(columns, many=True)
         return Response(serializer.data)
     
+    @csrf_exempt
     def post(self, request, subject_id):
         serializer = GradeColumnSerializer(data=request.data)
         if serializer.is_valid():
@@ -452,7 +454,7 @@ class MeetingListCreateView(APIView):
         past_meetings = Meeting.objects.all()
         serializer = MeetingSerializer(past_meetings, many=True)
         return Response(serializer.data)
-
+    @csrf_exempt
     def post(self, request):
         serializer = MeetingSerializer(data=request.data)
         if serializer.is_valid():
@@ -496,6 +498,7 @@ class MeetingAttendanceView(APIView):
         serializer = AttendanceSerializer(attendances, many=True)
         return Response(serializer.data)
 
+    @csrf_exempt
     def post(self, request, meeting_id):
         meeting = get_object_or_404(Meeting, pk=meeting_id)
 
@@ -570,6 +573,7 @@ class ConsentTemplateListView(APIView):
         serializer = ConsentTemplateSerializer(consent_templates, many=True)
         return Response(serializer.data)
 
+    @csrf_exempt    
     def post(self, request):
         teacher = get_object_or_404(Teacher, user=request.user)
         data = request.data.copy()
@@ -608,6 +612,7 @@ class ParentConsentSubmitView(APIView):
     permission_classes = [IsAuthenticated, IsParent]
     serializer_class = ParentConsentSerializer
 
+    @csrf_exempt
     def post(self, request, consent_template_id):
         parent = get_object_or_404(Parent, user=request.user)
         consent_template = get_object_or_404(
