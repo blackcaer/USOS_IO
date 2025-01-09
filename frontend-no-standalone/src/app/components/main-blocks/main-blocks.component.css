@@ -1,69 +1,159 @@
 .schedule-container {
-    display: flex;
-    background-color: #1E3E62;
-    padding: 10px;
-    border-radius: 8px;
-    color: white;
-    font-family: Arial, sans-serif;
-  }
-  
-  .time-column {
-    width: 2vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .time-slot {
-    height: 60px;
-    text-align: center;
-    font-size: 12px;
-    border-top: 1px solid #1E3E62;
-    color: #ccc;
-  }
-  
-  .events-column {
-    flex: 1;
-    position: relative;
-    margin-left: 10px;
-    background-color: #0B192C;
-    border-radius: 8px;
-    padding: 10px;
-    overflow: hidden;
-  }
-  
-  .event {
-    position: absolute;
-    left: 0;
-    right: 0;
-    margin: 0 5px;
-    padding: 5px;
-    background-color: #fff;
-    border-radius: 8px;
-    color: black;
-    font-size: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .event-title {
-    font-weight: bold;
-  }
+  display: flex;
+  background-color: #1E3E62;
+  padding: 10px;
+  border-radius: 8px;
+  color: white;
+  font-family: Arial, sans-serif;
+}
 
-  .event-details {
-    display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    color: #666;
-  }
-  
-  .event-time {
-    font-size: 10px;
-    color: #666;
-  }
+.time-column {
+  width: 2vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-  .empty-event {
-    text-align: center;
-    font-size: 14px;
-    color: #ccc;
-    margin-top: 50%;
-  }
+.time-slot {
+  height: 60px;
+  text-align: center;
+  font-size: 12px;
+  border-top: 1px solid #1E3E62;
+  color: #ccc;
+}
+
+.events-column {
+  flex: 1;
+  position: relative;
+  margin-left: 10px;
+  background-color: #0B192C;
+  border-radius: 8px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.event {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 5px;
+  padding: 5px;
+  background-color: #fff;
+  border-radius: 8px;
+  color: black;
+  font-size: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.event-title {
+  font-weight: bold;
+}
+
+.event-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #666;
+}
+
+.event-time {
+  font-size: 10px;
+  color: #666;
+}
+
+.empty-event {
+  text-align: center;
+  font-size: 14px;
+  color: #ccc;
+  margin-top: 50%;
+}
+
+/* animacja */
+
+/* Wrapper i treść */
+.schedule-content-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 100%; /* Dopasowanie do kontenera */
+  width: 100%;
+}
+
+/* Treść podlegająca przesuwaniu */
+.schedule-content {
+  position: relative;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Wewnętrzny wrapper */
+.schedule-content-inner {
+  display: flex;
+  flex-direction: row; /* Czas + Wydarzenia obok siebie */
+  max-height: 500px;   /* na hama wpierdolone ewentualnie do zmiany kiedys*/
+}
+
+/* Kolumny */
+.time-column {
+  width: 2vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.events-column {
+  flex: 1;
+  position: relative;
+  margin-left: 10px;
+  background-color: #0B192C;
+  border-radius: 8px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+/* Animacja chowania */
+.schedule-content.slide-out-left {
+transform: translateX(-100%);
+opacity: 0;
+}
+
+.schedule-content.slide-out-right {
+transform: translateX(100%);
+opacity: 0;
+}
+
+/* Animacja wchodzenia */
+.schedule-content.slide-in-left {
+transform: translateX(-100%);
+opacity: 0;
+animation: slide-in-left 0.3s forwards;
+}
+
+.schedule-content.slide-in-right {
+transform: translateX(100%);
+opacity: 0;
+animation: slide-in-right 0.3s forwards;
+}
+
+/* Klucze animacji */
+@keyframes slide-in-left {
+0% {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+100% {
+  transform: translateX(0);
+  opacity: 1;
+}
+}
+
+@keyframes slide-in-right {
+0% {
+  transform: translateX(100%);
+  opacity: 0;
+}
+100% {
+  transform: translateX(0);
+  opacity: 1;
+}
+}

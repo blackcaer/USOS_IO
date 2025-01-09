@@ -115,19 +115,74 @@ export class MainBlocksComponent {
     }
   }
 
-  showNextDay() {
-    this.currentDay = this.currentDay === 5 ? 5 : this.currentDay + 1;
-    this.currentDayName = this.getDayName(this.currentDay);
-  }
+  // showNextDay() {
+  //   this.currentDay = this.currentDay === 5 ? 5 : this.currentDay + 1;
+  //   this.currentDayName = this.getDayName(this.currentDay);
+  // }
 
-  showPreviousDay() {
-    this.currentDay = this.currentDay === 1 ? 1 : this.currentDay - 1;
-    this.currentDayName = this.getDayName(this.currentDay);
+  // showPreviousDay() {
+  //   this.currentDay = this.currentDay === 1 ? 1 : this.currentDay - 1;
+  //   this.currentDayName = this.getDayName(this.currentDay);
+  // }
+
+  // getDayName(day: number): string {
+  //   const days = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek'];
+  //   return days[day - 1];
+  // }
+
+  isSliding: boolean = false;
+
+  showNextDay() {
+    if (this.isSliding) return;
+    this.isSliding = true;
+  
+    const content = document.querySelector('.schedule-content') as HTMLElement;
+  
+    // Faza chowania w lewo
+    content.classList.add('slide-out-left');
+    setTimeout(() => {
+      content.classList.remove('slide-out-left');
+  
+      // Zmień aktualny dzień
+      this.currentDay = this.currentDay === 5 ? 1 : this.currentDay + 1;
+      this.currentDayName = this.getDayName(this.currentDay);
+  
+      // Faza wchodzenia z prawej
+      content.classList.add('slide-in-right');
+      setTimeout(() => {
+        content.classList.remove('slide-in-right');
+        this.isSliding = false;
+      }, 300); // Czas trwania animacji
+    }, 300); // Czas trwania animacji chowania
   }
+  
+  showPreviousDay() {
+    if (this.isSliding) return;
+    this.isSliding = true;
+  
+    const content = document.querySelector('.schedule-content') as HTMLElement;
+  
+    // Faza chowania w prawo
+    content.classList.add('slide-out-right');
+    setTimeout(() => {
+      content.classList.remove('slide-out-right');
+  
+      // Zmień aktualny dzień
+      this.currentDay = this.currentDay === 1 ? 5 : this.currentDay - 1;
+      this.currentDayName = this.getDayName(this.currentDay);
+  
+      // Faza wchodzenia z lewej
+      content.classList.add('slide-in-left');
+      setTimeout(() => {
+        content.classList.remove('slide-in-left');
+        this.isSliding = false;
+      }, 300); // Czas trwania animacji
+    }, 300); // Czas trwania animacji chowania
+  }
+  
 
   getDayName(day: number): string {
     const days = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek'];
     return days[day - 1];
   }
 }
-
