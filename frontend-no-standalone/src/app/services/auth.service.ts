@@ -8,7 +8,10 @@ import { CookieService } from './cookie.service';
   providedIn: 'root'
 })
 export class AuthService {
-  private loginUrl = 'http://localhost:8000/auth/login/';
+  private mainUrl2 = 'http://127.0.0.1:8000';
+  private mainUrl = 'http://localhost:8000';
+  private options = {withCredentials: true, 'access-control-allow-origin': "http://localhost:4200/"};
+  private loginUrl = this.mainUrl + '/auth/login/';
 
   constructor(private router: Router,
               private http: HttpClient, 
@@ -21,7 +24,7 @@ export class AuthService {
     formData.append('password', password);
 
     return new Observable((observer) => {
-      this.http.post(this.loginUrl, formData, { withCredentials: true }).subscribe({
+      this.http.post(this.loginUrl, formData, this.options).subscribe({
         next: (response: any) => {
           const xsrfToken = this.cookieService.getCookie('XSRF_TOKEN');
           const sessionid = this.cookieService.getCookie('sessionid');

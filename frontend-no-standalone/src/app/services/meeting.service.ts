@@ -7,11 +7,16 @@ import { Observable } from 'rxjs';
 })
 export class MeetingService {
 
-  private apiUrl = 'http://127.0.0.1:8000/meetings/';
+  private mainUrl2 = 'http://127.0.0.1:8000';
+  private mainUrl = 'http://localhost:8000';
+  private options = {withCredentials: true, 'access-control-allow-origin': "http://localhost:4200/"};
+  private apiUrl = this.mainUrl + '/meetings/';
 
   constructor(private http: HttpClient) { }
 
+/*   options = {withCredentials: true, 'access-control-allow-origin': "http://localhost:4200/", 'Content-Type': 'application/json'}; */
+
   createMeeting(meetingData: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, meetingData, { withCredentials: true });
+    return this.http.post<any>(this.apiUrl, meetingData, this.options);
   }
 }

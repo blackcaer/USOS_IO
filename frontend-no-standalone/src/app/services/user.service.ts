@@ -12,7 +12,10 @@ import { Parent } from '../common/parent';
   providedIn: 'root'
 })
 export class UserService {
-  private userUrl = 'http://localhost:8000/user';
+  private mainUrl2 = 'http://127.0.0.1:8000';
+  private mainUrl = 'http://localhost:8000';
+  private options = {withCredentials: true, 'access-control-allow-origin': "http://localhost:4200/"};
+  private userUrl = this.mainUrl + '/user';
   private currentUserId = localStorage.getItem('currentUserId');
 
   constructor(private http: HttpClient) {
@@ -49,7 +52,7 @@ export class UserService {
   }
 
   async getUsersGradesFromSubject(userId: number, subjectId: number): Promise<Array<Grade>> {
-    const url = `http://localhost:8000/grades/${userId}/${subjectId}`;
+    const url = `${this.mainUrl}/grades/${userId}/${subjectId}`;
     try {
       const response = await lastValueFrom(this.http.get<getGradeResponse[]>(url, { withCredentials: true }));
       return response.map(element => Grade.fromApiResponse(element));
@@ -61,7 +64,7 @@ export class UserService {
   }
 
   async getUserSchedule(): Promise<Array<ScheduleEvent>> {
-    const url = `http://localhost:8000/meetings/schedule/`;
+    const url = `${this.mainUrl}/meetings/schedule/`;
     try {
       const response = await lastValueFrom(this.http.get<getScheduleEventResponse[]>(url, { withCredentials: true }));
       return response.map(element => ScheduleEvent.fromApiResponse(element));
@@ -73,7 +76,7 @@ export class UserService {
   } 
 
   async getStudent(userId: number): Promise<Student | null> {
-    const url = `http://localhost:8000/students/${userId}`;
+    const url = `${this.mainUrl}/students/${userId}`;
     try {
       const response = await lastValueFrom(this.http.get<getStudentResponse>(url, { withCredentials: true }));
       return Student.fromApiResponse(response);
@@ -85,7 +88,7 @@ export class UserService {
   }
 
   async getTeacher(userId: number): Promise<Teacher | null> {
-    const url = `http://localhost:8000/teachers/${userId}`;
+    const url = `${this.mainUrl}/teachers/${userId}`;
     try {
       const response = await lastValueFrom(this.http.get<getTeacherResponse>(url, { withCredentials: true }));
       return Teacher.fromApiResponse(response);
@@ -97,7 +100,7 @@ export class UserService {
   }
 
   async getParent(userId: number): Promise<Parent | null> {
-    const url = `http://localhost:8000/parents/${userId}`;
+    const url = `${this.mainUrl}/parents/${userId}`;
     try {
       const response = await lastValueFrom(this.http.get<getParentResponse>(url, { withCredentials: true }));
       return Parent.fromApiResponse(response);

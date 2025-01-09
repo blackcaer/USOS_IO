@@ -14,7 +14,11 @@ export class ConsentService {
               private userService: UserService
   ) { }
 
-  private consentUrl: string = "http://localhost:8000/econsent";
+  private mainUrl2 = 'http://127.0.0.1:8000';
+  private mainUrl = 'http://localhost:8000';
+  private options = {withCredentials: true, 'access-control-allow-origin': "http://localhost:4200/"};
+
+  private consentUrl: string = this.mainUrl + "/econsent";
 
   async getPendingConsents(): Promise<Consent[]> {
       const url = `${this.consentUrl}/templates/pending/`;
@@ -29,8 +33,10 @@ export class ConsentService {
     }
 
     async postParentConsent(consentId: number, data: FormData) {
+      const token = this.userService.getUserToken();
+      const headers = new HttpHeaders().set('HTTP_X_XSRF_TOKEN', `${token}`); 
 
-      this.http.post<any>(`${this.consentUrl}/templates/${consentId}/submit_consent/`, data, {withCredentials: true})
+      this.http.post(`${this.consentUrl}/templates/${consentId}/submit_consent/`, data, this.options)
       .subscribe({
         next: (response) => {
           console.log('Plik załadowany:', response);
