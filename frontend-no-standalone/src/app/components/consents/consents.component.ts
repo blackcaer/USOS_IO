@@ -51,6 +51,16 @@ export class ConsentsComponent {
       });
   }
 
+/*   fillConsentTemplates() {
+    this.consentService.getPendingConsents()
+      .then((consents) => {
+        this.pendingConsents = consents;
+      })
+      .catch((error) => {
+        console.error('Błąd przy ładowaniu zgód:', error);
+      });
+  } */
+
   openInfo(consent: Consent) {
     this.infoConsent = consent;
     console.log(consent);

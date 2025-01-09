@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { Consent } from '../common/consent';
 import { Teacher } from '../common/teacher';
+import { ConsentTemplate } from '../common/consent-template';
 
 @Injectable({
   providedIn: 'root'
@@ -21,33 +22,45 @@ export class ConsentService {
   private consentUrl: string = this.mainUrl + "/econsent";
 
   async getPendingConsents(): Promise<Consent[]> {
-      const url = `${this.consentUrl}/templates/pending/`;
+    const url = `${this.consentUrl}/templates/pending/`;
 
-      try {
-        const response: getConsentResponse[] = await lastValueFrom(this.http.get<getConsentResponse[]>(url, { withCredentials: true }));
-        return response.map(element => Consent.fromApiResponse(element));
-      } catch (error) {
-        console.error('Błąd w ładowaniu zgód:', error);
-        return [];
-      }
+    try {
+      const response: getConsentResponse[] = await lastValueFrom(this.http.get<getConsentResponse[]>(url, { withCredentials: true }));
+      return response.map(element => Consent.fromApiResponse(element));
+    } catch (error) {
+      console.error('Błąd w ładowaniu zgód:', error);
+      return [];
     }
+  }
 
-    async postParentConsent(consentId: number, data: FormData) {
-      const token = this.userService.getUserToken();
-      const headers = new HttpHeaders().set('HTTP_X_XSRF_TOKEN', `${token}`); 
+  async getConsentTemplates(): Promise<ConsentTemplate[]> {
+    const url = `${this.consentUrl}/templates/`;
 
-      this.http.post(`${this.consentUrl}/templates/${consentId}/submit_consent/`, data, this.options)
-      .subscribe({
-        next: (response) => {
-          console.log('Plik załadowany:', response);
-          alert('Plik załadowany!');
-        },
-        error: (error) => {
-          console.error('Błąd ładowania pliku:', error);
-          alert('Niestety plik został nie załadowany!');
-        },
-      });
+    try {
+      const response: getConsentTemplateResponse[] = await lastValueFrom(this.http.get<getConsentTemplateResponse[]>(url, { withCredentials: true }));
+      return response.map(element => ConsentTemplate.fromApiResponse(element));
+    } catch (error) {
+      console.error('Błąd w ładowaniu zgód:', error);
+      return [];
     }
+  }
+
+  async postParentConsent(consentId: number, data: FormData) {
+    const token = this.userService.getUserToken();
+    const headers = new HttpHeaders().set('HTTP_X_XSRF_TOKEN', `${token}`); 
+
+    this.http.post(`${this.consentUrl}/templates/${consentId}/submit_consent/`, data, this.options)
+    .subscribe({
+      next: (response) => {
+        console.log('Plik załadowany:', response);
+        alert('Plik załadowany!');
+      },
+      error: (error) => {
+        console.error('Błąd ładowania pliku:', error);
+        alert('Niestety plik został nie załadowany!');
+      },
+    });
+  }
   
 }
 
@@ -60,3 +73,13 @@ interface getConsentResponse {
   parent_submission: boolean;
 }
 
+interface getConsentTemplateResponse {
+  id: number;
+  title: string;
+  description: string;
+  end_date: string;
+  students: number[];
+  parent_consents: getConsentResponse[];
+  author: Teacher;
+  parent_submission: boolean;
+}

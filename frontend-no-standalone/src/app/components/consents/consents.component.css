@@ -79,3 +79,12 @@
   }
 
   /*=======================================================*/
+
+  .block-naked {
+    background-color: #0B192C;
+    height: 100%; 
+}
+
+.button-main{
+    width: 6vw;
+}
