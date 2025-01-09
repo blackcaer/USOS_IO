@@ -70,6 +70,21 @@
 
 /* animacja */
 
+@keyframes slide-in-up {
+  0% {
+    transform: translateY(3rem);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  }
+
+  .slide-in-up{
+    animation: 0.5s ease slide-in-up;
+  }
+
 /* Wrapper i treść */
 .schedule-content-wrapper {
   position: relative;

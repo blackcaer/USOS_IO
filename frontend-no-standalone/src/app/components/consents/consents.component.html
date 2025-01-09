@@ -1,6 +1,6 @@
 <div class="main-content pt-28 flex overflow-y-auto">
 
-  <div *ngIf="isInfoOpen" class="modal fade-in">
+  <div *ngIf="isInfoOpen" class="modal">
       <div class="modal-content scale-anim">
           <div class="modal-header">
               <h2>{{ infoConsent?.title }}</h2>
@@ -23,7 +23,7 @@
       </div>
   </div>    
 
-  <div class="section-content w-4/5" style="display: flex;">
+  <div class="section-content w-4/5 slide-in-up" style="display: flex;">
     <div class="block rounded-xl flex flex-col mt-6 mb-14 ml-6">
       <ng-container [ngSwitch]="userRole">
         <div *ngSwitchCase="'parent'">
