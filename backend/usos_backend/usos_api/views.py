@@ -29,6 +29,12 @@ from .serializers import (
 )
 
 
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication 
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+
+    def enforce_csrf(self, request):
+        return  # To not perform the csrf check previously happening
 def get_consent_template_serializer(request, consent_template, many=False):
     context = {'request': request}
     if request.user.role == 'teacher':
@@ -177,6 +183,7 @@ class UserInfoView(APIView):
 class GradeListCreateView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = GradeSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self, request, user_id, subject_id):
         student = get_object_or_404(Student, user_id=user_id)
@@ -264,7 +271,8 @@ class FeedView(APIView):
 class GradeColumnView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = GradeColumnSerializer
-
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    
     def get(self, request, subject_id):
         columns = GradeColumn.objects.filter(school_subject_id=subject_id)
         serializer = GradeColumnSerializer(columns, many=True)
@@ -449,7 +457,8 @@ class MeetingListCreateView(APIView):
     """
     serializer_class = MeetingSerializer
     permission_classes = [IsAuthenticated]
-
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    
     def get(self, request):
         past_meetings = Meeting.objects.all()
         serializer = MeetingSerializer(past_meetings, many=True)
@@ -491,7 +500,8 @@ class MeetingAttendanceView(APIView):
     Ważne żeby studenci byli z grupy która faktycznie ma te zajęcia, inaczej error "Student not in the valid student group"
     """
     permission_classes = [IsAuthenticated]
-
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    
     def get(self, request, meeting_id):
         meeting = get_object_or_404(Meeting, pk=meeting_id)
         attendances = Attendance.objects.filter(meeting=meeting)
@@ -566,7 +576,8 @@ class ParentConsentDetailView(APIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class ConsentTemplateListView(APIView):
     permission_classes = [IsAuthenticated, IsTeacher]
-
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    
     def get(self, request):
         teacher = get_object_or_404(Teacher, user=request.user)
         consent_templates = ConsentTemplate.objects.filter(author=teacher, end_date__gte=timezone.now().date())
@@ -611,7 +622,8 @@ class ConsentTemplateDetailView(APIView):
 class ParentConsentSubmitView(APIView):
     permission_classes = [IsAuthenticated, IsParent]
     serializer_class = ParentConsentSerializer
-
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    
     @csrf_exempt
     def post(self, request, consent_template_id):
         parent = get_object_or_404(Parent, user=request.user)
