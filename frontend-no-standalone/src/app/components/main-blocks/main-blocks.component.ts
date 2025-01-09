@@ -144,7 +144,7 @@ export class MainBlocksComponent {
       content.classList.remove('slide-out-left');
   
       // Zmień aktualny dzień
-      this.currentDay = this.currentDay === 5 ? 5 : this.currentDay + 1;
+      this.currentDay = this.currentDay === 5 ? 1 : this.currentDay + 1;
       this.currentDayName = this.getDayName(this.currentDay);
   
       // Faza wchodzenia z prawej
@@ -168,7 +168,7 @@ export class MainBlocksComponent {
       content.classList.remove('slide-out-right');
   
       // Zmień aktualny dzień
-      this.currentDay = this.currentDay === 1 ? 1 : this.currentDay - 1;
+      this.currentDay = this.currentDay === 1 ? 5 : this.currentDay - 1;
       this.currentDayName = this.getDayName(this.currentDay);
   
       // Faza wchodzenia z lewej

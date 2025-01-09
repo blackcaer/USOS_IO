@@ -2,6 +2,7 @@ import { ConsentService } from './../../services/consent.service';
 import { Component } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { Consent } from '../../common/consent';
+import { ConsentTemplate } from '../../common/consent-template';
 
 @Component({
   selector: 'app-consents',
@@ -16,9 +17,11 @@ export class ConsentsComponent {
   
   userRole = this.userService.getUserRole();
   userId = this.userService.getCurrentUserIdAsInt();
-  teacherNames: { [key: number]: string } = {};
+
   pendingConsents: Consent[] = [];
   parentChildren: number[] = [];
+
+  consentTemplates: ConsentTemplate[] = [];
 
   infoConsent: Consent | null = null;
   isInfoOpen = false;
@@ -26,9 +29,15 @@ export class ConsentsComponent {
   selectedFile: File | null = null;
 
   ngOnInit() {
-    this.fillPendingConsents();
-    this.fillParentChildren();
-    console.log(this.pendingConsents);
+
+    if (this.userRole === "parent") {
+      this.fillPendingConsents();
+      this.fillParentChildren();
+    }
+    if (this.userRole === "teacher") {
+      this.fillConsentTemplates();
+    }
+
   }
   
   fillPendingConsents() {
@@ -51,15 +60,15 @@ export class ConsentsComponent {
       });
   }
 
-/*   fillConsentTemplates() {
-    this.consentService.getPendingConsents()
+  fillConsentTemplates() {
+    this.consentService.getConsentTemplates()
       .then((consents) => {
-        this.pendingConsents = consents;
+        this.consentTemplates = consents;
       })
       .catch((error) => {
         console.error('Błąd przy ładowaniu zgód:', error);
       });
-  } */
+  }
 
   openInfo(consent: Consent) {
     this.infoConsent = consent;
