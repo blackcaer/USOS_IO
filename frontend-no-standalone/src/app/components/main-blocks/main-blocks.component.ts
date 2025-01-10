@@ -35,6 +35,7 @@ export class MainBlocksComponent {
   async ngOnInit() {
     await this.fillLastGrades();
     await this.fillEvents();
+    console.log(this.weekEvents);
   }
 
   async test() {
