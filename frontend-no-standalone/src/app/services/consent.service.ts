@@ -45,6 +45,18 @@ export class ConsentService {
     }
   }
 
+  /* async getConsentTemplate(consentId: number): Promise<ConsentTemplate | null> {
+    const url = `${this.consentUrl}/templates/${consentId}`;
+
+    try {
+      const response: getConsentTemplateResponse = await lastValueFrom(this.http.get<getConsentTemplateResponse>(url, { withCredentials: true }));
+      return ConsentTemplate.fromApiResponse(response);
+    } catch (error) {
+      console.error('Błąd w ładowaniu zgód:', error);
+      return null;
+    }
+  } */
+
   async postParentConsent(consentId: number, data: FormData) {
     const token = this.userService.getUserToken();
     const headers = new HttpHeaders().set('HTTP_X_XSRF_TOKEN', `${token}`); 
@@ -61,6 +73,30 @@ export class ConsentService {
       },
     });
   }
+
+  async postConsentTemplate(data: any) {
+    this.http.post(`${this.consentUrl}/templates/`, data, this.options)
+      .subscribe({
+        next: (response) => {
+          console.log('Zgoda stworzona:', response);
+        },
+        error: (error) => {
+          console.error('Błąd tworzenia nowej zgody:', error);
+        }
+      });
+  }
+
+  async deleteConsentTemplate(consentTemplateId: number) {
+    this.http.delete(`${this.consentUrl}/templates/${consentTemplateId}/`)
+      .subscribe({
+        next: (response) => {
+          console.log('Zgoda została usunięta:', response);
+        },
+        error: (error) => {
+          console.error('Błąd usunięcia zgody:', error);
+        }
+      });
+  }
   
 }
 
@@ -73,13 +109,22 @@ interface getConsentResponse {
   parent_submission: boolean;
 }
 
+interface getParentConsentResponse {
+  id: number;
+  parentUser: number;
+  childUser: number;
+  consent: number;
+  isConsent: boolean;
+  file: string;
+}
+
 interface getConsentTemplateResponse {
   id: number;
   title: string;
   description: string;
   end_date: string;
   students: number[];
-  parent_consents: getConsentResponse[];
+  parent_consents: getParentConsentResponse[];
   author: Teacher;
   parent_submission: boolean;
 }

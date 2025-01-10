@@ -3,6 +3,11 @@ import { Component } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { Consent } from '../../common/consent';
 import { ConsentTemplate } from '../../common/consent-template';
+import { Parent } from '../../common/parent';
+import { StudentGroup } from '../../common/student-group';
+import { Title } from '@angular/platform-browser';
+import { Student } from '../../common/student';
+import { Teacher } from '../../common/teacher';
 
 @Component({
   selector: 'app-consents',
@@ -24,7 +29,21 @@ export class ConsentsComponent {
   consentTemplates: ConsentTemplate[] = [];
 
   infoConsent: Consent | null = null;
+  infoConsentTemplate: ConsentTemplate | null = null;
+  infoParents: Parent[] = [];
   isInfoOpen = false;
+
+  isCreateModalOpen = false;
+  newConsent = {
+    title: '',
+    description: '',
+    endDate: '',
+    students: ''
+  };
+  selectedGroup: number = 0;
+  groups: StudentGroup[] = [];
+  groupStudents: Student[] = [];
+  selectedStudents: Student[] = [];
 
   selectedFile: File | null = null;
 
@@ -38,6 +57,27 @@ export class ConsentsComponent {
       this.fillConsentTemplates();
     }
 
+  }
+
+  fillParents() {
+    if (!this.infoConsentTemplate) {
+      console.error('ConsentTemplate nie jest wybrany.');
+      return;
+    }
+  
+    const parentConsentDetails = this.infoConsentTemplate.parentConsents;
+  
+    this.infoParents = [];
+  
+    parentConsentDetails.forEach((consent) => {
+      this.userService.getParent(consent.parentUser).then((parent) => {
+        if (parent) {
+          this.infoParents.push(parent);
+        }
+      }).catch((error) => {
+        console.error(`Błąd przy ładowaniu rodziców:`, error);
+      });
+    });
   }
   
   fillPendingConsents() {
@@ -70,15 +110,136 @@ export class ConsentsComponent {
       });
   }
 
-  openInfo(consent: Consent) {
+  fillGroups() {
+    this.userService.getAllGroups()
+    .then((groups) => {
+      this.groups = groups;
+    })
+    .catch((error) => {
+      console.error('Błąd przy ładowaniu grup:', error);
+    });
+  }
+
+  fillSelectedGroupStudents() {
+    const tempGroup = this.groups.find((group) => group.id === Number(this.selectedGroup));
+  
+    if (!tempGroup) {
+      console.error('Nie znaleziono grupy o ID:', this.selectedGroup);
+      return;
+    }
+  
+    const groupStudentsId: number[] = tempGroup.students;
+  
+    for (const studentId of groupStudentsId) {
+      this.userService.getStudent(studentId)
+        .then((student) => {
+          if (student) {
+            this.groupStudents.push(student);
+          } else {
+            console.warn(`Nie znaleziono studenta o ID: ${studentId}`);
+          }
+        })
+        .catch((error) => {
+          console.error('Błąd przy ładowaniu studentów:', error);
+        });
+    }
+  }
+
+  getParentById(parentId: number): Parent | null {
+    const parent = this.infoParents.find(p => p.userId === parentId);
+    return parent || null;
+  }
+
+  viewFile(fileUrl: string): void {
+    window.open(`http://127.0.0.1:8000${fileUrl}`, '_blank');
+  }
+
+  openInfoParent(consent: Consent) {
     this.infoConsent = consent;
-    console.log(consent);
     this.isInfoOpen = true;
+  }
+
+  openInfoTeacher(consent: ConsentTemplate) {
+    this.infoConsentTemplate = consent;
+    this.isInfoOpen = true;
+    this.fillParents();
   }
 
   closeInfo() {
     this.infoConsent = null;
+    this.infoConsentTemplate = null;
     this.isInfoOpen = false;
+    this.infoParents = [];
+  }
+
+  openCreateModal() {
+    this.isCreateModalOpen = true;
+    this.newConsent = {
+      title: '',
+      description: '',
+      endDate: '',
+      students: ''
+    };
+    this.selectedGroup = 0;
+    this.groups = [];
+    this.groupStudents = [];
+    this.fillGroups();
+  }
+
+  onGroupChange() {
+    this.fillSelectedGroupStudents(); 
+  }
+
+  onStudentSelect(student: Student, event: any): void {
+    if (event.target.checked) {
+      this.selectedStudents.push(student);
+    } else {
+      this.selectedStudents = this.selectedStudents.filter(s => s !== student);
+    }
+    console.log(this.selectedStudents);
+  }
+
+  closeCreateModal() {
+    this.isCreateModalOpen = false;
+    this.newConsent = {
+      title: '',
+      description: '',
+      endDate: '',
+      students: ''
+    };
+    this.selectedGroup = 0;
+    this.groups = [];
+    this.groupStudents = [];
+    if (this.userRole === "teacher") {
+      this.fillConsentTemplates();
+    }
+  }
+
+  createConsent() {
+    let currentTeacher: Teacher | null = null;   
+    
+    this.userService.getTeacher(this.userId)
+    .then((teacher) => {
+      currentTeacher = teacher;
+      
+    })
+    .catch((error) => {
+      console.error('Błąd przy ładowaniu nauczyciela:', error);
+    });
+
+    let formData = {
+      author: currentTeacher,
+      title: this.newConsent.title,
+      description: this.newConsent.description,
+      end_date: this.newConsent.endDate,
+      students: this.selectedStudents.map((student) => student.userId)
+    }
+
+    this.consentService.postConsentTemplate(formData);
+  }
+
+  deleteConsent(consentTemplateId: number) {
+    this.consentService.deleteConsentTemplate(consentTemplateId);
   }
 
   formatDate(date: Date): string {  
@@ -112,7 +273,8 @@ export class ConsentsComponent {
     formData.append('parent_user', `${this.userId}`);
     formData.append('child_user', `${this.parentChildren[0]}`);
     
-    this.consentService.postParentConsent(this.infoConsent!.id, formData);    
+    this.consentService.postParentConsent(this.infoConsent!.id, formData);   
+    this.closeInfo(); 
   }
 
 

@@ -1,36 +1,181 @@
 <div class="main-content pt-28 flex overflow-y-auto">
 
-  <div *ngIf="isInfoOpen" class="modal">
-      <div class="modal-content scale-anim">
-          <div class="modal-header">
+  <!--Pierwsze okienko-->
+  <div *ngIf="isInfoOpen" class="modal fade-in">
+      <div [ngSwitch]="userRole">
+        <div *ngSwitchCase="'parent'">
+          <div class="modal-content scale-anim">
+            <div class="modal-header">
+                <h2>{{ infoConsent?.title }}</h2>
+                <span class="close-button" (click)="closeInfo()"> 
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
+                      <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+                    </svg>
+                </span>
+            </div> 
+            <p>{{ infoConsent?.description }}</p>     
+            <p style="margin-top: 10px; font-size: 18px; color: #F5F5F5;">
+              Termin potwierdzenia: {{ formatDate(infoConsent!.endDate) }}
+            </p>
+            <div style="margin-top: 20px;">
+                <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+                <button (click)="uploadFile()" class="mt-3 px-4 py-2 button-main rounded-3xl" style="max-width: 200px; width: 120px; height: 80px;">
+                  Wyślij potwierdzenie
+                </button>
+            </div>
+          </div>
+        </div>
+        <div *ngSwitchCase="'teacher'">
+          <div class="modal-content scale-anim">
+            <div class="modal-header">
               <h2>{{ infoConsent?.title }}</h2>
               <span class="close-button" (click)="closeInfo()"> 
-                  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
-                    <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
-                  </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
+                  <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+                </svg>
               </span>
-          </div> 
-          <p>{{ infoConsent?.description }}</p>     
-          <p style="margin-top: 10px; font-size: 18px; color: #F5F5F5;">
-            Termin potwierdzenia: {{ formatDate(infoConsent!.endDate) }}
-          </p>
-          <div style="margin-top: 20px;">
-              <input type="file" accept="image/*" (change)="onFileSelected($event)" />
-              <button (click)="uploadFile()" class="mt-3 px-4 py-2 button-main rounded-3xl" style="max-width: 200px; width: 120px; height: 80px;">
-                Wyślij potwierdzenie
+            </div> 
+          
+            <p style="margin-top: 10px; font-size: 18px; color: #F5F5F5;">
+              {{ infoConsentTemplate?.description }}
+            </p>
+            <p style="margin-top: 10px; font-size: 18px; color: #F5F5F5;">
+              Termin potwierdzenia: {{ formatDate(infoConsentTemplate!.endDate) }}
+            </p>
+          
+            <div class="mt-4">
+              <button (click)="deleteConsent(infoConsentTemplate!.id)" class="px-4 py-2 button-main rounded-3xl" style="background-color: red; color: white; max-width: 200px;">
+                Usuń zgodę
               </button>
-          </div>
-      </div>
-  </div>    
+            </div>
+          
+            <div class="mt-6">
+              <h3 style="font-size: 20px; color: #F5F5F5;">Lista zgód rodziców:</h3>
+              <ul class="mt-4" style="list-style: none; padding: 0;">
+                <li *ngFor="let consent of infoConsentTemplate?.parentConsents" class="mb-4" style="background: #1E3E62; padding: 12px; border-radius: 8px;">
+                  <p style="font-size: 16px; color: #F5F5F5; margin: 0;">
+                    Rodzic: {{ getParentById(consent.parentUser)?.user?.firstName }} {{ getParentById(consent.parentUser)?.user?.lastName }}
+                  </p>
+                  <p style="font-size: 16px; color: #F5F5F5; margin: 0;">
+                    Status: {{ consent.isConsent ? 'Przyjęta' : 'Nie przyjęta' }}
+                  </p>
 
-  <div class="section-content w-4/5 slide-in-up" style="display: flex;">
+                  <div *ngIf="consent.isConsent && consent.file" class="mt-2">
+                    <button (click)="viewFile(consent.file)" class="px-4 py-2 button-main rounded-3xl">
+                      Pokaż plik
+                    </button>
+                  </div>
+                  
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+  </div>
+  
+  <!--Drugie okienko na tworzenie zgod-->
+<!-- 
+  <div *ngIf="isCreateModalOpen" class="modal fade-in">
+    <div class="modal-content scale-anim">
+      <div class="modal-header">
+        <h2>Tworzenie nowej zgody</h2>
+        <span class="close-button" (click)="closeCreateModal()"> 
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
+            <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+          </svg>
+        </span>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>
+            Tytuł zgody:
+            <input [(ngModel)]="newConsent!.title" type="text" class="input-field" placeholder="Wprowadź tytuł" />
+          </label>
+        </div>
+        <div class="form-group">
+          <label>
+            Opis:
+            <textarea [(ngModel)]="newConsent!.description" class="input-field" placeholder="Wprowadź opis"></textarea>
+          </label>
+        </div>
+        <div class="form-group">
+          <label>
+            Data końca zgody:
+            <input [(ngModel)]="newConsent!.endDate" type="date" class="input-field" />
+          </label>
+        </div>
+        <button (click)="createConsent()" class="mt-3 px-4 py-2 button-main rounded-3xl">Utwórz</button>
+      </div>
+    </div>
+  </div>
+   -->
+
+   <div *ngIf="isCreateModalOpen" class="modal fade-in">
+    <div class="modal-content scale-anim">
+      <div class="modal-header">
+        <h2>Tworzenie nowej zgody</h2>
+        <span class="close-button" (click)="closeCreateModal()"> 
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#F5F5F5">
+            <path d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/>
+          </svg>
+        </span>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>
+            Tytuł zgody:
+            <input [(ngModel)]="newConsent!.title" type="text" class="input-field" placeholder="Wprowadź tytuł" />
+          </label>
+        </div>
+        <div class="form-group">
+          <label>
+            Opis:
+            <textarea [(ngModel)]="newConsent!.description" class="input-field" placeholder="Wprowadź opis"></textarea>
+          </label>
+        </div>
+        <div class="form-group">
+          <label>
+            Data końca zgody:
+            <input [(ngModel)]="newConsent!.endDate" type="date" class="input-field" />
+          </label>
+        </div>
+        <div class="form-group">
+          <label>
+            Wybierz grupę:
+            <select [(ngModel)]="selectedGroup" (change)="onGroupChange()">
+              <option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</option>
+            </select>
+          </label>
+        </div>
+        <div *ngIf="groupStudents.length > 0" class="form-group">
+          <label>
+            Wybierz studentów:
+            <div *ngFor="let student of groupStudents">
+              <input 
+                type="checkbox" 
+                [checked]="selectedStudents.includes(student)" 
+                (change)="onStudentSelect(student, $event)" 
+              /> 
+              {{ student.user.firstName }} {{ student.user.lastName }}
+            </div>
+          </label>
+        </div>
+        <button (click)="createConsent()" class="mt-3 px-4 py-2 button-main rounded-3xl">Utwórz</button>
+      </div>
+    </div>
+  </div>
+
+  <!--Głównz część-->
+  <div class="section-content w-4/5" style="display: flex;">
     <div class="block rounded-xl flex flex-col mt-6 mb-14 ml-6">
       <ng-container [ngSwitch]="userRole">
         <div *ngSwitchCase="'parent'">
           <div class="block rounded-xl flex flex-col mt-6 mb-14 ml-6">
             <div class="section-content block-naked mt-4 rounded-xl overflow-hidden mb-7 ml-7" style="width: 96%; max-height: 600px; overflow-y: auto;">
               <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" style="height: auto; background: #1E3E62; padding: 16px;" *ngFor="let p of pendingConsents">
-                <span class="ml-3" style="font-size: clamp(9px, 2.7vw, 44px);">
+                <span class="ml-3" (click)="openInfoParent(p)" style="font-size: clamp(9px, 2.7vw, 44px);">
                   {{ p.title }}
                 </span>
                 <p class="ml-3 text-sm mt-2" style="font-size: clamp(9px, 1.7vw, 22px);">
@@ -39,7 +184,7 @@
                 <p class="ml-3 text-sm mt-1" style="font-size: clamp(9px, 1.7vw, 22px);">
                   Status: {{ p.parentSubmission ? 'Przyjęta' : 'Nie przyjęta' }}
                 </p>
-                <button (click)="openInfo(p)" class="mt-3 ml-3 px-4 py-2 button-main rounded-3xl mx-4" style="max-width: 150px; width: 100px;">
+                <button (click)="openInfoParent(p)" class="mt-3 ml-3 px-4 py-2 button-main rounded-3xl mx-4" style="max-width: 150px; width: 100px;">
                   Szczegóły
                 </button>
               </div>
@@ -48,9 +193,12 @@
         </div>
         <div *ngSwitchCase="'teacher'">
           <div class="block rounded-xl flex flex-col mt-6 mb-14 ml-6">
+            <div class="flex ml-auto mr-5">
+              <div (click)="openCreateModal()" class="button-main rounded-3xl mx-4 flex justify-center items-center">Dodaj zgodę</div>
+            </div>
             <div class="section-content block-naked mt-4 rounded-xl overflow-hidden mb-7 ml-7" style="width: 96%; max-height: 600px; overflow-y: auto;">
               <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" style="height: auto; background: #1E3E62; padding: 16px;" *ngFor="let consent of consentTemplates">
-                <span class="ml-3" style="font-size: clamp(9px, 2.7vw, 44px);">
+                <span class="ml-3" style="font-size: clamp(9px, 2.7vw, 44px); cursor: pointer;" (click)="openInfoTeacher(consent)">
                   {{ consent.title }}
                 </span>
                 <p class="ml-3 text-sm mt-2" style="font-size: clamp(9px, 1.7vw, 22px);">
@@ -59,6 +207,9 @@
                 <p class="ml-3 text-sm mt-1" style="font-size: clamp(9px, 1.7vw, 22px);">
                   Ilość uczniów: {{ consent.students.length }}
                 </p>
+                <button (click)="openInfoTeacher(consent)" class="mt-3 ml-3 px-4 py-2 button-main rounded-3xl mx-4" style="max-width: 150px; width: 100px;">
+                  Szczegóły
+                </button>
               </div>
             </div>
           </div>
