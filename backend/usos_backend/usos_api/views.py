@@ -232,6 +232,7 @@ class GradeDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @csrf_exempt
     def delete(self, request, grade_id):
         grade = get_object_or_404(Grade, id=grade_id)
         grade.delete()
@@ -639,7 +640,7 @@ class ConsentTemplateDetailView(APIView):
     @csrf_exempt
     def delete(self, request, consent_template_id):
         if request.user.role != 'teacher':
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            return Response(status=status.HTTP_403_FORBIDDEN, data={'error': 'Only teacher can delete consent templates'})
         consent_template = get_object_or_404(
             ConsentTemplate, id=consent_template_id)
         consent_template.delete()
