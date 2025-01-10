@@ -161,6 +161,7 @@ def custom_logout_view(request):
     return JsonResponse({'status': 'method not allowed'}, status=405)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
@@ -170,6 +171,7 @@ class CurrentUserView(APIView):
         return Response(serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class UserInfoView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
@@ -180,6 +182,7 @@ class UserInfoView(APIView):
         return Response(serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class GradeListCreateView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = GradeSerializer
@@ -209,6 +212,7 @@ class GradeListCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class GradeDetailView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = GradeSerializer
@@ -234,6 +238,7 @@ class GradeDetailView(APIView):
         return Response(status=204)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ScheduleView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ScheduledMeetingSerializer
@@ -246,6 +251,7 @@ class ScheduleView(APIView):
         return Response(serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ConsentTemplateView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ConsentTemplateSerializer
@@ -270,7 +276,7 @@ class FeedView(APIView):
         # Logika generowania feeda dla użytkownika
         return Response({"feed": "Example feed data"})
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class GradeColumnView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = GradeColumnSerializer
@@ -562,6 +568,7 @@ class ScheduledMeetingView(APIView):
         return Response(serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class PendingConsentsView(APIView):
     permission_classes = [IsAuthenticated, IsParent]
 
@@ -574,6 +581,7 @@ class PendingConsentsView(APIView):
         return Response(serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ParentConsentDetailView(APIView):
     permission_classes = [IsAuthenticated, IsParentOrTeacher]
     serializer_class = ParentConsentSerializer
@@ -586,6 +594,7 @@ class ParentConsentDetailView(APIView):
         return Response(serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ConsentTemplateListView(APIView):
     permission_classes = [IsAuthenticated, IsTeacher]
     authentication_classes = (
@@ -612,6 +621,7 @@ class ConsentTemplateListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ConsentTemplateDetailView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ConsentTemplateSerializer
@@ -636,6 +646,7 @@ class ConsentTemplateDetailView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ParentConsentSubmitView(APIView):
     permission_classes = [IsAuthenticated, IsParent]
     serializer_class = ParentConsentSerializer
@@ -661,6 +672,7 @@ class ParentConsentSubmitView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class StudentGroupListView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StudentGroupSerializer
@@ -671,6 +683,7 @@ class StudentGroupListView(APIView):
         return Response(serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class StudentGroupDetailView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StudentGroupSerializer
@@ -681,6 +694,7 @@ class StudentGroupDetailView(APIView):
         return Response(serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class StudentGroupStudentsView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = StudentSerializer
@@ -692,6 +706,7 @@ class StudentGroupStudentsView(APIView):
         return Response(serializer.data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class StudentGroupSubjectsView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = SchoolSubjectSerializer
