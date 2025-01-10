@@ -212,6 +212,7 @@ class GradeListCreateView(APIView):
 class GradeDetailView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = GradeSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self, request, grade_id):
         grade = get_object_or_404(Grade, id=grade_id)
@@ -236,13 +237,13 @@ class GradeDetailView(APIView):
 class ScheduleView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ScheduledMeetingSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self, request):
         meetings = ScheduledMeeting.objects.filter(teacher=request.user)
         serializer = ScheduledMeetingSerializer(meetings, many=True)
         return Response(serializer.data)
-
-
+    
 
 class ConsentTemplateView(APIView):
     permission_classes = [IsAuthenticated]
@@ -253,6 +254,7 @@ class ConsentTemplateView(APIView):
         serializer = ConsentTemplateSerializer(template)
         return Response(serializer.data)
 
+    @csrf_exempt
     def delete(self, request, template_consent_id):
         template = get_object_or_404(ConsentTemplate, id=template_consent_id)
         template.delete()
@@ -286,6 +288,7 @@ class GradeColumnView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @csrf_exempt
     def delete(self, request, subject_id):
         columns = GradeColumn.objects.filter(school_subject_id=subject_id)
         columns.delete()
@@ -295,6 +298,7 @@ class GradeColumnView(APIView):
 class GradeColumnDetailView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = GradeColumnSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self, request, subject_id, column_id):
         column = get_object_or_404(GradeColumn, id=column_id)
@@ -315,6 +319,7 @@ class GradeColumnDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @csrf_exempt
     def delete(self, request, subject_id, column_id):
         column = get_object_or_404(GradeColumn, id=column_id)
         column.delete()
@@ -480,12 +485,14 @@ class MeetingDetailView(APIView):
     """
     serializer_class = MeetingSerializer
     permission_classes = [IsAuthenticated]
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self, request, meeting_id):
         meeting = get_object_or_404(Meeting, pk=meeting_id)
         serializer = MeetingSerializer(meeting)
         return Response(serializer.data)
 
+    @csrf_exempt
     def delete(self, request, meeting_id):
         meeting = get_object_or_404(Meeting, pk=meeting_id)
         meeting.delete()
@@ -604,6 +611,7 @@ class ConsentTemplateListView(APIView):
 class ConsentTemplateDetailView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ConsentTemplateSerializer
+    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
 
     def get(self, request, consent_template_id):
         consent_template = get_object_or_404(
@@ -613,6 +621,7 @@ class ConsentTemplateDetailView(APIView):
         serializer = get_consent_template_serializer(request, consent_template)
         return Response(serializer.data)
 
+    @csrf_exempt
     def delete(self, request, consent_template_id):
         if request.user.role != 'teacher':
             return Response(status=status.HTTP_403_FORBIDDEN)
