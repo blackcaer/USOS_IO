@@ -501,6 +501,7 @@ class MeetingAttendanceView(APIView):
     """
     permission_classes = [IsAuthenticated]
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+
     
     def get(self, request, meeting_id):
         meeting = get_object_or_404(Meeting, pk=meeting_id)
@@ -564,6 +565,7 @@ class PendingConsentsView(APIView):
 
 class ParentConsentDetailView(APIView):
     permission_classes = [IsAuthenticated, IsParentOrTeacher]
+    serializer_class = ParentConsentSerializer
 
     def get(self, request, parent_consent_id):
         parent_consent = get_object_or_404(ParentConsent, id=parent_consent_id)
@@ -577,7 +579,8 @@ class ParentConsentDetailView(APIView):
 class ConsentTemplateListView(APIView):
     permission_classes = [IsAuthenticated, IsTeacher]
     authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
-    
+    serializer_class = ConsentTemplateSerializer
+
     def get(self, request):
         teacher = get_object_or_404(Teacher, user=request.user)
         consent_templates = ConsentTemplate.objects.filter(author=teacher, end_date__gte=timezone.now().date())
@@ -600,6 +603,7 @@ class ConsentTemplateListView(APIView):
 
 class ConsentTemplateDetailView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = ConsentTemplateSerializer
 
     def get(self, request, consent_template_id):
         consent_template = get_object_or_404(
