@@ -1,4 +1,5 @@
 import { Consent } from "./consent";
+import { ParentConsent } from "./parent-consent";
 import { Teacher } from "./teacher";
 
 export class ConsentTemplate {
@@ -7,7 +8,7 @@ export class ConsentTemplate {
     description: string;
     endDate: Date;
     students: number[];
-    parentConsents: Consent[];
+    parentConsents: ParentConsent[];
     author: Teacher;
     parentSubmission: boolean | null;
 
@@ -17,7 +18,7 @@ export class ConsentTemplate {
         description: string,
         endDate: Date,
         students: number[],
-        parentConsents: Consent[],
+        parentConsents: ParentConsent[],
         author: Teacher,
         parentSubmission: boolean
     ) {
@@ -38,7 +39,7 @@ export class ConsentTemplate {
             response.description,
             new Date(response.end_date),
             response.students,
-            response.parent_consents,
+            response.parent_consents.map((consent: any) => ParentConsent.fromApiResponse(consent)),
             Teacher.fromApiResponse(response.author),
             response.parent_submission
         );

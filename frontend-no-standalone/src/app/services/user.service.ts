@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { SchoolSubject } from '../common/school-subject';
 import { Grade } from '../common/grade';
 import { ScheduleEvent } from '../common/schedule-event';
 import { Student } from '../common/student';
 import { Teacher } from '../common/teacher';
 import { Parent } from '../common/parent';
+import { StudentGroup } from '../common/student-group';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,17 @@ export class UserService {
   private currentUserId = localStorage.getItem('currentUserId');
 
   constructor(private http: HttpClient) {
+  }
+
+  async getAllGroups(): Promise<StudentGroup[]> {
+    const url = `${this.mainUrl}/student-groups`;
+    try {
+      const response: getStudentGroupResponse[] = await lastValueFrom(this.http.get<getStudentGroupResponse[]>(url, { withCredentials: true }));
+      return response.map(group => StudentGroup.fromApiResponse(group));
+    } catch (error) {
+      console.error('Błąd w ładowaniu groups:', error);
+      return [];
+    }
   }
 
   async getAllUserGroupIds(userId: number): Promise<number[]> {
