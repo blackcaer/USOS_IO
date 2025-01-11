@@ -800,11 +800,13 @@ class StudentGroupsAPITests(APITestCase):
         self.user = User.objects.create_user(
             username='testuser', password='testpass', role='teacher', email="teacher@teacher.pl")
         self.teacher = Teacher.objects.create(user=self.user)
-        self.student_group = StudentGroup.objects.create(name="Group 1", level=1)
+        self.student_group = StudentGroup.objects.create(
+            name="Group 1", level=1)
         self.student = Student.objects.create(user=User.objects.create_user(
             username='student_test', password='testpass', role='student', email="student@student.pl"))
         self.student_group.students.add(self.student)
-        self.subject = SchoolSubject.objects.create(subject_name="Math", student_group=self.student_group)
+        self.subject = SchoolSubject.objects.create(
+            subject_name="Math", student_group=self.student_group)
         self.client.login(username='testuser', password='testpass')
 
     def test_get_all_student_groups(self):
@@ -824,14 +826,16 @@ class StudentGroupsAPITests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['user']['username'], self.student.user.username)
+        self.assertEqual(response.data[0]['user']
+                         ['username'], self.student.user.username)
 
     def test_get_subjects_for_student_group(self):
         url = reverse('student_group_subjects', args=[self.student_group.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['subject_name'], self.subject.subject_name)
+        self.assertEqual(
+            response.data[0]['subject_name'], self.subject.subject_name)
 
 
 class GetScheduledMeetingsTests(TestCase):
@@ -883,20 +887,24 @@ class GetScheduledMeetingsTests(TestCase):
     def test_get_scheduled_meetings_for_student_with_date_range(self):
         start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
         end_of_week = start_of_week + timedelta(days=7)
-        meetings = get_scheduled_meetings(self.student_user, start_of_week, end_of_week)
+        meetings = get_scheduled_meetings(
+            self.student_user, start_of_week, end_of_week)
         self.assertIn(self.scheduled_meeting, meetings)
 
     def test_get_scheduled_meetings_for_teacher_with_date_range(self):
         start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
         end_of_week = start_of_week + timedelta(days=7)
-        meetings = get_scheduled_meetings(self.teacher_user, start_of_week, end_of_week)
+        meetings = get_scheduled_meetings(
+            self.teacher_user, start_of_week, end_of_week)
         self.assertIn(self.scheduled_meeting, meetings)
 
     def test_get_scheduled_meetings_for_parent_with_date_range(self):
         start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
         end_of_week = start_of_week + timedelta(days=7)
-        meetings = get_scheduled_meetings(self.parent_user, start_of_week, end_of_week)
+        meetings = get_scheduled_meetings(
+            self.parent_user, start_of_week, end_of_week)
         self.assertIn(self.scheduled_meeting, meetings)
+
 
 class PermissionTests(APITestCase):
 
@@ -959,12 +967,14 @@ class ConsentTemplateAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_get_consent_template_detail(self):
-        url = reverse('consent_template_detail', args=[self.consent_template.id])
+        url = reverse('consent_template_detail',
+                      args=[self.consent_template.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_delete_consent_template(self):
-        url = reverse('consent_template_detail', args=[self.consent_template.id])
+        url = reverse('consent_template_detail',
+                      args=[self.consent_template.id])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(ConsentTemplate.objects.count(), 0)
