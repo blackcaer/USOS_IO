@@ -10,7 +10,8 @@ import { UserService } from '../../services/user.service';
 })
 export class MainBlocksComponent {
 
-  private currentUserId: number;
+  currentUserId: number = this.userService.getCurrentUserIdAsInt();
+  userRole = this.userService.getUserRole();
   lastGrades = [
     { name: 'Matematyka', grade: -2 },
     { name: 'Informatyka', grade: 4 },
@@ -28,26 +29,41 @@ export class MainBlocksComponent {
   constructor(private http: HttpClient,
               private userService: UserService
   ) {
-    this.currentUserId = this.userService.getCurrentUserIdAsInt();
 
   }
 
   async ngOnInit() {
-    await this.fillLastGrades();
+    if (this.userRole === 'student') {
+      await this.fillLastGrades(this.currentUserId);
+    } else if (this.userRole === 'parent') {
+      this.userService.getParent(this.currentUserId)
+        .then((parent) => {
+          if (parent?.children && parent.children.length > 0) {
+            const childId = parent.children[0];
+
+            this.fillLastGrades(childId);
+          }
+        })
+        .catch((error) => {
+          console.error('Błąd w ładowaniu studenta', error);
+        });
+    }
+
+    
     await this.fillEvents();
   }
 
-  async fillLastGrades() {
+  async fillLastGrades(userId: number) {
     this.lastGrades = [];
   
     try {
-      const subjectsMap = await this.userService.getAllUsersSubjects(this.currentUserId);
+      const subjectsMap = await this.userService.getAllUsersSubjects(userId);
       const allGrades: { name: string, grade: number, date: Date }[] = [];
   
       for (const [groupId, subjects] of subjectsMap.entries()) {
         for (const subject of subjects) {
           try {
-            const grades = await this.userService.getUsersGradesFromSubject(this.currentUserId, subject.id);
+            const grades = await this.userService.getUsersGradesFromSubject(userId, subject.id);
   
             grades.forEach(grade => {
               allGrades.push({
