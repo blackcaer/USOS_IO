@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { UserService } from '../../services/user.service';
+import { Parent } from '../../common/parent';
+import { Student } from '../../common/student';
 
 @Component({
   selector: 'app-grades',
@@ -8,7 +10,9 @@ import { UserService } from '../../services/user.service';
 })
 export class GradesComponent {
 
-  private currentUserId: number;
+  currentUserId: number = this.userService.getCurrentUserIdAsInt();
+  userRole = this.userService.getUserRole();
+  student: Student | null = null;
   subjects = [
     { name: 'Biologia', grades: [4, 3, 2, 5] },
     { name: 'Matematyka', grades: [3, 1, 2] },
@@ -20,23 +24,54 @@ export class GradesComponent {
   ];
 
   constructor(private userService: UserService) {
-    this.currentUserId = this.userService.getCurrentUserIdAsInt();
   }
 
   ngOnInit() {
-    this.fillAllSubjectsGrades()
+    if (this.userRole === 'student') {
+      this.fillAllSubjectsGrades(this.currentUserId);
+      this.userService.getStudent(this.currentUserId)
+        .then((student) => {
+          this.student = student;
+        })
+        .catch((error) => {
+          console.error('Błąd w ładowaniu studenta', error);
+        });
+    } else if (this.userRole === 'parent') {
+      this.userService.getParent(this.currentUserId)
+        .then((parent) => {
+          if (parent?.children && parent.children.length > 0) {
+            const childId = parent.children[0];
+            
+            this.fillAllSubjectsGrades(childId);
+  
+            this.userService.getStudent(childId)
+              .then((student) => {
+                this.student = student;
+              })
+              .catch((error) => {
+                console.error('Błąd w ładowaniu studenta', error);
+              });
+          } else {
+            console.error('Brak dzieci w danych rodzica');
+          }
+        })
+        .catch((error) => {
+          console.error('Błąd w ładowaniu rodzica', error);
+        });
+    }
   }
+  
 
-  async fillAllSubjectsGrades() {
+  async fillAllSubjectsGrades(userId: number) {
     this.subjects = [];
   
     try {
-      const subjectsData = await this.userService.getAllUsersSubjects(this.currentUserId);
+      const subjectsData = await this.userService.getAllUsersSubjects(userId);
   
       for (const [groupId, subjectsArray] of subjectsData.entries()) {
         for (const subject of subjectsArray) {
           try {
-            const grades = await this.userService.getUsersGradesFromSubject(this.currentUserId, subject.id);
+            const grades = await this.userService.getUsersGradesFromSubject(userId, subject.id);
   
             const numericGrades = grades.map(grade => this.userService.parseGradeValue(grade.value));
   
