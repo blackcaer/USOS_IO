@@ -87,7 +87,7 @@ export class ConsentService {
   }
 
   async deleteConsentTemplate(consentTemplateId: number) {
-    this.http.delete(`${this.consentUrl}/templates/${consentTemplateId}/`)
+    this.http.delete(`${this.consentUrl}/templates/${consentTemplateId}/`, { withCredentials: true })
       .subscribe({
         next: (response) => {
           console.log('Zgoda została usunięta:', response);

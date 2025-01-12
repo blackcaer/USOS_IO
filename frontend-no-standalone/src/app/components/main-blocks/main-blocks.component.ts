@@ -22,7 +22,7 @@ export class MainBlocksComponent {
     "8:00", "9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
   ];
   weekEvents: { [key: number]: any[] } = {};
-  currentDay: number = new Date().getDay();
+  currentDay: number = new Date().getDay() <= 5 && new Date().getDay() > 0 ? new Date().getDay() : 1;
   currentDayName: string = this.getDayName(this.currentDay);
 
   constructor(private http: HttpClient,
@@ -35,16 +35,6 @@ export class MainBlocksComponent {
   async ngOnInit() {
     await this.fillLastGrades();
     await this.fillEvents();
-    console.log(this.weekEvents);
-  }
-
-  async test() {
-    try {
-      const response = await lastValueFrom(this.http.get('http://localhost:8000/test/', { withCredentials: true }));
-      console.log('Ответ от сервера:', response);
-    } catch (error) {
-      console.error('Ошибка при запросе:', error);
-    }
   }
 
   async fillLastGrades() {

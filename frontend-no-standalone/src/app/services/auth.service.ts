@@ -31,6 +31,7 @@ export class AuthService {
 
           if (!!response.role) {
             localStorage.setItem('currentUserRole', response.role);
+            console.log(response);
           }
           if (!!response.id) {
             localStorage.setItem('currentUserId', response.id);

@@ -640,6 +640,7 @@ class ConsentTemplateDetailView(APIView):
 
     @csrf_exempt
     def delete(self, request, consent_template_id):
+        print(request.user.role)
         if request.user.role != 'teacher':
             return Response(status=status.HTTP_403_FORBIDDEN, data={'error': 'Only teacher can delete consent templates'})
         consent_template = get_object_or_404(
