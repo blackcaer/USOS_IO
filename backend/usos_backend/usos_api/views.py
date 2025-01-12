@@ -277,6 +277,7 @@ class FeedView(APIView):
         # Logika generowania feeda dla użytkownika
         return Response({"feed": "Example feed data"})
 
+
 @method_decorator(csrf_exempt, name='dispatch')
 class GradeColumnView(APIView):
     permission_classes = [IsAuthenticated]

@@ -800,11 +800,13 @@ class StudentGroupsAPITests(APITestCase):
         self.user = User.objects.create_user(
             username='testuser', password='testpass', role='teacher', email="teacher@teacher.pl")
         self.teacher = Teacher.objects.create(user=self.user)
-        self.student_group = StudentGroup.objects.create(name="Group 1", level=1)
+        self.student_group = StudentGroup.objects.create(
+            name="Group 1", level=1)
         self.student = Student.objects.create(user=User.objects.create_user(
             username='student_test', password='testpass', role='student', email="student@student.pl"))
         self.student_group.students.add(self.student)
-        self.subject = SchoolSubject.objects.create(subject_name="Math", student_group=self.student_group)
+        self.subject = SchoolSubject.objects.create(
+            subject_name="Math", student_group=self.student_group)
         self.client.login(username='testuser', password='testpass')
 
     def test_get_all_student_groups(self):
@@ -824,14 +826,16 @@ class StudentGroupsAPITests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['user']['username'], self.student.user.username)
+        self.assertEqual(response.data[0]['user']
+                         ['username'], self.student.user.username)
 
     def test_get_subjects_for_student_group(self):
         url = reverse('student_group_subjects', args=[self.student_group.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['subject_name'], self.subject.subject_name)
+        self.assertEqual(
+            response.data[0]['subject_name'], self.subject.subject_name)
 
 
 class GetScheduledMeetingsTests(TestCase):
@@ -883,17 +887,271 @@ class GetScheduledMeetingsTests(TestCase):
     def test_get_scheduled_meetings_for_student_with_date_range(self):
         start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
         end_of_week = start_of_week + timedelta(days=7)
-        meetings = get_scheduled_meetings(self.student_user, start_of_week, end_of_week)
+        meetings = get_scheduled_meetings(
+            self.student_user, start_of_week, end_of_week)
         self.assertIn(self.scheduled_meeting, meetings)
 
     def test_get_scheduled_meetings_for_teacher_with_date_range(self):
         start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
         end_of_week = start_of_week + timedelta(days=7)
-        meetings = get_scheduled_meetings(self.teacher_user, start_of_week, end_of_week)
+        meetings = get_scheduled_meetings(
+            self.teacher_user, start_of_week, end_of_week)
         self.assertIn(self.scheduled_meeting, meetings)
 
     def test_get_scheduled_meetings_for_parent_with_date_range(self):
         start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
         end_of_week = start_of_week + timedelta(days=7)
-        meetings = get_scheduled_meetings(self.parent_user, start_of_week, end_of_week)
+        meetings = get_scheduled_meetings(
+            self.parent_user, start_of_week, end_of_week)
         self.assertIn(self.scheduled_meeting, meetings)
+
+
+class PermissionTests(APITestCase):
+
+    def setUp(self):
+        self.student_user = User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl")
+        self.parent_user = User.objects.create_user(
+            username='parent_test', password='testpass', role='parent', email="parent@parent.pl")
+        self.teacher_user = User.objects.create_user(
+            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
+
+    def test_student_permissions(self):
+        self.client.login(username='student_test', password='testpass')
+        url = reverse('current_user')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_parent_permissions(self):
+        self.client.login(username='parent_test', password='testpass')
+        url = reverse('current_user')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_teacher_permissions(self):
+        self.client.login(username='teacher_test', password='testpass')
+        url = reverse('current_user')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class ConsentTemplateAPITests(APITestCase):
+
+    def setUp(self):
+        self.teacher_user = User.objects.create_user(
+            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+        self.student_user = User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl")
+        self.student = Student.objects.create(user=self.student_user)
+        self.consent_template = ConsentTemplate.objects.create(
+            title="Test Consent", author=self.teacher, end_date=timezone.now().date() + timedelta(days=10))
+        self.client.login(username='teacher_test', password='testpass')
+
+    def test_create_consent_template(self):
+        url = reverse('consent_template_list')
+        data = {
+            'title': 'New Consent',
+            'description': 'New Description',
+            'end_date': (timezone.now().date() + timedelta(days=10)).isoformat(),
+            'students': [self.student.user_id]  # Dodanie studenta do listy
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ConsentTemplate.objects.count(), 2)
+        self.assertEqual(ConsentTemplate.objects.last().students.count(), 1)
+
+    def test_get_consent_template_list(self):
+        url = reverse('consent_template_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_consent_template_detail(self):
+        url = reverse('consent_template_detail',
+                      args=[self.consent_template.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_delete_consent_template(self):
+        url = reverse('consent_template_detail',
+                      args=[self.consent_template.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(ConsentTemplate.objects.count(), 0)
+
+
+class ParentConsentAPITests(APITestCase):
+
+    def setUp(self):
+        self.parent_user = User.objects.create_user(
+            username='parent_test', password='testpass', role='parent', email="parent@parent.pl")
+        self.parent = Parent.objects.create(user=self.parent_user)
+        self.student = Student.objects.create(user=User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl"))
+        self.consent_template = ConsentTemplate.objects.create(title="Test Consent", author=Teacher.objects.create(user=User.objects.create_user(
+            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")), end_date=timezone.now().date() + timedelta(days=10))
+        self.client.login(username='parent_test', password='testpass')
+
+    def test_create_parent_consent(self):
+        url = reverse('parent_consent_submit', args=[self.consent_template.id])
+        data = {
+            'child_user': self.student.user_id,
+            'is_consent': True
+        }
+        response = self.client.post(url, data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ParentConsent.objects.count(), 1)
+
+    def test_get_parent_consent_detail(self):
+        parent_consent = ParentConsent.objects.create(
+            parent_user=self.parent, child_user=self.student, consent=self.consent_template, is_consent=True)
+        url = reverse('parent_consent_detail', args=[parent_consent.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class MeetingAPITests(APITestCase):
+
+    def setUp(self):
+        self.teacher_user = User.objects.create_user(
+            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+        self.school_subject = SchoolSubject.objects.create(
+            subject_name="Math", student_group=StudentGroup.objects.create(name="Group 1", level=1))
+        self.meeting = Meeting.objects.create(
+            title="Test Meeting",
+            teacher=self.teacher,
+            school_subject=self.school_subject,
+            start_time=timezone.now() + timedelta(days=1)
+        )
+        self.client.login(username='teacher_test', password='testpass')
+
+    def test_create_meeting(self):
+        url = reverse('meeting-list-create')
+        data = {
+            'title': 'New Meeting',
+            'description': 'New Description',
+            'start_time': '2023-10-11T10:00:00Z',
+            'school_subject': self.school_subject.id,
+            'teacher': self.teacher_user.id
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Meeting.objects.count(), 2)
+
+    def test_get_meeting(self):
+        url = reverse('meeting-detail', args=[self.meeting.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_delete_meeting(self):
+        url = reverse('meeting-detail', args=[self.meeting.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Meeting.objects.count(), 0)
+
+
+class AttendanceAPITests(APITestCase):
+
+    def setUp(self):
+        self.teacher_user = User.objects.create_user(
+            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+        self.student_user = User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl")
+        self.student = Student.objects.create(user=self.student_user)
+        self.school_subject = SchoolSubject.objects.create(
+            subject_name="Math", student_group=StudentGroup.objects.create(name="Group 1", level=1))
+        self.meeting = Meeting.objects.create(
+            title="Test Meeting",
+            teacher=self.teacher,
+            school_subject=self.school_subject,
+            start_time=timezone.now() + timedelta(days=1)
+        )
+        self.client.login(username='teacher_test', password='testpass')
+
+    def test_create_attendance_invalid_group(self):
+        url = reverse('meeting-attendance', args=[self.meeting.id])
+        data = [
+            {'student': self.student.user_id, 'status': 'P'}
+        ]
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_attendance(self):
+        Attendance.objects.create(
+            student=self.student, meeting=self.meeting, status='P')
+        url = reverse('meeting-attendance', args=[self.meeting.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class GradeAPITests(APITestCase):
+
+    def setUp(self):
+        self.teacher_user = User.objects.create_user(
+            username='teacher_test', password='testpass', role='teacher', email="teacher@teacher.pl")
+        self.teacher = Teacher.objects.create(user=self.teacher_user)
+        self.student_user = User.objects.create_user(
+            username='student_test', password='testpass', role='student', email="student@student.pl")
+        self.student = Student.objects.create(user=self.student_user)
+        self.school_subject = SchoolSubject.objects.create(
+            subject_name="Math", student_group=StudentGroup.objects.create(name="Group 1", level=1))
+        self.grade_column = GradeColumn.objects.create(
+            title="Test Column", school_subject=self.school_subject)
+        self.grade_value = CategoryGradeValue.objects.create(
+            code="A", name="Excellent")
+        self.client.login(username='teacher_test', password='testpass')
+
+    def test_create_grade(self):
+        url = reverse('user_subject_grades', args=[
+                      self.student.user_id, self.school_subject.id])
+        data = {
+            'value': self.grade_value.code,
+            'grade_column': self.grade_column.id,
+            'count_to_avg': True
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Grade.objects.count(), 1)
+
+    def test_get_grades(self):
+        Grade.objects.create(
+            student=self.student, grade_column=self.grade_column, value=self.grade_value)
+        url = reverse('user_subject_grades', args=[
+                      self.student.user_id, self.school_subject.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+
+class UserAPITests(APITestCase):
+
+    def setUp(self):
+        self.admin_user = User.objects.create_superuser(
+            username='admin', password='adminpass', email='admin@admin.com')
+        self.client.login(username='admin', password='adminpass')
+
+    def test_create_user(self):
+        url = reverse('user-list')
+        data = {
+            'username': 'newuser',
+            'password': 'newpass',
+            'email': 'newuser@example.com',
+            'role': 'student'
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(User.objects.count(), 2)
+
+    def test_update_user(self):
+        user = User.objects.create_user(
+            username='testuser', password='testpass', email='testuser@example.com', role='student')
+        url = reverse('user-detail', args=[user.id])
+        data = {
+            'first_name': 'UpdatedName'
+        }
+        response = self.client.patch(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.assertEqual(user.first_name, 'UpdatedName')

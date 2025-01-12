@@ -86,7 +86,7 @@ class ParentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Parent
-        fields = ['user_id','user', 'children']
+        fields = ['user_id', 'user', 'children']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
