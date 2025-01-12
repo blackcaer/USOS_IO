@@ -194,7 +194,9 @@ export class ConsentsComponent {
   }
 
   onGroupChange() {
-    this.fillSelectedGroupStudents(); 
+    this.groupStudents = [];
+    this.selectedStudents = [];
+    this.fillSelectedGroupStudents();
   }
 
   onStudentSelect(student: Student, event: any): void {
@@ -245,12 +247,16 @@ export class ConsentsComponent {
     this.consentService.postConsentTemplate(formData).subscribe((consent) => {
       this.consentTemplates.push(ConsentTemplate.fromApiResponse(consent));
     })
+
+    this.closeCreateModal();
   }
 
   deleteConsent(consentTemplateId: number) {
     this.consentService.deleteConsentTemplate(consentTemplateId);
     this.consentTemplates = this.consentTemplates.filter(template => template.id !== consentTemplateId);
     
+    this.fillConsentTemplates();
+    this.closeInfo();
   }
 
   formatDate(date: Date): string {  
