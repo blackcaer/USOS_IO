@@ -49,6 +49,8 @@ export class ConsentsComponent {
 
   ngOnInit() {
 
+    console.log(this.userRole);
+
     if (this.userRole === "parent") {
       this.fillPendingConsents();
       this.fillParentChildren();
@@ -84,6 +86,7 @@ export class ConsentsComponent {
     this.consentService.getPendingConsents()
       .then((consents) => {
         this.pendingConsents = consents;
+        console.log(this.pendingConsents);
       })
       .catch((error) => {
         console.error('Błąd przy ładowaniu zgód:', error);
@@ -261,7 +264,7 @@ export class ConsentsComponent {
     }
   }
 
-  uploadFile(): void {
+  uploadFile(consent: boolean): void {
     if (!this.selectedFile) {
       alert('Należy najpierw wybrać plik!');
       return;
@@ -269,7 +272,7 @@ export class ConsentsComponent {
 
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-    formData.append('is_consent', 'true');
+    formData.append('is_consent', `${consent}`);
     formData.append('parent_user', `${this.userId}`);
     formData.append('child_user', `${this.parentChildren[0]}`);
     
