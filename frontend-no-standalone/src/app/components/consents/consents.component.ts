@@ -248,12 +248,12 @@ export class ConsentsComponent {
       this.consentTemplates.push(ConsentTemplate.fromApiResponse(consent));
     })
 
+    this.fillConsentTemplates();
     this.closeCreateModal();
   }
 
   deleteConsent(consentTemplateId: number) {
     this.consentService.deleteConsentTemplate(consentTemplateId);
-    this.consentTemplates = this.consentTemplates.filter(template => template.id !== consentTemplateId);
     
     this.fillConsentTemplates();
     this.closeInfo();
@@ -291,6 +291,8 @@ export class ConsentsComponent {
     formData.append('child_user', `${this.parentChildren[0]}`);
     
     this.consentService.postParentConsent(this.infoConsent!.id, formData);   
+
+    this.fillPendingConsents();
     this.closeInfo(); 
   }
   
