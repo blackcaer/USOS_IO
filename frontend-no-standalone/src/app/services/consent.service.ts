@@ -65,25 +65,17 @@ export class ConsentService {
     .subscribe({
       next: (response) => {
         console.log('Plik załadowany:', response);
-        alert('Plik załadowany!');
+        alert('Plik załadowany, zgoda z odpowiednią decyzją została wysłana!');
       },
       error: (error) => {
         console.error('Błąd ładowania pliku:', error);
-        alert('Niestety plik został nie załadowany!');
+        alert('Niestety plik został nie załadowany, zgoda nie może być wysłana wielokrotnie!');
       },
     });
   }
 
-  async postConsentTemplate(data: any) {
-    this.http.post(`${this.consentUrl}/templates/`, data, this.options)
-      .subscribe({
-        next: (response) => {
-          console.log('Zgoda stworzona:', response);
-        },
-        error: (error) => {
-          console.error('Błąd tworzenia nowej zgody:', error);
-        }
-      });
+  postConsentTemplate(data: any) {
+    return this.http.post(`${this.consentUrl}/templates/`, data, this.options);
   }
 
   async deleteConsentTemplate(consentTemplateId: number) {

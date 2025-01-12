@@ -5,7 +5,6 @@ import { Consent } from '../../common/consent';
 import { ConsentTemplate } from '../../common/consent-template';
 import { Parent } from '../../common/parent';
 import { StudentGroup } from '../../common/student-group';
-import { Title } from '@angular/platform-browser';
 import { Student } from '../../common/student';
 import { Teacher } from '../../common/teacher';
 
@@ -154,7 +153,7 @@ export class ConsentsComponent {
   }
 
   viewFile(fileUrl: string): void {
-    window.open(`http://127.0.0.1:8000${fileUrl}`, '_blank');
+    window.open(`http://localhost:8000${fileUrl}`, '_blank');
   }
 
   openInfoParent(consent: Consent) {
@@ -173,6 +172,11 @@ export class ConsentsComponent {
     this.infoConsentTemplate = null;
     this.isInfoOpen = false;
     this.infoParents = [];
+    if (this.userRole === 'teacher') {
+      this.fillConsentTemplates();
+    } else if (this.userRole === 'parent') {
+      this.fillPendingConsents();
+    }
   }
 
   openCreateModal() {
@@ -238,11 +242,15 @@ export class ConsentsComponent {
       students: this.selectedStudents.map((student) => student.userId)
     }
 
-    this.consentService.postConsentTemplate(formData);
+    this.consentService.postConsentTemplate(formData).subscribe((consent) => {
+      this.consentTemplates.push(ConsentTemplate.fromApiResponse(consent));
+    })
   }
 
   deleteConsent(consentTemplateId: number) {
     this.consentService.deleteConsentTemplate(consentTemplateId);
+    this.consentTemplates = this.consentTemplates.filter(template => template.id !== consentTemplateId);
+    
   }
 
   formatDate(date: Date): string {  
@@ -279,12 +287,6 @@ export class ConsentsComponent {
     this.consentService.postParentConsent(this.infoConsent!.id, formData);   
     this.closeInfo(); 
   }
-
-
-
-
-
-
   
 }
 
