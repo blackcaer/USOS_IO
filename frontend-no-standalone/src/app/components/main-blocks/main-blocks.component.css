@@ -150,6 +150,33 @@ opacity: 0;
 animation: slide-in-right 0.3s forwards;
 }
 
+
+/* animacje dla nazwy dnia */
+
+.day-name.slide-out-left {
+  transform: translateX(-2rem);
+  opacity: 0;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.day-name.slide-out-right {
+  transform: translateX(2rem);
+  opacity: 0;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.day-name.slide-in-left {
+  transform: translateX(-2rem);
+  opacity: 0;
+  animation: slide-in-left 0.3s forwards;
+}
+
+.day-name.slide-in-right {
+  transform: translateX(2rem);
+  opacity: 0;
+  animation: slide-in-right 0.3s forwards;
+}
+
 /* Klucze animacji */
 @keyframes slide-in-left {
 0% {

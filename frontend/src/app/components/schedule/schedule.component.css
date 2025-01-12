@@ -1,0 +1,33 @@
+.schedule-container {
+    display: flex;
+    background-color: #1E3E62;
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+  
+  .time-column {
+    width: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .time-slot {
+    height: 60px;
+    text-align: center;
+    font-size: 12px;
+    border-top: 1px solid #1E3E62;
+    color: #ccc;
+  }
+  
+  .events-column {
+    flex: 1;
+    position: relative;
+    margin-left: 10px;
+    background-color: #0B192C;
+    border-radius: 8px;
+    padding: 10px;
+    overflow: hidden;
+  }
