@@ -1,7 +1,89 @@
 <div class="main-content pt-28 flex overflow-y-auto">
-    <div class="section-content w-4/5" style="display: flex;">
-        <div class="block rounded-xl flex flex-grow mt-6 mb-14 ml-6 slide-in-up">
+    <div class="block rounded-xl flex flex-grow flex-col mt-6 mb-14 ml-6 mr-6 slide-in-up">
+        <!-- Loading indicator -->
+        <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+            <div class="loader"></div>
+        </div>
 
+        <!-- Main content -->
+        <div *ngIf="!isLoading" class="section-content p-6">
+            <!-- Subject selector -->
+            <div class="mb-8">
+                <div class="text-2xl mb-4" style="color: #F5F5F5;">Wybierz przedmiot do analizy</div>
+                <div class="flex flex-wrap gap-2">
+                    <button *ngFor="let subject of getSubjectsList()"
+                            [class.selected]="selectedSubject === subject"
+                            class="button-main rounded-3xl px-4 py-2"
+                            (click)="selectSubject(subject)">
+                        {{subject}}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics display -->
+            <div *ngIf="selectedSubject" class="grid grid-cols-1 md:grid-cols-2 gap-6 anim-display slide-in-up">
+                <!-- Group comparison -->
+                <div class="block-naked rounded-xl p-6">
+                    <div class="text-xl mb-4" style="color: #F5F5F5;">Porównanie grup - {{selectedSubject}}</div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr>
+                                    <th class="p-4 text-left" style="color: #F5F5F5; background-color: #0B192C;">Grupa</th>
+                                    <th class="p-4 text-left" style="color: #F5F5F5; background-color: #0B192C;">Średnia</th>
+                                    <th class="p-4 text-left" style="color: #F5F5F5; background-color: #0B192C;">Liczba uczniów</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let stat of getSelectedSubjectStats()">
+                                    <td class="p-4" style="color: #F5F5F5;">{{stat.groupName}}</td>
+                                    <td class="p-4" style="color: #F5F5F5;">{{stat.averageGrade}}</td>
+                                    <td class="p-4" style="color: #F5F5F5;">{{stat.numberOfStudents}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Grade distribution -->
+                <div class="block-naked rounded-xl p-6">
+                    <div class="text-xl mb-4" style="color: #F5F5F5;">Rozkład ocen</div>
+                    <ng-container *ngIf="getFirstGroupStats() as firstGroup">
+                        <div class="flex justify-between items-end h-48">
+                            <div *ngFor="let grade of getGradeDistribution(firstGroup) | keyvalue"
+                                 class="flex flex-col items-center w-1/6">
+                                <div class="bg-grade w-full"
+                                     [style.height.%]="calculateGradePercentage(firstGroup, grade.value)">
+                                </div>
+                                <span class="mt-2" style="color: #F5F5F5;">{{grade.key}}</span>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+                <!-- Student's personal statistics -->
+                <div *ngIf="userRole === 'student' && getStudentStatsForSubject(selectedSubject)"
+                     class="block-naked rounded-xl p-6 md:col-span-2">
+                    <div class="text-xl mb-4" style="color: #F5F5F5;">Twoje statystyki</div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="mb-2" style="color: #F5F5F5;">Twoja średnia: 
+                                {{getStudentStatsForSubject(selectedSubject)?.studentAverage}}</p>
+                            <p style="color: #F5F5F5;">Średnia grupy: 
+                                {{getStudentStatsForSubject(selectedSubject)?.groupAverage}}</p>
+                        </div>
+                        <div>
+                            <p class="mb-2" style="color: #F5F5F5;">Trend ostatnich ocen:</p>
+                            <div class="flex gap-2 mt-2">
+                                <span *ngFor="let grade of getStudentStatsForSubject(selectedSubject)?.trend"
+                                      class="grade-box">
+                                    {{grade}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

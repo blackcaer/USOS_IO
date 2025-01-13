@@ -65,6 +65,7 @@
 }
 
 .button-main{
+    font-size: clamp(9px,0.68vw,16px);
     width: 6vw;
 }
 
