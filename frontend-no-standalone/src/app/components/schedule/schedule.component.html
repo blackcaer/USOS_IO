@@ -95,7 +95,7 @@
             <div class="buttons-wrapper flex ml-2 mr-5">
               <div class="button-main rounded-3xl px-4 py-2 mt-4 mx-4 flex justify-center items-center" (click)="getActualWeek()">Aktualny tydzień</div>
               <div class="button-main rounded-3xl px-4 py-2 mt-4 mx-4 flex justify-center items-center" (click)="getFollowingWeek()">Następny tydzień</div>
-              <div class="button-main rounded-3xl px-4 py-2 mt-4 mx-4 flex justify-center items-center">Inny tydzień</div>            
+              <input type="date" (change)="onDateChange($event)" [value]="getCallendarFormattedDate(currentData)" class="button-main rounded-3xl px-4 py-2 mt-4 mx-4 flex justify-center items-center"/>            
             </div>
             <div class="ml-6 mt-4 text-sm md:text-base">
               {{ getFormattedDate(firstCurrentWeekDay) }} - {{ getFormattedDate(lastCurrentWeekDay) }}

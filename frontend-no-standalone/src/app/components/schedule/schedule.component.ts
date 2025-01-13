@@ -69,6 +69,13 @@ export class ScheduleComponent {
     return `${day}.${month}.${year}`;
   }
 
+  getCallendarFormattedDate(date: Date): string {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  }
+
   startMeeting(event: any): void {
     const meetingData = this.getPostMeetingData(event);
 
@@ -122,6 +129,19 @@ export class ScheduleComponent {
   closeInfo() {
     this.isInfoOpen = false;
     this.subjectStudentList = [];
+  }
+
+  onDateChange(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const selectedDate = inputElement.value;
+    
+    this.currentData = new Date(selectedDate);
+    this.updateCalendar(this.currentData);
+  }
+
+  updateCalendar(date: Date): void {
+    this.firstCurrentWeekDay = this.getStartOfWeek(date);
+    this.lastCurrentWeekDay = this.addDays(date, 6);
   }
 
   async fillEvents() {
