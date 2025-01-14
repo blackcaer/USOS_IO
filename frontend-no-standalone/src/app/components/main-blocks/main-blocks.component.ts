@@ -10,6 +10,10 @@ import { UserService } from '../../services/user.service';
 })
 export class MainBlocksComponent {
 
+  isLoadingSchedule: boolean = true;
+  isLoadingGrades: boolean = true;
+  isLoadingConsents: boolean = false; //kiedys do zmiany
+  isLoadingStats: boolean = false; //moze kidys sie zmieni
   currentUserId: number = this.userService.getCurrentUserIdAsInt();
   userRole = this.userService.getUserRole();
   lastGrades = [
@@ -34,23 +38,28 @@ export class MainBlocksComponent {
 
   async ngOnInit() {
     if (this.userRole === 'student') {
+      this.isLoadingGrades = true;
       await this.fillLastGrades(this.currentUserId);
+      this.isLoadingGrades = false;
     } else if (this.userRole === 'parent') {
+      this.isLoadingGrades = true;
       this.userService.getParent(this.currentUserId)
-        .then((parent) => {
+        .then(async (parent) => {
           if (parent?.children && parent.children.length > 0) {
             const childId = parent.children[0];
-
-            this.fillLastGrades(childId);
+            await this.fillLastGrades(childId);
           }
+          this.isLoadingGrades = false;
         })
         .catch((error) => {
           console.error('Błąd w ładowaniu studenta', error);
+          this.isLoadingGrades = false;
         });
     }
-
-    
+  
+    this.isLoadingSchedule = true;
     await this.fillEvents();
+    this.isLoadingSchedule = false;
   }
 
   async fillLastGrades(userId: number) {

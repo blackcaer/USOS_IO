@@ -232,3 +232,138 @@
     display: flex;
     gap: 20px;
   }
+
+  
+  .info-icon {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+  }
+  
+  .students-table {
+    width: 100%;
+    margin: 20px auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .students-table thead tr {
+    background-color: #1E3E62;
+    color: white;
+  }
+  
+  .students-table th, 
+  .students-table td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .students-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .students-table input.grade-input {
+    width: 60px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .students-table input[type="checkbox"] {
+    transform: scale(1.2);
+  }
+  
+  .students-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .grade-input {
+    width: 50px;
+    text-align: center;
+  }
+  
+  input[type="checkbox"] {
+    transform: scale(1.2);
+  }
+
+  .table-container {
+    margin: 20px auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .start-lecture-container {
+    margin-top: 20px;
+  }
+  
+  .start-lecture-button {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .start-lecture-button:hover {
+    background-color: #45a049;
+  }
+  
+  .start-lecture-button:active {
+    transform: scale(0.98);
+  }
+
+  /* zmiany by elementy sie nie zbijaly w schedule */
+
+  /* Zapobieganie zbijaniu się elementów na małych ekranach */
+@media (max-width: 640px) { /* Tailwind's sm breakpoint */
+  .button-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .buttons-wrapper {
+    width: 100%;
+  }
+  
+  .ml-auto {
+    margin-left: 0;
+  }
+}
+
+/* Dodanie minimalnej szerokości do przycisków */
+.button-main {
+  min-width: 130px;
+  min-height: 30px;
+}
+
+/* Poprawa wyglądu na bardzo małych ekranach */
+@media (max-width: 480px) {
+  .button-main {
+    min-width: 100px;
+    font-size: 14px;
+  }
+  
+  .button-container {
+    gap: 4px;
+  }
+  
+  .buttons-wrapper {
+    gap: 2px;
+  }
+  
+  .ml-auto {
+    margin-left: 0;
+  }
+}
