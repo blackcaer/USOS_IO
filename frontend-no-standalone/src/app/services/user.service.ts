@@ -75,7 +75,7 @@ export class UserService {
     }
   }
 
-  async getUserSchedule(): Promise<Array<ScheduleEvent>> {
+  async getUserSchedule(): Promise<ScheduleEvent[]> {
     const url = `${this.mainUrl}/meetings/schedule/`;
     try {
       const response = await lastValueFrom(this.http.get<getScheduleEventResponse[]>(url, { withCredentials: true }));

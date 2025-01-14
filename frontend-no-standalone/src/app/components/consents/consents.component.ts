@@ -163,6 +163,7 @@ export class ConsentsComponent {
 
   openInfoTeacher(consent: ConsentTemplate) {
     this.infoConsentTemplate = consent;
+    console.log(this.infoConsentTemplate);
     this.isInfoOpen = true;
     this.fillParents();
   }

@@ -304,6 +304,7 @@ a,a:hover{
     height: 2vw;
     background-color: #F5F5F5;
     margin: 0 auto;
+    font-weight: bold;
 }
 
 .button-arrow{
