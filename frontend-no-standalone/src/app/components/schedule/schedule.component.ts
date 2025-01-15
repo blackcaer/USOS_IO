@@ -82,9 +82,11 @@ export class ScheduleComponent {
     this.meetingService.createMeeting(meetingData).subscribe({
       next: (response) => {
         console.log('Meeting created successfully:', response);
+        alert('Lekcja została rozpoczęta');
       },
       error: (error) => {
         console.error('Error creating meeting:', error);
+        alert('Lekcja nie została rozpoczęta');
       },
     });
   }

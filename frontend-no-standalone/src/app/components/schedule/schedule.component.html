@@ -42,16 +42,12 @@
             <thead>
               <tr>
                 <th>Student</th>
-                <th>Ocena</th>
                 <th>Obecność</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let student of subjectStudentList">
                 <td>{{student.user.firstName}} {{student.user.lastName}}</td>
-                <td>
-                  <input type="number" min="1" max="5" class="grade-input" />
-                </td>
                 <td>
                   <input type="checkbox" />
                 </td>
