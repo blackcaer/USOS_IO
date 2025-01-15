@@ -92,11 +92,16 @@
                 </div>
               </div>
 
-              <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" *ngFor="let g of lastGrades">
-                <span class="ml-3" style="font-size: clamp(9px,2.7vw,20px);">{{ g.name }}</span>
-                <div class="grade-box mr-3">{{ g.grade }}</div>
-              </div>
-                
+              <ng-container [ngSwitch]="userRole">
+                <div *ngSwitchCase="'teacher'" class="section-content flex-grow mt-4 rounded-xl" style="background-color: #1E3E62; padding: 20px;">
+                </div>
+                <div *ngSwitchDefault>
+                  <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" *ngFor="let g of lastGrades">
+                    <span class="ml-3" style="font-size: clamp(9px,2.7vw,20px);">{{ g.name }}</span>
+                    <div class="grade-box mr-3">{{ g.grade }}</div>
+                  </div>
+                </div>
+              </ng-container>   
             </div>
 
             <div class="col-span-2 p-6 rounded-xl block flex flex-col" style="height: 515px;">
