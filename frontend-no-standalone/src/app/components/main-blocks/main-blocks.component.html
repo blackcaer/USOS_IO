@@ -69,58 +69,78 @@
               </div>
             </div>
 
-            <div class="col-span-4 p-6 rounded-xl block flex" style="height: 190px;">
-              Zgody
-              <div *ngIf="isLoadingConsents" class="flex justify-center items-center h-full w-full">
+            <div class="col-span-4 p-6 rounded-xl block" style="height: 190px;">
+              <div class="flex justify-between items-center">
+                <span>Zgody</span>
+                <div class="mt-1">
+                  <svg class="button-link" [routerLink]="'/consents'" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
+                    <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
+                  </svg>    
+                </div>
+              </div>
+              <div *ngIf="isLoadingConsents" class="flex justify-center items-center h-full">
                 <div class="loader"></div>
               </div>
-              <div *ngIf="!isLoadingConsents" class="ml-auto mt-1">
-                <svg class="button-link" [routerLink]="'/consents'" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
-                  <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
-                </svg>    
+              <div *ngIf="!isLoadingConsents" class="h-full flex flex-col">
+                <div class="flex-grow flex justify-center items-center">
+                  <svg  class="pb-2" width="70px" height="70px" fill="#F5F5F5" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.016 30.016v-26.016q0-0.832 0.576-1.408t1.408-0.576h4v4h-1.984v21.984h20v-21.984h-2.016v-4h4q0.832 0 1.408 0.576t0.608 1.408v26.016q0 0.832-0.608 1.408t-1.408 0.576h-24q-0.832 0-1.408-0.576t-0.576-1.408zM8 26.016v-18.016h2.016q0 0.832 0.576 1.44t1.408 0.576h8q0.832 0 1.408-0.576t0.608-1.44h1.984v18.016h-16zM10.016 22.016h9.984v-2.016h-9.984v2.016zM10.016 18.016h8v-2.016h-8v2.016zM10.016 14.016h12v-2.016h-12v2.016zM10.016 6.016v-4h4v-2.016h4v2.016h4v4q0 0.832-0.608 1.408t-1.408 0.576h-8q-0.832 0-1.408-0.576t-0.576-1.408zM14.016 6.016h4v-2.016h-4v2.016z"/>
+                  </svg>
+                </div>
               </div>
             </div>
 
             <div class="col-span-2 p-6 rounded-xl block flex flex-col" style="height: 515px;">
               <div class="flex justify-between items-center">
-                Oceny
+                <span>Oceny</span>
                 <div class="ml-auto mt-1">
                   <svg class="button-link" [routerLink]="'/grades'" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
                     <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
                   </svg>
                 </div>
               </div>
-
               <ng-container [ngSwitch]="userRole">
-                <div *ngSwitchCase="'teacher'" class="section-content flex-grow mt-4 rounded-xl" style="background-color: #1E3E62; padding: 20px;">
+                <div *ngSwitchCase="'teacher'" class="section-content flex-grow mt-4 rounded-xl" style="background-color: none;">
+                  <div class="flex justify-center items-center h-full">
+                    <svg width="8vw" height="8vw" viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg" fill="#F5F5F5">
+                      <path d="M 47.4578,53.8333L 39.4751,53.8333L 37.3851,47.3311L 25.4184,47.3311L 23.3502,53.8333L 15.4111,53.8333L 27.2327,21.3222L 35.9047,21.3222L 47.4578,53.8333 Z M 35.433,40.8289L 32.0223,30.0523C 31.7562,29.2347 31.5723,28.2599 31.4707,27.1278L 31.2893,27.1278C 31.2312,28.0809 31.0401,29.0243 30.716,29.958L 27.2399,40.8289L 35.433,40.8289 Z M 46.3125,34.8333L 52.25,34.8333L 52.25,28.8958L 58.5833,28.8958L 58.5833,34.8333L 64.5208,34.8333L 64.5208,41.1667L 58.5833,41.1667L 58.5833,47.1042L 52.25,47.1042L 52.25,41.1667L 46.3125,41.1667L 46.3125,34.8333 Z"/>
+                    </svg>
+                  </div>
                 </div>
                 <div *ngSwitchDefault>
                   <div *ngIf="isLoadingGrades" class="flex justify-center items-center h-64">
-                <div class="loader"></div>
-              </div>
-              
-              <ng-container *ngIf="!isLoadingGrades">
-                <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" *ngFor="let g of lastGrades">
+                    <div class="loader"></div>
+                  </div>
+                  <ng-container *ngIf="!isLoadingGrades">
+                    <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" *ngFor="let g of lastGrades">
                       <span class="ml-3" style="font-size: clamp(9px,2.7vw,20px);">{{ g.name }}</span>
                       <div class="grade-box mr-3">{{ g.grade }}</div>
                     </div>
-              </ng-container></div>
-              </ng-container>   
+                  </ng-container>
+                </div>
+              </ng-container>
             </div>
 
             <div class="col-span-2 p-6 rounded-xl block flex flex-col" style="height: 515px;">
               <div class="flex justify-between items-center">
-                Statystyki
+                <span>Statystyki</span>
                 <div class="ml-auto mt-1">
                   <svg class="button-link" [routerLink]="'/statistics'" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
                     <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
                   </svg>
                 </div>
               </div>
-
-              <div class="section-content section-content-p30 flex-grow mt-4 rounded-xl" style="background-color: #1E3E62;">
+              <div class="flex justify-center items-center flex-grow">
                 <div *ngIf="isLoadingStats" class="flex justify-center items-center h-64">
                   <div class="loader"></div>
+                </div>
+                <div class="flex justify-center items-center h-full" *ngIf="!isLoadingStats">
+                  <svg width="8vw" height="8vw" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="2" x2="22" y1="20" y2="20" stroke="#F5F5F5" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M5,20V8.2A.2.2,0,0,1,5.2,8H7.8a.2.2,0,0,1,.2.2V20" stroke="#F5F5F5" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M11,20V4.26667C11,4.11939,11.08954,4,11.2,4h2.6c.11046,0,.2.11939.2.26667V20" stroke="#F5F5F5" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M17,20V11.15c0-.08284.08954-.15.2-.15h2.6c.11046,0,.2.06716.2.15V20" stroke="#F5F5F5" stroke-width="1.5px" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </div>
               </div>
             </div>

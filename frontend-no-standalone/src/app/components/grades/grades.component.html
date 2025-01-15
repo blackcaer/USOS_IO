@@ -85,7 +85,7 @@
                 </div>
                 
                 <!-- Отображение оценок выбранного ученика -->
-                <div *ngIf="selectedStudent" class="section-content block-naked mt-4 rounded-xl overflow-hidden mb-7 mx-auto" style="width: 96%; max-height: 600px; overflow-y: auto;">
+                <div *ngIf="selectedStudent" class="section-content block-naked mt-4 rounded-xl overflow-hidden mb-7 mx-auto" style="width: 96%; max-height: 500px; overflow-y: auto;">
                     <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" style="height: 100px; background: #1E3E62;" *ngFor="let s of subjects">
                     <span class="ml-3" style="font-size: clamp(9px,2.7vw,44px);">{{ s.name }}</span>
                     <div class="grades mr-5">
@@ -105,7 +105,7 @@
               </div>
             </div>
   
-            <div class="section-content block-naked mt-4 rounded-xl overflow-hidden overflow-y-hidden mb-1 ml-7" style="width: 96%; max-height: 500px; overflow-y: hidden;">
+            <div class="section-content block-naked mt-4 rounded-xl overflow-hidden overflow-y-hidden mb-1 mx-auto" style="width: 96%; max-height: 500px; overflow-y: hidden;">
               <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" style="height: 100px; background: #1E3E62;" *ngFor="let s of subjects">
                 <span class="ml-3" style="font-size: clamp(9px,2.7vw,44px);">{{ s.name }}</span>
                 <div class="grades mr-5">
