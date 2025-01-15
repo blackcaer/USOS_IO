@@ -17,7 +17,6 @@
                 </div> 
               </div>
 
-
               <div class="flex justify-between items-center mt-2">
                 <div class="mt-3 mb-1 ml-16">
                   <svg class="button-arrow" (click)="showPreviousDay()" xmlns="http://www.w3.org/2000/svg" height="2vh" viewBox="0 -960 960 960" width="2vw" fill="#F5F5F5">
@@ -25,7 +24,9 @@
                   </svg>
                 </div>
 
-                <div class="button-noAnimation rounded-3xl flex-grow mx-4 mt-2 flex justify-center items-center"><span class="day-name">{{ currentDayName }}</span></div>
+                <div class="button-noAnimation rounded-3xl flex-grow mx-4 mt-2 flex justify-center items-center">
+                  <span class="day-name">{{ currentDayName }}</span>
+                </div>
 
                 <div class="mt-3 mb-1 mr-16">
                   <svg class="button-arrow" (click)="showNextDay()" xmlns="http://www.w3.org/2000/svg" height="2vw" viewBox="0 -960 960 960" width="2vw" fill="#F5F5F5">
@@ -34,10 +35,11 @@
                 </div>
               </div>
               
-               
               <div class="section-content flex-grow mt-4 rounded-xl" style="background-color: #1E3E62;">
-                 
-                <div class="schedule-container flex-grow mt-4 rounded-xl" style="background-color: #1E3E62;">
+                <div *ngIf="isLoadingSchedule" class="flex justify-center items-center h-64">
+                  <div class="loader"></div>
+                </div>
+                <div *ngIf="!isLoadingSchedule" class="schedule-container flex-grow mt-4 rounded-xl" style="background-color: #1E3E62;">
                   <div class="schedule-content-wrapper">
                     <div class="schedule-content">
                       <div class="schedule-content-inner">
@@ -64,27 +66,24 @@
                     </div>
                   </div>
                 </div>
-                
               </div>
             </div>
-            
 
             <div class="col-span-4 p-6 rounded-xl block flex" style="height: 190px;">
               Zgody
-
-              <div class="ml-auto mt-1">
+              <div *ngIf="isLoadingConsents" class="flex justify-center items-center h-full w-full">
+                <div class="loader"></div>
+              </div>
+              <div *ngIf="!isLoadingConsents" class="ml-auto mt-1">
                 <svg class="button-link" [routerLink]="'/consents'" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
                   <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
                 </svg>    
-            </div>
+              </div>
             </div>
 
             <div class="col-span-2 p-6 rounded-xl block flex flex-col" style="height: 515px;">
-
               <div class="flex justify-between items-center">
-                
                 Oceny
-
                 <div class="ml-auto mt-1">
                   <svg class="button-link" [routerLink]="'/grades'" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
                     <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
@@ -96,20 +95,22 @@
                 <div *ngSwitchCase="'teacher'" class="section-content flex-grow mt-4 rounded-xl" style="background-color: #1E3E62; padding: 20px;">
                 </div>
                 <div *ngSwitchDefault>
-                  <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" *ngFor="let g of lastGrades">
-                    <span class="ml-3" style="font-size: clamp(9px,2.7vw,20px);">{{ g.name }}</span>
-                    <div class="grade-box mr-3">{{ g.grade }}</div>
-                  </div>
-                </div>
+                  <div *ngIf="isLoadingGrades" class="flex justify-center items-center h-64">
+                <div class="loader"></div>
+              </div>
+              
+              <ng-container *ngIf="!isLoadingGrades">
+                <div class="section-content section-content-p30 grade-block flex-grow mt-4 rounded-xl" *ngFor="let g of lastGrades">
+                      <span class="ml-3" style="font-size: clamp(9px,2.7vw,20px);">{{ g.name }}</span>
+                      <div class="grade-box mr-3">{{ g.grade }}</div>
+                    </div>
+              </ng-container></div>
               </ng-container>   
             </div>
 
             <div class="col-span-2 p-6 rounded-xl block flex flex-col" style="height: 515px;">
-
               <div class="flex justify-between items-center">
-                
                 Statystyki
-
                 <div class="ml-auto mt-1">
                   <svg class="button-link" [routerLink]="'/statistics'" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" height="3vw" viewBox="0 -960 960 960" width="3vw" fill="#F5F5F5">
                     <path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/>
@@ -118,14 +119,13 @@
               </div>
 
               <div class="section-content section-content-p30 flex-grow mt-4 rounded-xl" style="background-color: #1E3E62;">
+                <div *ngIf="isLoadingStats" class="flex justify-center items-center h-64">
+                  <div class="loader"></div>
+                </div>
               </div>
-                
             </div>
 
-            
-
         </div>
-
       </div>
   </div>
 </div>

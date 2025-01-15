@@ -11,7 +11,7 @@
 }
 
 .slide-in-up {
-  animation: 0.5s ease slide-in-up;
+  animation: 0.3s ease slide-in-up;
 }
 
 /* Loader */
@@ -79,7 +79,24 @@ th, td {
   background-color: #F5F5F5;
   border-radius: 4px;
   transition: height 0.3s ease;
+  min-height: 1px; /* Zapewnia minimalną wysokość */
+  width: 100%;
+  position: relative;
 }
+
+.grade-bar-container {
+  height: 200px; /* Stała wysokość kontenera */
+  display: flex;
+  align-items: flex-end;
+  width: 40px; /* Stała szerokość słupka */
+}
+
+.grade-bar {
+  width: 100%;
+  background-color: #F5F5F5;
+  transition: height 0.3s ease;
+}
+
 
 /* Grade Box */
 .grade-box {

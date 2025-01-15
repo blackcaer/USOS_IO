@@ -49,13 +49,20 @@
                 <div class="block-naked rounded-xl p-6">
                     <div class="text-xl mb-4" style="color: #F5F5F5;">Rozkład ocen</div>
                     <ng-container *ngIf="getFirstGroupStats() as firstGroup">
-                        <div class="flex justify-between items-end h-48">
-                            <div *ngFor="let grade of getGradeDistribution(firstGroup) | keyvalue"
-                                 class="flex flex-col items-center w-1/6">
-                                <div class="bg-grade w-full"
-                                     [style.height.%]="calculateGradePercentage(firstGroup, grade.value)">
+                        <div class="flex justify-around items-end h-48 px-4">
+                            <div *ngFor="let grade of [1,2,3,4,5]"
+                                class="flex flex-col items-center"
+                                style="width: 18%;">
+                                <div class="h-48 relative w-full flex items-end">
+                                    <div class="grade-bar absolute bottom-0 left-0 w-full"
+                                        [style.height.%]="calculateGradePercentage(firstGroup, firstGroup.grades[grade])">
+                                    </div>
                                 </div>
-                                <span class="mt-2" style="color: #F5F5F5;">{{grade.key}}</span>
+                                <span class="mt-2" style="color: #F5F5F5;">{{grade}}</span>
+                                <span class="mt-1 text-sm" style="color: #F5F5F5;">
+                                    {{firstGroup.grades[grade]}} 
+                                    <span class="text-xs">({{(calculateGradePercentage(firstGroup, firstGroup.grades[grade])).toFixed(1)}}%)</span>
+                                </span>
                             </div>
                         </div>
                     </ng-container>

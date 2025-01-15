@@ -1,0 +1,127 @@
+.block-naked {
+    background-color: #0B192C;
+    height: 100%; 
+}
+
+.button-main{
+    width: 6vw;
+}
+
+/* animation */
+@keyframes slide-in-up {
+    0% {
+      transform: translateY(3rem);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    }
+  
+    .slide-in-up{
+      animation: 0.5s ease slide-in-up;
+    }
+
+    .header-logo {
+        font-size: 70px;
+        font-weight: bold;
+        color: #F5F5F5; 
+        margin-right: auto; 
+        padding-left: 0vw; 
+    }
+    
+    .header-icon {
+        display: flex;
+        align-items: center;
+        padding-right: 0vw;
+    }
+    
+    /* 
+     * ----------------------------
+     * Main Content Section
+     * ----------------------------
+     */
+    
+     .button-link {
+        font-size: clamp(9px,0.7vw,16px);
+        width: 3vw;
+        height: 3vw;
+        border-radius: 10px;
+        background-color: #121218;
+        margin: 0 auto;
+        font-weight: Bold;
+        transition: all 0.5s;
+        -webkit-transition: all 0.5s;
+    }
+    
+    .button-link:hover {
+        background-color: #1E3E62;
+        color: white;
+        box-shadow: 0 0 20px #6fc5ff50;
+        transform: scale(1.1);
+    }
+    
+    .button-link:active {
+        background-color: #3d94cf;
+        transition: all 0.25s;
+        -webkit-transition: all 0.25s;
+        box-shadow: none;
+        transform: scale(0.98);
+    }
+    
+    .block {
+        display: flex;
+        flex-grow: 1;
+        background-color: #121218;
+        font-size: clamp(16px,2vw,60px); 
+        font-weight: 650;
+        color: #F5F5F5;
+    }
+    
+    .block-schedule {
+        background-color: #1E3E62;
+        height: 67vh;
+    }
+      
+    
+    .grade-block {
+        background-color: #1E3E62; 
+        max-height: 20%;
+        max-height: 100px;
+        display: flex;
+        justify-content: space-between;  /* Размещение элементов по бокам */
+        align-items: center;
+        padding: 0 1px;
+        color: #F5F5F5;
+        font-size: 16px;
+    }
+    
+    .block-naked {
+        background-color: #1E3E62;
+        height: 100%; 
+    }
+    
+    /* 
+     * ----------------------------
+     * Grades Section
+     * ----------------------------
+     */
+    
+    .grade-box {
+        background-color: #F5F5F5;
+        padding: 5px 10px;
+        border-radius: 10px;
+        font-weight: bold;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #0B192C;
+    }
+    
+    .grades {
+        display: flex;
+        gap: 8px; 
+    }
+    

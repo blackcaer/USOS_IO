@@ -11,6 +11,7 @@ interface SubjectStatistics {
   averageGrade: number;
   numberOfStudents: number;
   grades: {[key: number]: number}; // rozkład ocen
+  totalGrades: number; // dodane: całkowita liczba ocen
 }
 
 interface StudentStatistics {
@@ -23,7 +24,7 @@ interface StudentStatistics {
 @Component({
   selector: 'app-statistics',
   templateUrl: './statistics.component.html',
-  styleUrl: './statistics.component.css'
+  styleUrls: ['./statistics.component.css']
 })
 export class StatisticsComponent implements OnInit {
   userRole: string = '';
@@ -76,8 +77,10 @@ export class StatisticsComponent implements OnInit {
     const groups = await this.userService.getAllGroups();
     
     for (const group of groups) {
-      for (const studentId of group.students) {
-        const subjects = await this.userService.getAllUsersSubjects(studentId);
+      const groupStudents = group.students;
+      if (groupStudents && groupStudents.length > 0) {
+        const firstStudent = groupStudents[0];
+        const subjects = await this.userService.getAllUsersSubjects(firstStudent);
         
         for (const [groupId, subjectsArray] of subjects.entries()) {
           for (const subject of subjectsArray) {
@@ -100,14 +103,18 @@ export class StatisticsComponent implements OnInit {
   private async calculateGroupStatistics(subject: SchoolSubject, groupId: number): Promise<SubjectStatistics> {
     const allGrades: number[] = [];
     const gradeDistribution: {[key: number]: number} = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+    let totalGrades = 0;
     
     const students = subject.studentGroup.students;
     for (const studentId of students) {
       const grades = await this.userService.getUsersGradesFromSubject(studentId, subject.id);
       grades.forEach(grade => {
         const value = this.userService.parseGradeValue(grade.value);
-        allGrades.push(value);
-        gradeDistribution[value]++;
+        if (value > 0) { // pomijamy nieprawidłowe oceny
+          allGrades.push(value);
+          gradeDistribution[value]++;
+          totalGrades++;
+        }
       });
     }
 
@@ -117,7 +124,8 @@ export class StatisticsComponent implements OnInit {
       groupName: subject.studentGroup.name,
       averageGrade: this.calculateAverage(allGrades),
       numberOfStudents: students.length,
-      grades: gradeDistribution
+      grades: gradeDistribution,
+      totalGrades: totalGrades
     };
   }
 
@@ -139,14 +147,13 @@ export class StatisticsComponent implements OnInit {
 
   selectSubject(subject: string) {
     this.selectedSubject = subject;
-
-    // Dodaj klasę animacji do sekcji statystyk
-  const statsSection = document.querySelector('.anim-display') as HTMLElement; // Rzutowanie na HTMLElement
-  if (statsSection) {
-    statsSection.classList.remove('slide-in-up'); // Usuń poprzednią animację (jeśli istnieje)
-    void statsSection.offsetWidth; // Wymuś reflow, aby animacja działała za każdym razem
-    statsSection.classList.add('slide-in-up'); // Dodaj nową animację
-  }
+    
+    const statsSection = document.querySelector('.anim-display') as HTMLElement;
+    if (statsSection) {
+      // statsSection.classList.remove('slide-in-up');
+      // void statsSection.offsetWidth;                     ewentualnie do zmiany potem
+      // statsSection.classList.add('slide-in-up');
+    }
   }
 
   getSelectedSubjectStats(): SubjectStatistics[] {
@@ -163,12 +170,13 @@ export class StatisticsComponent implements OnInit {
   }
 
   calculateGradePercentage(stats: SubjectStatistics, count: number): number {
-    if (stats.numberOfStudents === 0) return 0;
-    return (count / stats.numberOfStudents) * 100;
+    if (!stats || stats.totalGrades === 0) return 0;
+    const percentage = (count / stats.totalGrades) * 100;
+    // Upewniamy się, że wartość nie jest NaN
+    return isNaN(percentage) ? 0 : percentage;
   }
 
   getStudentStatsForSubject(subjectName: string): StudentStatistics | undefined {
     return this.studentStats.find(s => s.subjectName === subjectName);
   }
-
 }
