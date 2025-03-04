@@ -150,6 +150,7 @@ export class GradesComponent {
       
       this.closeGradeModal();
     } catch (error) {
+      alert("Ocena z tego tematu już jest dodana");
       console.error('Błąd podczas dodawania oceny:', error);
     }
   }
