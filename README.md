@@ -55,13 +55,14 @@ You can view the original project summary by clicking the link below:
 **backend:**
 ```
 cd backend/
+python -m venv venv
+pip install -r requirements.txt
 python manage.py runserver
 ```
 
 **frontend:**
 ```
 cd frontend-no-standalone/
+npm install
 ng serve --open
 ```
-
-(You have to install required packages first and run venv but I'm too lazy to explain how to do that)
