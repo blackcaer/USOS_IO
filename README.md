@@ -16,13 +16,6 @@ which are included in original presentations at the **`./project_presentation`**
 
 The project consists of a **Django REST API** backend and an **Angular** frontend.
 
-You can view the original project summary by clicking the link below:
-
-<h2 align="center">
-  📄 <a href="./project_presentation/UI_UX, Project summary.pdf" target="_blank">View Project Summary</a>
-</h2>
-
-
 ## Features:
 - Electronic consent system
 - Class schedules  
@@ -36,7 +29,11 @@ You can view the original project summary by clicking the link below:
 
 All the project presentations are in the ./project_presentation/ directory.
 
+You can view the original project summary by clicking the link below:
 
+<h2 align="center">
+  📄 <a href="./project_presentation/UI_UX, Project summary.pdf" target="_blank">View Project Summary</a>
+</h2>
 
 *Parent's main view:*
 ![parent main view](./project_presentation/usos_img_1.png)
@@ -46,6 +43,12 @@ All the project presentations are in the ./project_presentation/ directory.
 
 *Grades stats view:*
 ![grade stats view](./project_presentation/usos_img_3.png)
+
+*ERD summary:*
+![ERD summary](./project_presentation/usos_img_5.png)
+
+*Business value canvas summary:*
+![Business value canvas summary](./project_presentation/usos_img_4.png)
 
 ## How to run:
 
